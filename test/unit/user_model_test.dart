@@ -25,7 +25,11 @@ void main() {
       final user = User.fromJson(json);
       final result = user.toJson();
       expect(result['id'], 'user_123');
+      expect(result['phone'], '+221771234567');
       expect(result['role'], 'producer');
+      expect(result['firstName'], 'Amadou');
+      expect(result['lastName'], 'Diallo');
+      expect(result['email'], 'amadou@test.com');
       expect(result['kycStatus'], 'approved');
     });
 
@@ -40,6 +44,16 @@ void main() {
       final a = User.fromJson(json);
       final b = User.fromJson(json);
       expect(a, equals(b));
+    });
+
+    test('kycStatus defaults to pending when absent from json', () {
+      final jsonWithoutKyc = {
+        'id': 'user_456',
+        'phone': '+221771234567',
+        'role': 'vendor',
+      };
+      final user = User.fromJson(jsonWithoutKyc);
+      expect(user.kycStatus, 'pending');
     });
   });
 }
