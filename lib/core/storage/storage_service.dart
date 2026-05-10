@@ -30,6 +30,8 @@ class StorageService {
     await _secure.delete(key: _kRefreshToken);
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kUser);
+    await prefs.remove(_kLastPhone);
+    await prefs.remove(_kBiometric);
   }
 
   Future<void> setUserJson(String json) async {
