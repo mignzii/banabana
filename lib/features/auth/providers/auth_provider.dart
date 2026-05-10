@@ -55,17 +55,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     if (accessToken != null && refreshToken != null && userJson != null) {
       try {
-        final user = User.fromJson(
-            jsonDecode(userJson) as Map<String, dynamic>);
+        final freshUser = await repo.getProfile();
+        await storage.setUserJson(jsonEncode(freshUser.toJson()));
         state = AuthState(
           isAuthenticated: true,
-          user: user,
+          isLoading: false,
+          user: freshUser,
           accessToken: accessToken,
           refreshToken: refreshToken,
         );
-        final freshUser = await repo.getProfile();
-        await storage.setUserJson(jsonEncode(freshUser.toJson()));
-        state = state.copyWith(user: freshUser);
       } catch (_) {
         await storage.clearAll();
         state = const AuthState();
@@ -96,8 +94,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState();
   }
 
-  void setError(String? message) {
+  void setError(String message) {
     state = state.copyWith(error: message);
+  }
+
+  void clearError() {
+    state = AuthState(
+      isAuthenticated: state.isAuthenticated,
+      isLoading: state.isLoading,
+      user: state.user,
+      accessToken: state.accessToken,
+      refreshToken: state.refreshToken,
+      error: null,
+    );
   }
 }
 
