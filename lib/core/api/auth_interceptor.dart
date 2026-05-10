@@ -33,10 +33,14 @@ class AuthInterceptor extends Interceptor {
         return;
       }
       try {
-        final response = await _dio!.post(
+        // Use a clean Dio instance (no interceptors) to avoid circular refresh calls
+        final refreshDio = Dio(BaseOptions(
+          baseUrl: _dio!.options.baseUrl,
+          headers: {'Content-Type': 'application/json'},
+        ));
+        final response = await refreshDio.post(
           '/auth/refresh',
           data: {'refreshToken': refreshToken},
-          options: Options(headers: {}),
         );
         final newToken = response.data['accessToken'] as String;
         await storage.setAccessToken(newToken);
@@ -44,7 +48,10 @@ class AuthInterceptor extends Interceptor {
         retryOptions.headers['Authorization'] = 'Bearer $newToken';
         final retryResponse = await _dio!.fetch(retryOptions);
         handler.resolve(retryResponse);
-      } catch (_) {
+      } on DioException catch (e) {
+        await storage.clearAll();
+        handler.next(e);
+      } catch (e) {
         await storage.clearAll();
         handler.next(err);
       }
