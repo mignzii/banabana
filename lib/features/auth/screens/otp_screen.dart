@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +24,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   final List<FocusNode> _nodes = List.generate(6, (_) => FocusNode());
   bool _loading = false;
   int _resendCountdown = 60;
+  Timer? _countdownTimer;
 
   @override
   void initState() {
@@ -33,16 +35,25 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     for (final c in _ctrlrs) { c.dispose(); }
     for (final n in _nodes) { n.dispose(); }
     super.dispose();
   }
 
-  void _startCountdown() async {
-    while (_resendCountdown > 0 && mounted) {
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) setState(() => _resendCountdown--);
-    }
+  void _startCountdown() {
+    _countdownTimer?.cancel();
+    setState(() => _resendCountdown = 60);
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        _resendCountdown--;
+        if (_resendCountdown <= 0) timer.cancel();
+      });
+    });
   }
 
   String get _otp => _ctrlrs.map((c) => c.text).join();
@@ -143,7 +154,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               TextButton(
                 onPressed: _resendCountdown == 0
                     ? () {
-                        setState(() => _resendCountdown = 60);
                         _startCountdown();
                         ref.read(authRepositoryProvider)
                             .requestOtp(phone: widget.phone, role: widget.role);

@@ -25,22 +25,21 @@ class _SetPinScreenState extends ConsumerState<SetPinScreen> {
 
   void _onDigit(String d) {
     HapticFeedback.lightImpact();
-    setState(() {
-      if (!_confirming) {
-        if (_pin.length < 4) {
-          _pin += d;
-          if (_pin.length == 4) {
-            Future.delayed(const Duration(milliseconds: 300),
-                () => setState(() => _confirming = true));
-          }
-        }
-      } else {
-        if (_confirmPin.length < 4) {
-          _confirmPin += d;
-          if (_confirmPin.length == 4) _setPin();
+    if (!_confirming) {
+      if (_pin.length < 4) {
+        setState(() => _pin += d);
+        if (_pin.length == 4) {
+          Future.delayed(const Duration(milliseconds: 300), () {
+            if (mounted) setState(() => _confirming = true);
+          });
         }
       }
-    });
+    } else {
+      if (_confirmPin.length < 4) {
+        setState(() => _confirmPin += d);
+        if (_confirmPin.length == 4) _setPin();
+      }
+    }
   }
 
   void _onDelete() {
