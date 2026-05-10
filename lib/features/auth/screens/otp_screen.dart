@@ -33,8 +33,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   void dispose() {
-    for (final c in _ctrlrs) c.dispose();
-    for (final n in _nodes) n.dispose();
+    for (final c in _ctrlrs) { c.dispose(); }
+    for (final n in _nodes) { n.dispose(); }
     super.dispose();
   }
 
@@ -92,7 +92,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     } catch (e) {
       if (mounted) {
         context.showSnack('Code incorrect. Réessayez.', type: SnackType.error);
-        for (final c in _ctrlrs) c.clear();
+        for (final c in _ctrlrs) { c.clear(); }
         _nodes[0].requestFocus();
       }
     } finally {
