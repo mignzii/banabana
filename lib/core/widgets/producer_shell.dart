@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:banabana_b2b/core/theme/app_colors.dart';
+import 'package:banabana_b2b/shared/widgets/app_bottom_nav.dart';
 
 class ProducerShell extends StatelessWidget {
   const ProducerShell({
@@ -13,58 +13,63 @@ class ProducerShell extends StatelessWidget {
   final Widget child;
   final String location;
 
+  static const _items = [
+    AppNavItem(
+      icon: Symbols.home,
+      activeIcon: Symbols.home,
+      label: 'Accueil',
+    ),
+    AppNavItem(
+      icon: Symbols.inventory_2,
+      activeIcon: Symbols.inventory_2,
+      label: 'Produits',
+    ),
+    AppNavItem(
+      icon: Symbols.receipt_long,
+      activeIcon: Symbols.receipt_long,
+      label: 'Commandes',
+    ),
+    AppNavItem(
+      icon: Symbols.chat_bubble,
+      activeIcon: Symbols.chat_bubble,
+      label: 'Messages',
+    ),
+    AppNavItem(
+      icon: Symbols.person,
+      activeIcon: Symbols.person,
+      label: 'Profil',
+    ),
+  ];
+
   int get _currentIndex {
     if (location.startsWith('/producer/home')) return 0;
+    if (location.startsWith('/producer/products') ||
+        location.startsWith('/producer/inventory') ||
+        location.startsWith('/producer/analytics') ||
+        location.startsWith('/producer/dashboard')) { return 1; }
     if (location.startsWith('/producer/orders')) return 2;
-    if (location.startsWith('/producer/profile')) return 3;
-    // dashboard, products, inventory, analytics, messages → tab 1
-    return 1;
+    if (location.startsWith('/producer/messages')) return 3;
+    if (location.startsWith('/producer/profile')) return 4;
+    return 0;
+  }
+
+  void _onTap(BuildContext context, int index) {
+    switch (index) {
+      case 0: context.go('/producer/home');
+      case 1: context.go('/producer/products');
+      case 2: context.go('/producer/orders');
+      case 3: context.go('/producer/messages');
+      case 4: context.go('/producer/profile');
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.gray400,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              context.go('/producer/home');
-            case 1:
-              context.go('/producer/dashboard');
-            case 2:
-              context.go('/producer/orders');
-            case 3:
-              context.go('/producer/profile');
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Symbols.home),
-            activeIcon: Icon(Symbols.home, fill: 1),
-            label: 'Accueil',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Symbols.dashboard),
-            activeIcon: Icon(Symbols.dashboard, fill: 1),
-            label: 'Tableau de bord',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Symbols.receipt_long),
-            activeIcon: Icon(Symbols.receipt_long, fill: 1),
-            label: 'Commandes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Symbols.person),
-            activeIcon: Icon(Symbols.person, fill: 1),
-            label: 'Profil',
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+    body: child,
+    bottomNavigationBar: AppBottomNav(
+      items: _items,
+      currentIndex: _currentIndex,
+      onTap: (i) => _onTap(context, i),
+    ),
+  );
 }
