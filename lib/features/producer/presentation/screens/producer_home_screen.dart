@@ -1,14 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
-import 'package:banabana_b2b/core/api/api_client.dart';
+import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/producer/providers/product_providers.dart';
-import 'package:banabana_b2b/shared/models/product.dart';
-import 'package:banabana_b2b/shared/widgets/error_state_widget.dart';
+import 'package:banabana_b2b/features/producer/providers/order_providers.dart';
+import 'package:banabana_b2b/shared/widgets/product_card.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
 class ProducerHomeScreen extends ConsumerWidget {
@@ -16,273 +16,190 @@ class ProducerHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final user = ref.watch(authProvider).user;
     final productsAsync = ref.watch(productsNotifierProvider);
+    final ordersAsync = ref.watch(ordersNotifierProvider);
+
+    final firstName = user?.firstName ?? 'Producteur';
 
     return Scaffold(
-      backgroundColor: AppColors.gray50,
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.gray50,
       appBar: AppBar(
-        title: const Text('BanaBana Business'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.white,
+        backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Symbols.notifications),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _PromoBanner(onExplore: () => context.go('/shop/catalog')),
-          const SizedBox(height: 24),
-
-          // Mes produits section
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Mes produits', style: AppTextStyles.sectionTitle),
-              TextButton(
-                onPressed: () => context.go('/producer/products'),
-                child: const Text('Voir tout'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          productsAsync.when(
-            loading: () => SizedBox(
-              height: 160,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: 3,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (_, __) => const SizedBox(
-                  width: 140,
-                  child: CardShimmer(),
-                ),
-              ),
-            ),
-            error: (err, _) => ErrorStateWidget(
-              message: err.toString(),
-              onRetry: () =>
-                  ref.read(productsNotifierProvider.notifier).load(),
-            ),
-            data: (products) {
-              if (products.isEmpty) {
-                return Column(
-                  children: [
-                    const SizedBox(height: 8),
-                    Text(
-                      'Aucun produit — créez votre premier produit',
-                      style: AppTextStyles.bodySecondary,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 12),
-                    FilledButton(
-                      onPressed: () => context.push('/producer/products/new'),
-                      child: const Text('Ajouter un produit'),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                );
-              }
-              return SizedBox(
-                height: 180,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: products.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (_, i) => _ProductCard(product: products[i]),
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 24),
-
-          // Actions rapides
-          Text('Actions rapides', style: AppTextStyles.sectionTitle),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _QuickActionButton(
-                  icon: Symbols.add_circle,
-                  label: 'Ajouter produit',
-                  onTap: () => context.push('/producer/products/new'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _QuickActionButton(
-                  icon: Symbols.receipt_long,
-                  label: 'Voir commandes',
-                  onTap: () => context.go('/producer/orders'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PromoBanner extends StatelessWidget {
-  const _PromoBanner({required this.onExplore});
-
-  final VoidCallback onExplore;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 160,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [AppColors.success, AppColors.primaryDark],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -10,
-            top: -10,
-            child: Icon(
-              Symbols.eco,
-              size: 130,
-              color: AppColors.white.withValues(alpha: 0.15),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: AppColors.secondary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    '-30%',
-                    style: TextStyle(
-                      color: AppColors.gray900,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Promotion spéciale',
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                const Text(
-                  'Sur une sélection de produits frais',
-                  style: TextStyle(color: AppColors.white, fontSize: 12),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: onExplore,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.white,
-                    foregroundColor: AppColors.primaryDark,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    textStyle: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w600),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                  child: const Text('Explorer le catalogue'),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProductCard extends StatelessWidget {
-  const _ProductCard({required this.product});
-
-  final Product product;
-
-  @override
-  Widget build(BuildContext context) {
-    final imageUrl = product.images.isNotEmpty
-        ? resolveImageUrl(product.images.first.url)
-        : null;
-    return SizedBox(
-      width: 140,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 1,
-        child: Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(12)),
-              child: AspectRatio(
-                aspectRatio: 4 / 3,
-                child: imageUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: imageUrl,
-                        fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => Container(
-                          color: AppColors.gray100,
-                          child: const Icon(Icons.image_outlined,
-                              color: AppColors.gray400),
-                        ),
-                      )
-                    : Container(
-                        color: AppColors.gray100,
-                        child: const Icon(Icons.image_outlined,
-                            color: AppColors.gray400),
-                      ),
+            Text(
+              'Bonjour, $firstName 👋',
+              style: AppTextStyles.sectionTitle.copyWith(
+                color: isDark ? AppColors.white : AppColors.gray900,
               ),
             ),
+            Text(
+              'Tableau de bord producteur',
+              style: AppTextStyles.caption.copyWith(
+                color: isDark ? AppColors.gray500 : AppColors.gray400,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.s8),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+              child: Text(
+                firstName.isNotEmpty ? firstName[0].toUpperCase() : 'P',
+                style: AppTextStyles.label.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        color: AppColors.primary,
+        onRefresh: () async {
+          ref.invalidate(productsNotifierProvider);
+          ref.invalidate(ordersNotifierProvider);
+        },
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s16),
+          children: [
+            _QuickStats(
+              isDark: isDark,
+              ordersAsync: ordersAsync,
+              productsAsync: productsAsync,
+            ),
+            const SizedBox(height: AppSpacing.s24),
             Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
+              child: Text(
+                'Actions rapides',
+                style: AppTextStyles.sectionTitle.copyWith(
+                  color: isDark ? AppColors.white : AppColors.gray900,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                mainAxisSpacing: AppSpacing.s12,
+                crossAxisSpacing: AppSpacing.s12,
+                childAspectRatio: 2.4,
+                children: [
+                  _QuickAction(
+                    icon: Symbols.add_circle,
+                    label: 'Ajouter produit',
+                    color: AppColors.primary,
+                    isDark: isDark,
+                    onTap: () => context.push('/producer/products/new'),
+                  ),
+                  _QuickAction(
+                    icon: Symbols.receipt_long,
+                    label: 'Commandes',
+                    color: const Color(0xFF7C3AED),
+                    isDark: isDark,
+                    onTap: () => context.go('/producer/orders'),
+                  ),
+                  _QuickAction(
+                    icon: Symbols.inventory_2,
+                    label: 'Inventaire',
+                    color: const Color(0xFF0EA5E9),
+                    isDark: isDark,
+                    onTap: () => context.push('/producer/inventory'),
+                  ),
+                  _QuickAction(
+                    icon: Symbols.bar_chart,
+                    label: 'Analytiques',
+                    color: AppColors.secondary,
+                    isDark: isDark,
+                    onTap: () => context.push('/producer/analytics'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    product.title,
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w600),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    'Mes produits',
+                    style: AppTextStyles.sectionTitle.copyWith(
+                      color: isDark ? AppColors.white : AppColors.gray900,
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${product.basePrice.toStringAsFixed(0)} FCFA',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
+                  TextButton(
+                    onPressed: () => context.go('/producer/products'),
+                    child: Text(
+                      'Voir tout',
+                      style: AppTextStyles.label.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: AppSpacing.s8),
+            productsAsync.when(
+              loading: () => SizedBox(
+                height: 200,
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s16,
+                  ),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 4,
+                  separatorBuilder: (_, __) =>
+                      const SizedBox(width: AppSpacing.s12),
+                  itemBuilder: (_, __) => const SizedBox(
+                    width: 150,
+                    child: ProductCardShimmer(),
+                  ),
+                ),
+              ),
+              error: (_, __) => const SizedBox.shrink(),
+              data: (products) {
+                if (products.isEmpty) return const SizedBox.shrink();
+                final recent =
+                    products.length > 6 ? products.sublist(0, 6) : products;
+                return SizedBox(
+                  height: 210,
+                  child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s16,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: recent.length,
+                    separatorBuilder: (_, __) =>
+                        const SizedBox(width: AppSpacing.s12),
+                    itemBuilder: (_, i) => SizedBox(
+                      width: 150,
+                      child: ProductCard(
+                        product: recent[i],
+                        onTap: () =>
+                            context.push('/producer/products/${recent[i].id}'),
+                        onEdit: () => context
+                            .push('/producer/products/${recent[i].id}/edit'),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: AppSpacing.s32),
           ],
         ),
       ),
@@ -290,36 +207,197 @@ class _ProductCard extends StatelessWidget {
   }
 }
 
-class _QuickActionButton extends StatelessWidget {
-  const _QuickActionButton({
+class _QuickStats extends StatelessWidget {
+  const _QuickStats({
+    required this.isDark,
+    required this.ordersAsync,
+    required this.productsAsync,
+  });
+
+  final bool isDark;
+  final AsyncValue<List> ordersAsync;
+  final AsyncValue<List> productsAsync;
+
+  @override
+  Widget build(BuildContext context) {
+    final pendingOrders =
+        ordersAsync.valueOrNull?.length ?? 0;
+    final totalProducts = productsAsync.valueOrNull?.length ?? 0;
+
+    return SizedBox(
+      height: 88,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
+        scrollDirection: Axis.horizontal,
+        children: [
+          _StatChip(
+            icon: Symbols.shopping_bag,
+            label: 'Commandes',
+            value: '$pendingOrders',
+            color: AppColors.primary,
+            isDark: isDark,
+          ),
+          const SizedBox(width: AppSpacing.s12),
+          _StatChip(
+            icon: Symbols.inventory_2,
+            label: 'Produits',
+            value: '$totalProducts',
+            color: const Color(0xFF0EA5E9),
+            isDark: isDark,
+          ),
+          const SizedBox(width: AppSpacing.s12),
+          _StatChip(
+            icon: Symbols.star,
+            label: 'Note',
+            value: '4.8',
+            color: AppColors.secondary,
+            isDark: isDark,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({
     required this.icon,
     required this.label,
+    required this.value,
+    required this.color,
+    required this.isDark,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 120,
+      padding: const EdgeInsets.all(AppSpacing.s12),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+        border: isDark ? Border.all(color: AppColors.darkBorder) : null,
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: AppColors.black.withValues(alpha: 0.05),
+                  blurRadius: 6,
+                ),
+              ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+            ),
+            child: Icon(icon, size: 18, color: color),
+          ),
+          const SizedBox(width: AppSpacing.s8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                value,
+                style: AppTextStyles.sectionTitle.copyWith(
+                  fontSize: 18,
+                  color: isDark ? AppColors.white : AppColors.gray900,
+                ),
+              ),
+              Text(
+                label,
+                style: AppTextStyles.caption.copyWith(
+                  color: isDark ? AppColors.gray500 : AppColors.gray400,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickAction extends StatelessWidget {
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.isDark,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
+  final Color color;
+  final bool isDark;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.gray200),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 28, color: AppColors.primary),
-            const SizedBox(height: 6),
-            Text(label,
-                style: AppTextStyles.label, textAlign: TextAlign.center),
-          ],
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+        splashColor: color.withValues(alpha: 0.1),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : AppColors.white,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+            border: isDark ? Border.all(color: AppColors.darkBorder) : null,
+            boxShadow: isDark
+                ? null
+                : [
+                    BoxShadow(
+                      color: AppColors.black.withValues(alpha: 0.04),
+                      blurRadius: 6,
+                    ),
+                  ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.s12,
+              vertical: AppSpacing.s8,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusSmall),
+                  ),
+                  child: Icon(icon, size: 16, color: color),
+                ),
+                const SizedBox(width: AppSpacing.s8),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: AppTextStyles.label.copyWith(
+                      color: isDark ? AppColors.gray200 : AppColors.gray800,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
