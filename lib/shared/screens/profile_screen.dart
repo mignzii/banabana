@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
+import 'package:banabana_b2b/features/auth/providers/theme_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -12,6 +14,8 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider).user;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = ref.watch(themeModeProvider) == ThemeMode.dark;
 
     final firstName = user?.firstName ?? '';
     final lastName = user?.lastName ?? '';
@@ -39,45 +43,72 @@ class ProfileScreen extends ConsumerWidget {
       _ => 'En attente',
     };
 
+    final bg = isDark ? AppColors.darkBg : AppColors.gray50;
+    final surface = isDark ? AppColors.darkSurface : AppColors.white;
+    final border = isDark ? AppColors.darkBorder : AppColors.gray100;
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+
     return Scaffold(
-      backgroundColor: AppColors.gray50,
+      backgroundColor: bg,
       appBar: AppBar(
-        title: const Text('Mon profil'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.white,
+        backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
         elevation: 0,
+        title: Text(
+          'Mon profil',
+          style: AppTextStyles.sectionTitle.copyWith(color: textPrimary),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Divider(height: 1, color: border),
+        ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.screenPadding),
         children: [
+          const SizedBox(height: AppSpacing.s8),
+
           // Avatar + Name + Role
-          Center(
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.s24),
+            decoration: BoxDecoration(
+              color: surface,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+              border: Border.all(color: border),
+            ),
             child: Column(
               children: [
                 CircleAvatar(
                   radius: 44,
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.15),
                   child: initials != null
                       ? Text(
                           initials,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.white,
+                          style: AppTextStyles.display.copyWith(
+                            color: AppColors.primary,
                           ),
                         )
-                      : const Icon(Symbols.person, size: 40, color: AppColors.white),
+                      : const Icon(Symbols.person, size: 40, color: AppColors.primary),
                 ),
-                const SizedBox(height: 12),
-                Text(displayName, style: AppTextStyles.screenTitle),
-                const SizedBox(height: 4),
-                Text(user?.phone ?? '-', style: AppTextStyles.bodySecondary),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.s12),
+                Text(
+                  displayName,
+                  style: AppTextStyles.screenTitle.copyWith(color: textPrimary),
+                ),
+                const SizedBox(height: AppSpacing.s4),
+                Text(
+                  user?.phone ?? '-',
+                  style: AppTextStyles.bodySecondary.copyWith(color: textSecondary),
+                ),
+                const SizedBox(height: AppSpacing.s8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s12,
+                    vertical: AppSpacing.s4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
                   ),
                   child: Text(
                     roleBadgeLabel,
@@ -85,122 +116,172 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
                 if (user?.businessName?.isNotEmpty == true) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.s4),
                   Text(
                     user!.businessName!,
-                    style: AppTextStyles.bodySecondary,
+                    style: AppTextStyles.bodySecondary.copyWith(color: textSecondary),
                   ),
                 ],
               ],
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.s16),
 
-          // Informations card
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Informations', style: AppTextStyles.sectionTitle),
-                  const Divider(height: 24),
-                  _InfoRow(
-                    icon: Symbols.phone,
-                    label: 'Téléphone',
-                    value: user?.phone ?? '-',
+          // Informations
+          _SectionCard(
+            isDark: isDark,
+            surface: surface,
+            border: border,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Informations',
+                  style: AppTextStyles.label.copyWith(
+                    color: textSecondary,
+                    letterSpacing: 0.5,
                   ),
-                  const SizedBox(height: 12),
-                  _InfoRow(
-                    icon: Symbols.email,
-                    label: 'Email',
-                    value: user?.email?.isNotEmpty == true
-                        ? user!.email!
-                        : 'Non renseigné',
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      const Icon(Symbols.verified_user, size: 20, color: AppColors.gray500),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Statut KYC', style: AppTextStyles.label),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: kycColor.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                kycLabel,
-                                style: AppTextStyles.caption.copyWith(
-                                    color: kycColor,
-                                    fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: AppSpacing.s16),
+                _InfoRow(
+                  icon: Symbols.phone,
+                  label: 'Téléphone',
+                  value: user?.phone ?? '-',
+                  isDark: isDark,
+                ),
+                Divider(height: AppSpacing.s24, color: border),
+                _InfoRow(
+                  icon: Symbols.email,
+                  label: 'Email',
+                  value: user?.email?.isNotEmpty == true ? user!.email! : 'Non renseigné',
+                  isDark: isDark,
+                ),
+                Divider(height: AppSpacing.s24, color: border),
+                Row(
+                  children: [
+                    Icon(Symbols.verified_user, size: 20, color: textSecondary),
+                    const SizedBox(width: AppSpacing.s12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Statut KYC',
+                            style: AppTextStyles.caption.copyWith(color: textSecondary),
+                          ),
+                          const SizedBox(height: AppSpacing.s4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: kycColor.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+                            ),
+                            child: Text(
+                              kycLabel,
+                              style: AppTextStyles.caption.copyWith(
+                                color: kycColor,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
 
           // KYC action si non approuvé
           if (user?.kycStatus != 'approved') ...[
-            const SizedBox(height: 12),
-            ListTile(
-              tileColor: kycColor.withValues(alpha: 0.08),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: kycColor.withValues(alpha: 0.3)),
+            const SizedBox(height: AppSpacing.s8),
+            Container(
+              decoration: BoxDecoration(
+                color: kycColor.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+                border: Border.all(color: kycColor.withValues(alpha: 0.3)),
               ),
-              leading: Icon(Symbols.upload_file, color: kycColor),
-              title: Text(
-                user?.kycStatus == 'rejected'
-                    ? 'Documents refusés — soumettre à nouveau'
-                    : 'Vérification d\'identité en attente',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: kycColor),
+              child: ListTile(
+                leading: Icon(Symbols.upload_file, color: kycColor),
+                title: Text(
+                  user?.kycStatus == 'rejected'
+                      ? 'Documents refusés — soumettre à nouveau'
+                      : 'Vérification d\'identité en attente',
+                  style: AppTextStyles.label.copyWith(color: kycColor),
+                ),
+                trailing: Icon(Symbols.arrow_forward_ios, size: 14, color: kycColor),
+                onTap: () => context.push('/auth/kyc'),
               ),
-              trailing: Icon(Icons.arrow_forward_ios,
-                  size: 14, color: kycColor),
-              onTap: () => context.push('/auth/kyc'),
             ),
           ],
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.s16),
 
-          // Logout button
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () => _confirmLogout(context, ref),
-              icon: const Icon(Symbols.logout, color: AppColors.error),
-              label: const Text(
-                'Déconnexion',
-                style: TextStyle(color: AppColors.error),
-              ),
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppColors.error),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+          // Préférences
+          _SectionCard(
+            isDark: isDark,
+            surface: surface,
+            border: border,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Préférences',
+                  style: AppTextStyles.label.copyWith(
+                    color: textSecondary,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s8),
+                Row(
+                  children: [
+                    Icon(
+                      isDarkMode ? Symbols.dark_mode : Symbols.light_mode,
+                      size: 20,
+                      color: textSecondary,
+                    ),
+                    const SizedBox(width: AppSpacing.s12),
+                    Expanded(
+                      child: Text(
+                        'Mode sombre',
+                        style: AppTextStyles.body.copyWith(color: textPrimary),
+                      ),
+                    ),
+                    Switch(
+                      value: isDarkMode,
+                      onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
+                      activeThumbColor: AppColors.primary,
+                      activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.s16),
+
+          // Déconnexion
+          OutlinedButton.icon(
+            onPressed: () => _confirmLogout(context, ref),
+            icon: const Icon(Symbols.logout, color: AppColors.error),
+            label: const Text('Déconnexion'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.error,
+              side: const BorderSide(color: AppColors.error),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
               ),
             ),
           ),
+
+          const SizedBox(height: AppSpacing.s24),
         ],
       ),
     );
@@ -223,13 +304,41 @@ class ProfileScreen extends ConsumerWidget {
               await ref.read(authProvider.notifier).logout();
               if (context.mounted) context.go('/auth/login');
             },
-            child: const Text(
+            child: Text(
               'Déconnexion',
-              style: TextStyle(color: AppColors.error),
+              style: AppTextStyles.body.copyWith(color: AppColors.error),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({
+    required this.isDark,
+    required this.surface,
+    required this.border,
+    required this.child,
+  });
+
+  final bool isDark;
+  final Color surface;
+  final Color border;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.s16),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+        border: Border.all(color: border),
+      ),
+      child: child,
     );
   }
 }
@@ -239,25 +348,30 @@ class _InfoRow extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
+    required this.isDark,
   });
 
   final IconData icon;
   final String label;
   final String value;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
+    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+
     return Row(
       children: [
-        Icon(icon, size: 20, color: AppColors.gray500),
-        const SizedBox(width: 12),
+        Icon(icon, size: 20, color: textSecondary),
+        const SizedBox(width: AppSpacing.s12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: AppTextStyles.label),
+              Text(label, style: AppTextStyles.caption.copyWith(color: textSecondary)),
               const SizedBox(height: 2),
-              Text(value, style: AppTextStyles.body),
+              Text(value, style: AppTextStyles.body.copyWith(color: textPrimary)),
             ],
           ),
         ),
