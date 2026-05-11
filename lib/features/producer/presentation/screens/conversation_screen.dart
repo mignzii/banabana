@@ -139,6 +139,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     itemBuilder: (_, i) => _MessageBubble(
                       message: _messages[i],
                       isDark: isDark,
+                      initials: conv?.initials ?? '?',
                     ),
                   ),
           ),
@@ -155,9 +156,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 }
 
 class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message, required this.isDark});
+  const _MessageBubble({required this.message, required this.isDark, this.initials = '?'});
   final MockMessage message;
   final bool isDark;
+  final String initials;
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +177,7 @@ class _MessageBubble extends StatelessWidget {
               radius: 14,
               backgroundColor: AppColors.primary.withValues(alpha: 0.15),
               child: Text(
-                '?',
+                initials,
                 style: AppTextStyles.badge.copyWith(color: AppColors.primary, fontSize: 10),
               ),
             ),
