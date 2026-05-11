@@ -19,7 +19,7 @@ class ProductFormScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!isEditing) {
-      return _ProductFormBody(productId: null, initial: null);
+      return const _ProductFormBody(productId: null, initial: null);
     }
 
     final productAsync = ref.watch(productDetailProvider(productId!));

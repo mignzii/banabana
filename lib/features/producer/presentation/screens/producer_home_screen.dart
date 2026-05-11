@@ -141,7 +141,7 @@ class _PromoBanner extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: const LinearGradient(
-          colors: [AppColors.accentGreen, AppColors.accentDarkGreen],
+          colors: [AppColors.success, AppColors.primaryDark],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
@@ -198,7 +198,7 @@ class _PromoBanner extends StatelessWidget {
                   onPressed: onExplore,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.white,
-                    foregroundColor: AppColors.accentDarkGreen,
+                    foregroundColor: AppColors.primaryDark,
                     padding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                     minimumSize: Size.zero,

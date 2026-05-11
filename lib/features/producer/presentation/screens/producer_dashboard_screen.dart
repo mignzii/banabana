@@ -38,12 +38,12 @@ class ProducerDashboardScreen extends ConsumerWidget {
             floating: true,
             snap: true,
             pinned: false,
-            backgroundColor: AppColors.accentGreen,
+            backgroundColor: AppColors.success,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.accentGreen, AppColors.accentDarkGreen],
+                    colors: [AppColors.success, AppColors.primaryDark],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -135,7 +135,7 @@ class ProducerDashboardScreen extends ConsumerWidget {
                           label: 'Revenus FCFA',
                           value: fmt.format(summary.totalRevenue),
                           icon: Symbols.wallet,
-                          color: AppColors.accentGreen,
+                          color: AppColors.success,
                         ),
                         _StatCard(
                           label: 'En attente',
@@ -178,7 +178,7 @@ class ProducerDashboardScreen extends ConsumerWidget {
                     _QuickAction(
                       label: 'Commandes',
                       icon: Symbols.receipt_long,
-                      color: AppColors.accentGreen,
+                      color: AppColors.success,
                       onTap: () => context.push('/producer/orders'),
                     ),
                     _QuickAction(
@@ -230,16 +230,16 @@ class ProducerDashboardScreen extends ConsumerWidget {
                       return Container(
                         padding: const EdgeInsets.symmetric(vertical: 32),
                         alignment: Alignment.center,
-                        child: Column(
+                        child: const Column(
                           children: [
-                            const Icon(Symbols.shopping_cart,
+                            Icon(Symbols.shopping_cart,
                                 size: 48, color: AppColors.gray400),
-                            const SizedBox(height: 12),
-                            const Text('Aucune commande reçue',
+                            SizedBox(height: 12),
+                            Text('Aucune commande reçue',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.gray700)),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
                               'Les commandes des grossistes apparaîtront ici',
                               style: TextStyle(

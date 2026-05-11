@@ -67,7 +67,7 @@ class _SummaryRow extends StatelessWidget {
           child: _InfoCard(
             label: 'Revenus totaux',
             value: '${fmt.format(summary.totalRevenue)} FCFA',
-            color: AppColors.accentGreen,
+            color: AppColors.success,
           ),
         ),
         const SizedBox(width: 12),
