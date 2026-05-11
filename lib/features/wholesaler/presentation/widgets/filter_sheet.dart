@@ -42,8 +42,8 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
       params.priceMin?.toDouble() ?? 0,
       params.priceMax?.toDouble() ?? 100000,
     );
-    _inStockOnly = false;
-    _sortBy = 'relevance';
+    _inStockOnly = params.inStockOnly;
+    _sortBy = params.sortBy ?? 'relevance';
   }
 
   void _apply() {
@@ -51,6 +51,8 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
           category: _category,
           priceMin: _priceRange.start > 0 ? _priceRange.start : null,
           priceMax: _priceRange.end < 100000 ? _priceRange.end : null,
+          inStockOnly: _inStockOnly,
+          sortBy: _sortBy == 'relevance' ? null : _sortBy,
           page: 1,
         ));
     Navigator.pop(context);
@@ -67,6 +69,8 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
           category: null,
           priceMin: null,
           priceMax: null,
+          inStockOnly: false,
+          sortBy: null,
           page: 1,
         ));
     Navigator.pop(context);
