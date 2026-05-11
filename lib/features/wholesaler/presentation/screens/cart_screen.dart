@@ -1,83 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
+import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/wholesaler_order_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/widgets/cart_item_tile.dart';
+import 'package:banabana_b2b/shared/widgets/app_button.dart';
 import 'package:banabana_b2b/shared/widgets/empty_state_widget.dart';
+import 'package:intl/intl.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final cartItems = ref.watch(cartProvider);
     final total = ref.watch(cartTotalProvider);
     final fmt = NumberFormat('#,###', 'fr_FR');
 
     return Scaffold(
-      backgroundColor: AppColors.gray50,
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.gray50,
       appBar: AppBar(
-        title: const Text('Mon panier'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
+        title: Text(
+          'Mon panier',
+          style: AppTextStyles.sectionTitle.copyWith(
+            color: isDark ? AppColors.white : AppColors.gray900,
+          ),
+        ),
+        elevation: 0,
         actions: [
           if (cartItems.isNotEmpty)
             TextButton(
-              onPressed: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text('Vider le panier ?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Annuler'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          ref.read(cartProvider.notifier).clear();
-                          Navigator.pop(ctx);
-                        },
-                        child: const Text('Vider'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: const Text('Vider', style: TextStyle(color: Colors.white)),
+              onPressed: () => _confirmClear(context, ref),
+              child: Text(
+                'Vider',
+                style: AppTextStyles.label.copyWith(color: AppColors.error),
+              ),
             ),
         ],
       ),
       body: cartItems.isEmpty
           ? EmptyStateWidget(
-              title: 'Panier vide',
+              icon: Symbols.shopping_cart,
+              title: 'Votre panier est vide',
               subtitle: 'Ajoutez des produits depuis le catalogue.',
               ctaLabel: 'Explorer le catalogue',
-              onCta: () => context.push('/shop/catalog'),
+              onCta: () => context.go('/shop/catalog'),
             )
           : Column(
               children: [
                 Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s16,
+                      vertical: AppSpacing.s12,
+                    ),
                     itemCount: cartItems.length,
+                    separatorBuilder: (_, __) =>
+                        const SizedBox(height: AppSpacing.s8),
                     itemBuilder: (_, i) => CartItemTile(item: cartItems[i]),
                   ),
                 ),
-                _CheckoutBar(total: total, fmt: fmt),
+                _CheckoutBar(
+                  total: total,
+                  fmt: fmt,
+                  isDark: isDark,
+                ),
               ],
             ),
     );
   }
+
+  Future<void> _confirmClear(BuildContext context, WidgetRef ref) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Vider le panier ?'),
+        content: const Text('Tous les articles seront supprimés.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Vider',
+                style: TextStyle(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) ref.read(cartProvider.notifier).clear();
+  }
 }
 
 class _CheckoutBar extends ConsumerStatefulWidget {
+  const _CheckoutBar({
+    required this.total,
+    required this.fmt,
+    required this.isDark,
+  });
+
   final double total;
   final NumberFormat fmt;
-  const _CheckoutBar({required this.total, required this.fmt});
+  final bool isDark;
 
   @override
   ConsumerState<_CheckoutBar> createState() => _CheckoutBarState();
@@ -126,55 +157,59 @@ class _CheckoutBarState extends ConsumerState<_CheckoutBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.s16,
+        AppSpacing.s16,
+        AppSpacing.s16,
+        MediaQuery.of(context).padding.bottom + AppSpacing.s16,
+      ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: widget.isDark ? AppColors.gray900 : AppColors.white,
+        border: Border(
+          top: BorderSide(
+            color:
+                widget.isDark ? AppColors.darkBorder : AppColors.gray200,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12,
+            color: AppColors.black
+                .withValues(alpha: widget.isDark ? 0.4 : 0.06),
+            blurRadius: 16,
             offset: const Offset(0, -4),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Total',
-                  style: TextStyle(fontSize: 12, color: AppColors.gray500)),
+              Text(
+                'Total',
+                style: AppTextStyles.label.copyWith(
+                  color: widget.isDark
+                      ? AppColors.gray300
+                      : AppColors.gray600,
+                ),
+              ),
               Text(
                 '${widget.fmt.format(widget.total)} FCFA',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                style: AppTextStyles.sectionTitle.copyWith(
+                  color: widget.isDark
+                      ? AppColors.white
+                      : AppColors.gray900,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ],
           ),
-          const Spacer(),
-          ElevatedButton(
+          const SizedBox(height: AppSpacing.s12),
+          AppButton(
+            label: 'Commander — ${widget.fmt.format(widget.total)} F',
             onPressed: _loading ? null : _placeOrder,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            child: _loading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                        color: Colors.white, strokeWidth: 2),
-                  )
-                : const Text('Passer la commande',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+            isLoading: _loading,
           ),
         ],
       ),
