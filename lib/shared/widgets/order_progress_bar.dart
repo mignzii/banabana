@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
@@ -21,10 +22,10 @@ class OrderProgressBar extends StatelessWidget {
   final String currentStatus;
 
   static const _steps = [
-    (OrderProgressStep.placed,     'Placée',      Icons.receipt_long_outlined),
-    (OrderProgressStep.accepted,   'Acceptée',    Icons.check_circle_outline),
-    (OrderProgressStep.inDelivery, 'En livraison', Icons.local_shipping_outlined),
-    (OrderProgressStep.delivered,  'Livrée',      Icons.home_outlined),
+    (OrderProgressStep.placed,     'Placée',       Symbols.receipt_long),
+    (OrderProgressStep.accepted,   'Acceptée',     Symbols.check_circle),
+    (OrderProgressStep.inDelivery, 'En livraison', Symbols.local_shipping),
+    (OrderProgressStep.delivered,  'Livrée',       Symbols.home),
   ];
 
   @override

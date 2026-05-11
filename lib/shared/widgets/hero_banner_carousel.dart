@@ -48,7 +48,7 @@ class _HeroBannerCarouselState extends State<HeroBannerCarousel> {
     super.initState();
     _pageCtrl = PageController();
     _timer = Timer.periodic(widget.autoScrollInterval, (_) {
-      if (!mounted) return;
+      if (!mounted || widget.banners.length <= 1) return;
       final next = (_currentPage + 1) % widget.banners.length;
       _pageCtrl.animateToPage(
         next,

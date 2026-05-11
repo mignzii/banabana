@@ -50,9 +50,11 @@ class _CatalogItemCardState extends ConsumerState<CatalogItemCard>
   }
 
   Future<void> _onAddToCart() async {
-    await _scaleCtrl.reverse();
-    await _scaleCtrl.forward();
     HapticFeedback.lightImpact();
+    await _scaleCtrl.reverse();
+    if (!mounted) return;
+    await _scaleCtrl.forward();
+    if (!mounted) return;
     ref.read(cartProvider.notifier).add(
       variantId: widget.item.id,
       productId: widget.item.id,
