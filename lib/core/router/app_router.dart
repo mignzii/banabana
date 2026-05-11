@@ -11,6 +11,8 @@ import 'package:banabana_b2b/features/auth/screens/kyc_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/analytics_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/inventory_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/messages_stub_screen.dart';
+import 'package:banabana_b2b/features/producer/presentation/screens/conversation_screen.dart';
+import 'package:banabana_b2b/features/producer/data/models/message_mock.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/order_detail_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/orders_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/producer_dashboard_screen.dart';
@@ -169,6 +171,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/producer/messages',
             name: 'producer-messages',
             pageBuilder: (_, __) => _fadePage(const MessagesStubScreen()),
+          ),
+          GoRoute(
+            path: '/producer/messages/:conversationId',
+            name: 'producer-conversation',
+            pageBuilder: (_, state) => _fadePage(
+              ConversationScreen(
+                conversationId: state.pathParameters['conversationId']!,
+                conversation: state.extra as MockConversation?,
+              ),
+            ),
           ),
           GoRoute(
             path: '/producer/profile',
