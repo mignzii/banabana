@@ -28,7 +28,7 @@ class AuthRepository {
     required String phone,
     required String pin,
   }) async {
-    await dio.post('/auth/pin/set', data: {'phone': phone, 'pin': pin});
+    await dio.post('/auth/pin/set', data: {'pin': pin});
   }
 
   Future<AuthResponse> verifyPin({
@@ -53,6 +53,17 @@ class AuthRepository {
   Future<User> getProfile() async {
     final res = await dio.get('/users/profile');
     return User.fromJson(res.data as Map<String, dynamic>);
+  }
+
+  Future<void> submitKyc({
+    required String frontPath,
+    required String backPath,
+  }) async {
+    final formData = FormData.fromMap({
+      'frontDocument': await MultipartFile.fromFile(frontPath),
+      'backDocument': await MultipartFile.fromFile(backPath),
+    });
+    await dio.post('/users/kyc', data: formData);
   }
 }
 

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
+import 'package:banabana_b2b/features/auth/data/auth_repository.dart';
+import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 
 class KycScreen extends ConsumerStatefulWidget {
@@ -16,9 +19,31 @@ class KycScreen extends ConsumerStatefulWidget {
 class _KycScreenState extends ConsumerState<KycScreen> {
   XFile? _frontDoc;
   XFile? _backDoc;
-  // ignore: prefer_final_fields
   bool _loading = false;
   final _picker = ImagePicker();
+
+  Future<void> _submit() async {
+    setState(() => _loading = true);
+    try {
+      final repo = ref.read(authRepositoryProvider);
+      await repo.submitKyc(
+        frontPath: _frontDoc!.path,
+        backPath: _backDoc!.path,
+      );
+      await ref.read(authProvider.notifier).refreshProfile();
+      if (mounted) {
+        context.showSnack(
+          'Documents soumis. Vérification sous 24–48h.',
+          type: SnackType.success,
+        );
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) context.showSnack(e.toString(), type: SnackType.error);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   Future<void> _pickImage(bool isFront) async {
     final file = await _picker.pickImage(
@@ -80,10 +105,7 @@ class _KycScreenState extends ConsumerState<KycScreen> {
                 const SizedBox(height: 32),
                 FilledButton(
                   onPressed: (_frontDoc != null && _backDoc != null && !_loading)
-                      ? () => context.showSnack(
-                            'Documents soumis. Vérification sous 24–48h.',
-                            type: SnackType.success,
-                          )
+                      ? _submit
                       : null,
                   child: _loading
                       ? const CircularProgressIndicator(color: AppColors.white)
