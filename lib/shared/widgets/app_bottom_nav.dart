@@ -6,13 +6,11 @@ import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 class AppNavItem {
   const AppNavItem({
     required this.icon,
-    required this.activeIcon,
     required this.label,
     this.badgeCount = 0,
   });
 
   final IconData icon;
-  final IconData activeIcon;
   final String label;
   final int badgeCount;
 }
@@ -36,7 +34,7 @@ class AppBottomNav extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF111111) : AppColors.white,
+        color: isDark ? AppColors.gray900 : AppColors.white,
         border: Border(
           top: BorderSide(
             color: isDark ? AppColors.darkBorder : AppColors.gray200,
@@ -84,7 +82,7 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const activeColor = AppColors.primary;
-    final inactiveColor = isDark ? const Color(0xFF555555) : AppColors.gray400;
+    final inactiveColor = isDark ? AppColors.gray600 : AppColors.gray400;
 
     return GestureDetector(
       onTap: onTap,
@@ -115,9 +113,10 @@ class _NavItem extends StatelessWidget {
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 150),
                   child: Icon(
-                    isActive ? item.activeIcon : item.icon,
+                    item.icon,
                     key: ValueKey(isActive),
                     size: 24,
+                    fill: isActive ? 1.0 : 0.0,
                     color: isActive ? activeColor : inactiveColor,
                   ),
                 ),

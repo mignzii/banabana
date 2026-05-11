@@ -41,16 +41,15 @@ class WholesalerShell extends ConsumerWidget {
     final cartCount = ref.watch(cartItemCountProvider);
 
     final items = [
-      const AppNavItem(icon: Symbols.home, activeIcon: Symbols.home, label: 'Accueil'),
-      const AppNavItem(icon: Symbols.store, activeIcon: Symbols.store, label: 'Catalogue'),
+      const AppNavItem(icon: Symbols.home, label: 'Accueil'),
+      const AppNavItem(icon: Symbols.store, label: 'Catalogue'),
       AppNavItem(
         icon: Symbols.shopping_cart,
-        activeIcon: Symbols.shopping_cart,
         label: 'Panier',
         badgeCount: cartCount,
       ),
-      const AppNavItem(icon: Symbols.receipt_long, activeIcon: Symbols.receipt_long, label: 'Commandes'),
-      const AppNavItem(icon: Symbols.person, activeIcon: Symbols.person, label: 'Profil'),
+      const AppNavItem(icon: Symbols.receipt_long, label: 'Commandes'),
+      const AppNavItem(icon: Symbols.person, label: 'Profil'),
     ];
 
     return Scaffold(

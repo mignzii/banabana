@@ -14,31 +14,11 @@ class ProducerShell extends StatelessWidget {
   final String location;
 
   static const _items = [
-    AppNavItem(
-      icon: Symbols.home,
-      activeIcon: Symbols.home,
-      label: 'Accueil',
-    ),
-    AppNavItem(
-      icon: Symbols.inventory_2,
-      activeIcon: Symbols.inventory_2,
-      label: 'Produits',
-    ),
-    AppNavItem(
-      icon: Symbols.receipt_long,
-      activeIcon: Symbols.receipt_long,
-      label: 'Commandes',
-    ),
-    AppNavItem(
-      icon: Symbols.chat_bubble,
-      activeIcon: Symbols.chat_bubble,
-      label: 'Messages',
-    ),
-    AppNavItem(
-      icon: Symbols.person,
-      activeIcon: Symbols.person,
-      label: 'Profil',
-    ),
+    AppNavItem(icon: Symbols.home, label: 'Accueil'),
+    AppNavItem(icon: Symbols.inventory_2, label: 'Produits'),
+    AppNavItem(icon: Symbols.receipt_long, label: 'Commandes'),
+    AppNavItem(icon: Symbols.chat_bubble, label: 'Messages'),
+    AppNavItem(icon: Symbols.person, label: 'Profil'),
   ];
 
   int get _currentIndex {
