@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
@@ -53,6 +54,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     });
     _inputCtrl.clear();
     Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted) return;
       if (_scrollCtrl.hasClients) {
         _scrollCtrl.animateTo(
           _scrollCtrl.position.maxScrollExtent,
@@ -78,7 +80,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
             Symbols.arrow_back,
             color: isDark ? AppColors.gray100 : AppColors.gray900,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         titleSpacing: 0,
         title: Row(
@@ -260,7 +262,7 @@ class _InputBar extends StatelessWidget {
         AppSpacing.s16, MediaQuery.of(context).padding.bottom + AppSpacing.s8,
       ),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF111111) : AppColors.white,
+        color: isDark ? AppColors.darkSurface : AppColors.white,
         border: Border(
           top: BorderSide(
             color: isDark ? AppColors.darkBorder : AppColors.gray100,
