@@ -43,6 +43,7 @@ dependencies:
 
   # Utils
   intl: ^0.19.0
+  google_fonts: ^6.2.1
 
   # Splash
   flutter_native_splash: ^2.4.4
