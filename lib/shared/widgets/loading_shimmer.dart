@@ -53,7 +53,7 @@ class _ShimmerBoxState extends State<ShimmerBox>
         height: widget.height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(widget.borderRadius),
-          color: baseColor.withValues(alpha: _anim.value + 0.3),
+          color: baseColor.withValues(alpha: _anim.value),
         ),
       ),
     );
@@ -81,13 +81,13 @@ class ProductCardShimmer extends StatelessWidget {
                 ),
               ],
       ),
-      child: Column(
+      child: const Column(
         children: [
           // Image placeholder 1:1
           AspectRatio(
             aspectRatio: 1,
             child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
+              borderRadius: BorderRadius.vertical(
                 top: Radius.circular(AppSpacing.radiusLarge),
               ),
               child: ShimmerBox(
@@ -97,12 +97,12 @@ class ProductCardShimmer extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(AppSpacing.s12),
+            padding: EdgeInsets.all(AppSpacing.s12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ShimmerBox(height: 12, borderRadius: AppSpacing.s4),
-                const SizedBox(height: AppSpacing.s8),
+                SizedBox(height: AppSpacing.s8),
                 ShimmerBox(width: 80, height: 10, borderRadius: AppSpacing.s4),
               ],
             ),
@@ -127,13 +127,13 @@ class StatCardShimmer extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
         border: isDark ? Border.all(color: AppColors.darkBorder) : null,
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ShimmerBox(width: 36, height: 36, borderRadius: AppSpacing.radiusMedium),
-          const SizedBox(height: AppSpacing.s12),
+          SizedBox(height: AppSpacing.s12),
           ShimmerBox(width: 60, height: 22, borderRadius: AppSpacing.s4),
-          const SizedBox(height: AppSpacing.s8),
+          SizedBox(height: AppSpacing.s8),
           ShimmerBox(width: 80, height: 10, borderRadius: AppSpacing.s4),
         ],
       ),
@@ -159,14 +159,14 @@ class OrderCardShimmer extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
         border: isDark ? Border.all(color: AppColors.darkBorder) : null,
       ),
-      child: Row(
+      child: const Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ShimmerBox(width: 120, height: 12, borderRadius: AppSpacing.s4),
-                const SizedBox(height: AppSpacing.s8),
+                SizedBox(height: AppSpacing.s8),
                 ShimmerBox(width: 80, height: 10, borderRadius: AppSpacing.s4),
               ],
             ),

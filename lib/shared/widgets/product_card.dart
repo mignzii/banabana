@@ -128,21 +128,26 @@ class ProductCard extends StatelessWidget {
                             ),
                           ),
                           if (onEdit != null)
-                            GestureDetector(
-                              onTap: onEdit,
-                              child: Container(
-                                width: 28,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? AppColors.darkSurface2
-                                      : AppColors.gray100,
-                                  borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
-                                ),
-                                child: Icon(
-                                  Symbols.edit,
-                                  size: 14,
-                                  color: isDark ? AppColors.gray400 : AppColors.gray500,
+                            Material(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
+                              child: InkWell(
+                                onTap: onEdit,
+                                borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
+                                child: Ink(
+                                  width: 28,
+                                  height: 28,
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? AppColors.darkSurface2
+                                        : AppColors.gray100,
+                                    borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
+                                  ),
+                                  child: Icon(
+                                    Symbols.edit,
+                                    size: 14,
+                                    color: isDark ? AppColors.gray400 : AppColors.gray500,
+                                  ),
                                 ),
                               ),
                             ),
