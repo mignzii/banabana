@@ -118,12 +118,13 @@ abstract final class AppTheme {
       color: AppColors.darkSurface,
       surfaceTintColor: Colors.transparent,
     ),
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: AppColors.darkBg,
       foregroundColor: AppColors.gray100,
       elevation: 0,
       scrolledUnderElevation: 0,
-      iconTheme: IconThemeData(color: AppColors.gray100),
+      titleTextStyle: AppTextStyles.sectionTitle.copyWith(color: AppColors.gray100),
+      iconTheme: const IconThemeData(color: AppColors.gray100),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
@@ -145,14 +146,17 @@ abstract final class AppTheme {
         ),
       ),
     ),
-    snackBarTheme: const SnackBarThemeData(
+    snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      ),
     ),
     dividerTheme: const DividerThemeData(color: AppColors.darkBorder, space: 1),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Color(0xFF111111),
+      backgroundColor: AppColors.gray900,
       selectedItemColor: AppColors.primary,
-      unselectedItemColor: Color(0xFF555555),
+      unselectedItemColor: AppColors.gray600,
       type: BottomNavigationBarType.fixed,
       elevation: 0,
     ),
