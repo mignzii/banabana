@@ -3,6 +3,16 @@ import 'package:banabana_b2b/core/api/api_client.dart';
 import 'package:banabana_b2b/features/wholesaler/data/catalog_repository.dart';
 import 'package:banabana_b2b/shared/models/catalog_item.dart';
 
+final shopCategoriesProvider = FutureProvider<List<String>>((ref) async {
+  try {
+    final cats = await ref.watch(catalogRepositoryProvider).getCategories();
+    if (cats.isNotEmpty) return cats;
+  } catch (_) {}
+  final result = await ref.watch(catalogResultProvider.future);
+  final cats = result.data.map((e) => e.category).toSet().toList()..sort();
+  return cats;
+});
+
 final catalogRepositoryProvider = Provider<CatalogRepository>((ref) {
   return CatalogRepository(ref.watch(apiClientProvider));
 });

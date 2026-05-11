@@ -12,16 +12,6 @@ import 'package:banabana_b2b/shared/widgets/error_state_widget.dart';
 import 'package:banabana_b2b/shared/widgets/hero_banner_carousel.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
-final shopCategoriesProvider = FutureProvider<List<String>>((ref) async {
-  try {
-    final cats = await ref.watch(catalogRepositoryProvider).getCategories();
-    if (cats.isNotEmpty) return cats;
-  } catch (_) {}
-  final result = await ref.watch(catalogResultProvider.future);
-  final cats = result.data.map((e) => e.category).toSet().toList()..sort();
-  return cats;
-});
-
 class ShopHomeScreen extends ConsumerWidget {
   const ShopHomeScreen({super.key});
 
