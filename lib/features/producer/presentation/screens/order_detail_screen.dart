@@ -102,18 +102,19 @@ class OrderDetailScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            // Progress bar
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s16,
-                AppSpacing.s16,
-                AppSpacing.s16,
-                AppSpacing.s8,
+            // Only show progress bar for non-cancelled orders
+            if (order.status != OrderStatus.cancelled)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s16,
+                  AppSpacing.s16,
+                  AppSpacing.s16,
+                  AppSpacing.s8,
+                ),
+                child: OrderProgressBar(
+                  currentStatus: _statusToProgressString(order.status),
+                ),
               ),
-              child: OrderProgressBar(
-                currentStatus: _statusToProgressString(order.status),
-              ),
-            ),
             const SizedBox(height: AppSpacing.s16),
             // Items card
             Container(

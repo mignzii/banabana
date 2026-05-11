@@ -78,36 +78,36 @@ class _OrdersList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(ordersNotifierProvider);
 
-    return ordersAsync.when(
-      loading: () => ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
-        itemCount: 5,
-        itemBuilder: (_, __) => const OrderCardShimmer(),
-      ),
-      error: (e, _) => ErrorStateWidget(
-        message: e.toString(),
-        onRetry: () => ref.read(ordersNotifierProvider.notifier).load(),
-      ),
-      data: (orders) {
-        final filtered = filterStatus == null
-            ? orders
-            : orders.where((o) => o.status == filterStatus).toList();
+    return RefreshIndicator(
+      color: AppColors.primary,
+      onRefresh: () async =>
+          ref.read(ordersNotifierProvider.notifier).load(),
+      child: ordersAsync.when(
+        loading: () => ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
+          itemCount: 5,
+          itemBuilder: (_, __) => const OrderCardShimmer(),
+        ),
+        error: (e, _) => ErrorStateWidget(
+          message: e.toString(),
+          onRetry: () => ref.read(ordersNotifierProvider.notifier).load(),
+        ),
+        data: (orders) {
+          final filtered = filterStatus == null
+              ? orders
+              : orders.where((o) => o.status == filterStatus).toList();
 
-        if (filtered.isEmpty) {
-          return EmptyStateWidget(
-            icon: Symbols.receipt_long,
-            title: 'Aucune commande',
-            subtitle: filterStatus == null
-                ? 'Vous recevrez vos commandes ici.'
-                : 'Aucune commande dans cet état.',
-          );
-        }
+          if (filtered.isEmpty) {
+            return EmptyStateWidget(
+              icon: Symbols.receipt_long,
+              title: 'Aucune commande',
+              subtitle: filterStatus == null
+                  ? 'Vous recevrez vos commandes ici.'
+                  : 'Aucune commande dans cet état.',
+            );
+          }
 
-        return RefreshIndicator(
-          color: AppColors.primary,
-          onRefresh: () async =>
-              ref.read(ordersNotifierProvider.notifier).load(),
-          child: ListView.separated(
+          return ListView.separated(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.s16,
               vertical: AppSpacing.s12,
@@ -121,9 +121,9 @@ class _OrdersList extends ConsumerWidget {
               onTap: () =>
                   context.push('/producer/orders/${filtered[i].id}'),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

@@ -8,6 +8,8 @@ import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/producer/providers/product_providers.dart';
 import 'package:banabana_b2b/features/producer/providers/order_providers.dart';
+import 'package:banabana_b2b/shared/models/order.dart';
+import 'package:banabana_b2b/shared/models/product.dart';
 import 'package:banabana_b2b/shared/widgets/product_card.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
@@ -155,7 +157,7 @@ class ProducerHomeScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.s8),
             productsAsync.when(
               loading: () => SizedBox(
-                height: 200,
+                height: 210,
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.s16,
@@ -215,8 +217,8 @@ class _QuickStats extends StatelessWidget {
   });
 
   final bool isDark;
-  final AsyncValue<List> ordersAsync;
-  final AsyncValue<List> productsAsync;
+  final AsyncValue<List<Order>> ordersAsync;
+  final AsyncValue<List<Product>> productsAsync;
 
   @override
   Widget build(BuildContext context) {
