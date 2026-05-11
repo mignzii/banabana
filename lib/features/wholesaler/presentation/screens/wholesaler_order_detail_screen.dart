@@ -2,11 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/wholesaler_order_providers.dart';
 import 'package:banabana_b2b/shared/models/order.dart';
+import 'package:banabana_b2b/shared/widgets/order_progress_bar.dart';
 import 'package:banabana_b2b/shared/widgets/order_status_badge.dart';
 import 'package:banabana_b2b/shared/widgets/error_state_widget.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
+
+String _statusToProgressString(OrderStatus status) => switch (status) {
+  OrderStatus.created   => 'pending',
+  OrderStatus.preparing => 'accepted',
+  OrderStatus.shipped   => 'shipped',
+  OrderStatus.delivered => 'delivered',
+  OrderStatus.cancelled => 'pending',
+};
 
 class WholesalerOrderDetailScreen extends ConsumerWidget {
   final String orderId;
@@ -51,6 +61,16 @@ class WholesalerOrderDetailScreen extends ConsumerWidget {
               DateFormat('dd/MM/yyyy HH:mm').format(order.createdAt),
               style:
                   const TextStyle(color: AppColors.gray500, fontSize: 12),
+            ),
+            const SizedBox(height: AppSpacing.s8),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s16,
+                vertical: AppSpacing.s8,
+              ),
+              child: OrderProgressBar(
+                currentStatus: _statusToProgressString(order.status),
+              ),
             ),
             const Divider(height: 24),
             const Text('Articles',
