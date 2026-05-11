@@ -33,6 +33,22 @@ final _producerShellKey = GlobalKey<NavigatorState>(debugLabel: 'producerShell')
 final _wholesalerShellKey =
     GlobalKey<NavigatorState>(debugLabel: 'wholesalerShell');
 
+Page<void> _fadePage(Widget child) => CustomTransitionPage(
+  child: child,
+  transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+      FadeTransition(
+        opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.03),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
+          child: child,
+        ),
+      ),
+  transitionDuration: const Duration(milliseconds: 200),
+);
+
 String _roleHome(String? role) {
   return switch (role) {
     'producer' => '/producer/home',
@@ -57,36 +73,36 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       // Auth routes (no shell)
-      GoRoute(path: '/auth/login', builder: (_, __) => const LoginScreen()),
+      GoRoute(path: '/auth/login', pageBuilder: (_, __) => _fadePage(const LoginScreen())),
       GoRoute(
         path: '/auth/otp',
-        builder: (_, state) {
+        pageBuilder: (_, state) {
           final extra = state.extra as Map<String, String>;
-          return OtpScreen(phone: extra['phone']!, role: extra['role']!);
+          return _fadePage(OtpScreen(phone: extra['phone']!, role: extra['role']!));
         },
       ),
       GoRoute(
         path: '/auth/register',
-        builder: (_, state) {
+        pageBuilder: (_, state) {
           final phone = (state.extra as Map<String, String>)['phone']!;
-          return RegisterScreen(phone: phone);
+          return _fadePage(RegisterScreen(phone: phone));
         },
       ),
       GoRoute(
         path: '/auth/set-pin',
-        builder: (_, state) {
+        pageBuilder: (_, state) {
           final phone = (state.extra as Map<String, String>)['phone']!;
-          return SetPinScreen(phone: phone);
+          return _fadePage(SetPinScreen(phone: phone));
         },
       ),
       GoRoute(
         path: '/auth/pin',
-        builder: (_, state) {
+        pageBuilder: (_, state) {
           final phone = (state.extra as Map<String, String>)['phone']!;
-          return PinLoginScreen(phone: phone);
+          return _fadePage(PinLoginScreen(phone: phone));
         },
       ),
-      GoRoute(path: '/auth/kyc', builder: (_, __) => const KycScreen()),
+      GoRoute(path: '/auth/kyc', pageBuilder: (_, __) => _fadePage(const KycScreen())),
 
       // Producer shell
       ShellRoute(
@@ -99,65 +115,65 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/producer/home',
             name: 'producer-home',
-            builder: (_, __) => const ProducerHomeScreen(),
+            pageBuilder: (_, __) => _fadePage(const ProducerHomeScreen()),
           ),
           GoRoute(
             path: '/producer/dashboard',
             name: 'producer-dashboard',
-            builder: (_, __) => const ProducerDashboardScreen(),
+            pageBuilder: (_, __) => _fadePage(const ProducerDashboardScreen()),
           ),
           GoRoute(
             path: '/producer/products',
             name: 'producer-products',
-            builder: (_, __) => const ProductsScreen(),
+            pageBuilder: (_, __) => _fadePage(const ProductsScreen()),
           ),
           GoRoute(
             path: '/producer/products/new',
             name: 'producer-product-new',
-            builder: (_, __) => const ProductFormScreen(),
+            pageBuilder: (_, __) => _fadePage(const ProductFormScreen()),
           ),
           GoRoute(
             path: '/producer/products/:id',
             name: 'producer-product-detail',
-            builder: (_, state) =>
-                ProductDetailScreen(productId: state.pathParameters['id']!),
+            pageBuilder: (_, state) =>
+                _fadePage(ProductDetailScreen(productId: state.pathParameters['id']!)),
           ),
           GoRoute(
             path: '/producer/products/:id/edit',
             name: 'producer-product-edit',
-            builder: (_, state) =>
-                ProductFormScreen(productId: state.pathParameters['id']),
+            pageBuilder: (_, state) =>
+                _fadePage(ProductFormScreen(productId: state.pathParameters['id'])),
           ),
           GoRoute(
             path: '/producer/orders',
             name: 'producer-orders',
-            builder: (_, __) => const OrdersScreen(),
+            pageBuilder: (_, __) => _fadePage(const OrdersScreen()),
           ),
           GoRoute(
             path: '/producer/orders/:id',
             name: 'producer-order-detail',
-            builder: (_, state) =>
-                OrderDetailScreen(orderId: state.pathParameters['id']!),
+            pageBuilder: (_, state) =>
+                _fadePage(OrderDetailScreen(orderId: state.pathParameters['id']!)),
           ),
           GoRoute(
             path: '/producer/inventory',
             name: 'producer-inventory',
-            builder: (_, __) => const InventoryScreen(),
+            pageBuilder: (_, __) => _fadePage(const InventoryScreen()),
           ),
           GoRoute(
             path: '/producer/analytics',
             name: 'producer-analytics',
-            builder: (_, __) => const AnalyticsScreen(),
+            pageBuilder: (_, __) => _fadePage(const AnalyticsScreen()),
           ),
           GoRoute(
             path: '/producer/messages',
             name: 'producer-messages',
-            builder: (_, __) => const MessagesStubScreen(),
+            pageBuilder: (_, __) => _fadePage(const MessagesStubScreen()),
           ),
           GoRoute(
             path: '/producer/profile',
             name: 'producer-profile',
-            builder: (_, __) => const ProfileScreen(),
+            pageBuilder: (_, __) => _fadePage(const ProfileScreen()),
           ),
         ],
       ),
@@ -173,44 +189,44 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/shop/home',
             name: 'shop-home',
-            builder: (_, __) => const ShopHomeScreen(),
+            pageBuilder: (_, __) => _fadePage(const ShopHomeScreen()),
           ),
           GoRoute(
             path: '/shop/dashboard',
             name: 'shop-dashboard',
-            builder: (_, __) => const ShopDashboardScreen(),
+            pageBuilder: (_, __) => _fadePage(const ShopDashboardScreen()),
           ),
           GoRoute(
             path: '/shop/catalog',
             name: 'shop-catalog',
-            builder: (_, __) => const CatalogScreen(),
+            pageBuilder: (_, __) => _fadePage(const CatalogScreen()),
           ),
           GoRoute(
             path: '/shop/product/:id',
             name: 'shop-product-detail',
-            builder: (_, state) =>
-                ProductPublicDetailScreen(productId: state.pathParameters['id']!),
+            pageBuilder: (_, state) =>
+                _fadePage(ProductPublicDetailScreen(productId: state.pathParameters['id']!)),
           ),
           GoRoute(
             path: '/shop/cart',
             name: 'shop-cart',
-            builder: (_, __) => const CartScreen(),
+            pageBuilder: (_, __) => _fadePage(const CartScreen()),
           ),
           GoRoute(
             path: '/shop/orders',
             name: 'shop-orders',
-            builder: (_, __) => const WholesalerOrdersScreen(),
+            pageBuilder: (_, __) => _fadePage(const WholesalerOrdersScreen()),
           ),
           GoRoute(
             path: '/shop/orders/:id',
             name: 'shop-order-detail',
-            builder: (_, state) =>
-                WholesalerOrderDetailScreen(orderId: state.pathParameters['id']!),
+            pageBuilder: (_, state) =>
+                _fadePage(WholesalerOrderDetailScreen(orderId: state.pathParameters['id']!)),
           ),
           GoRoute(
             path: '/shop/profile',
             name: 'shop-profile',
-            builder: (_, __) => const ProfileScreen(),
+            pageBuilder: (_, __) => _fadePage(const ProfileScreen()),
           ),
         ],
       ),
@@ -218,7 +234,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // Vendor (no shell yet)
       GoRoute(
         path: '/vendor/dashboard',
-        builder: (_, __) => const _PlaceholderScreen(title: 'Vendor Dashboard'),
+        pageBuilder: (_, __) => _fadePage(const _PlaceholderScreen(title: 'Vendor Dashboard')),
       ),
     ],
   );
