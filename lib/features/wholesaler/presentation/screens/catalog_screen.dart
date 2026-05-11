@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
+import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/catalog_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/widgets/catalog_item_card.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/widgets/filter_sheet.dart';
-import 'package:banabana_b2b/features/wholesaler/presentation/widgets/cart_badge.dart';
 import 'package:banabana_b2b/shared/widgets/empty_state_widget.dart';
 import 'package:banabana_b2b/shared/widgets/error_state_widget.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
@@ -26,105 +28,180 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     super.dispose();
   }
 
+  void _onSearch(String q) => ref
+      .read(catalogSearchParamsProvider.notifier)
+      .update((s) => s.copyWith(q: q.isEmpty ? null : q, page: 1));
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final resultAsync = ref.watch(catalogResultProvider);
     final params = ref.watch(catalogSearchParamsProvider);
+    final hasFilters = params.category != null ||
+        params.priceMin != null ||
+        params.priceMax != null;
 
     return Scaffold(
-      backgroundColor: AppColors.gray50,
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.gray50,
       appBar: AppBar(
-        title: const Text('Catalogue'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        actions: [
-          CartBadge(
-            child: IconButton(
-              icon: const Icon(Icons.shopping_cart_outlined),
-              onPressed: () => context.push('/shop/cart'),
-            ),
+        backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
+        title: Text(
+          'Catalogue',
+          style: AppTextStyles.sectionTitle.copyWith(
+            color: isDark ? AppColors.white : AppColors.gray900,
           ),
-        ],
+        ),
+        elevation: 0,
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
+          Container(
+            color: isDark ? AppColors.darkBg : AppColors.white,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s8,
+              AppSpacing.s16,
+              AppSpacing.s12,
+            ),
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _searchCtrl,
-                    decoration: InputDecoration(
-                      hintText: 'Rechercher un produit...',
-                      prefixIcon: const Icon(Icons.search, color: AppColors.gray400),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
+                  child: Container(
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? AppColors.darkSurface2
+                          : AppColors.gray100,
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusMedium),
                     ),
-                    onSubmitted: (q) => ref
-                        .read(catalogSearchParamsProvider.notifier)
-                        .update((s) => s.copyWith(q: q, page: 1)),
+                    child: TextField(
+                      controller: _searchCtrl,
+                      style: AppTextStyles.body.copyWith(
+                        color: isDark
+                            ? AppColors.gray100
+                            : AppColors.gray900,
+                        height: 1.0,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Rechercher un produit...',
+                        hintStyle: AppTextStyles.bodySecondary.copyWith(
+                          color: isDark
+                              ? AppColors.gray600
+                              : AppColors.gray400,
+                        ),
+                        prefixIcon: const Icon(
+                          Symbols.search,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.s12,
+                        ),
+                        isDense: true,
+                      ),
+                      onSubmitted: _onSearch,
+                      textInputAction: TextInputAction.search,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () => FilterSheet.show(context),
-                  icon: Stack(
-                    children: [
-                      const Icon(Icons.tune, color: AppColors.primary),
-                      if (params.category != null ||
-                          params.priceMin != null ||
-                          params.priceMax != null)
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.secondary,
-                              shape: BoxShape.circle,
-                            ),
+                const SizedBox(width: AppSpacing.s8),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => FilterSheet.show(context),
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMedium),
+                    child: Ink(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: hasFilters
+                            ? AppColors.primary.withValues(alpha: 0.1)
+                            : (isDark
+                                ? AppColors.darkSurface2
+                                : AppColors.gray100),
+                        borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusMedium),
+                        border: hasFilters
+                            ? Border.all(
+                                color: AppColors.primary, width: 1.5)
+                            : null,
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            Symbols.tune,
+                            color: hasFilters
+                                ? AppColors.primary
+                                : (isDark
+                                    ? AppColors.gray400
+                                    : AppColors.gray500),
+                            size: 20,
                           ),
-                        ),
-                    ],
+                          if (hasFilters)
+                            Positioned(
+                              top: 6,
+                              right: 6,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           if (params.category != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 12, bottom: 4),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Chip(
-                  label: Text(params.category!),
-                  deleteIcon: const Icon(Icons.close, size: 14),
-                  onDeleted: () => ref
-                      .read(catalogSearchParamsProvider.notifier)
-                      .update((s) => s.copyWith(category: null, page: 1)),
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+            Container(
+              width: double.infinity,
+              color: isDark ? AppColors.darkBg : AppColors.white,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s16,
+                0,
+                AppSpacing.s16,
+                AppSpacing.s8,
+              ),
+              child: Chip(
+                label: Text(
+                  params.category!,
+                  style: AppTextStyles.caption
+                      .copyWith(color: AppColors.primary),
                 ),
+                deleteIcon: const Icon(Icons.close,
+                    size: 14, color: AppColors.primary),
+                onDeleted: () => ref
+                    .read(catalogSearchParamsProvider.notifier)
+                    .update((s) => s.copyWith(category: null, page: 1)),
+                backgroundColor:
+                    AppColors.primary.withValues(alpha: 0.10),
+                side: const BorderSide(color: AppColors.primary, width: 1),
+                padding: EdgeInsets.zero,
               ),
             ),
           Expanded(
             child: resultAsync.when(
               loading: () => GridView.builder(
-                padding: const EdgeInsets.all(12),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                padding: const EdgeInsets.all(AppSpacing.s16),
+                gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.72,
+                  crossAxisSpacing: AppSpacing.s12,
+                  mainAxisSpacing: AppSpacing.s12,
+                  childAspectRatio: 0.78,
                 ),
                 itemCount: 6,
-                itemBuilder: (_, __) => const ShimmerBox(height: 200),
+                itemBuilder: (_, __) => const ProductCardShimmer(),
               ),
               error: (e, _) => ErrorStateWidget(
                 message: e.toString(),
@@ -132,30 +209,34 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
               ),
               data: (result) {
                 if (result.data.isEmpty) {
-                  return const EmptyStateWidget(
-                    title: 'Aucun produit',
-                    subtitle: 'Essayez d\'autres filtres.',
+                  return EmptyStateWidget(
+                    icon: Symbols.search_off,
+                    title: 'Aucun produit trouvé',
+                    subtitle:
+                        'Essayez d\'autres termes ou modifiez les filtres.',
+                    ctaLabel: 'Modifier les filtres',
+                    onCta: () => FilterSheet.show(context),
                   );
                 }
                 return RefreshIndicator(
                   color: AppColors.primary,
-                  onRefresh: () async => ref.invalidate(catalogResultProvider),
+                  onRefresh: () async =>
+                      ref.invalidate(catalogResultProvider),
                   child: GridView.builder(
-                    padding: const EdgeInsets.all(12),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    padding: const EdgeInsets.all(AppSpacing.s16),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.72,
+                      crossAxisSpacing: AppSpacing.s12,
+                      mainAxisSpacing: AppSpacing.s12,
+                      childAspectRatio: 0.78,
                     ),
                     itemCount: result.data.length,
-                    itemBuilder: (_, i) {
-                      final item = result.data[i];
-                      return CatalogItemCard(
-                        item: item,
-                        onTap: () => context.push('/shop/product/${item.id}'),
-                      );
-                    },
+                    itemBuilder: (_, i) => CatalogItemCard(
+                      item: result.data[i],
+                      onTap: () => context
+                          .push('/shop/product/${result.data[i].id}'),
+                    ),
                   ),
                 );
               },
