@@ -14,6 +14,8 @@ workflows:
           include: true
 
     environment:
+      groups:
+        - app_store
       vars:
         FLUTTER_VERSION: "3.32.0"
         XCODE_WORKSPACE: ios/Runner.xcworkspace
