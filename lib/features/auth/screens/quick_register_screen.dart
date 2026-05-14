@@ -46,7 +46,16 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
       final storage = ref.read(storageServiceProvider);
       final phone   = _phoneCtrl.text.trim();
 
-      await repo.requestPin(phone: phone, role: _role);
+      final hasPin = await repo.requestPin(phone: phone, role: _role);
+      if (hasPin) {
+        if (mounted) {
+          context.showSnack(
+            'Ce numéro est déjà enregistré — connectez-vous avec votre PIN',
+            type: SnackType.warning,
+          );
+        }
+        return;
+      }
       final auth = await repo.verifyPin(phone: phone, pin: '0000');
       await storage.setAccessToken(auth.accessToken);
       await storage.setRefreshToken(auth.refreshToken);

@@ -15,11 +15,12 @@ class AuthRepository {
     await dio.post('/auth/otp/request', data: {'phone': phone, 'role': role});
   }
 
-  Future<void> requestPin({
+  Future<bool> requestPin({
     required String phone,
     required String role,
   }) async {
-    await dio.post('/auth/pin/request', data: {'phone': phone, 'role': role});
+    final res = await dio.post('/auth/pin/request', data: {'phone': phone, 'role': role});
+    return (res.data as Map<String, dynamic>)['hasPin'] as bool? ?? false;
   }
 
   Future<AuthResponse> verifyOtp({

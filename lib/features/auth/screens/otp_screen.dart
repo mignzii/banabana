@@ -102,7 +102,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           context.go('/auth/register', extra: {'phone': widget.phone});
         }
       } else {
-        if (mounted) {
+        final hasPin = await repo.requestPin(phone: widget.phone, role: widget.role);
+        if (!mounted) return;
+        if (hasPin) {
+          context.go('/auth/pin', extra: {'phone': widget.phone});
+        } else {
           context.go('/auth/set-pin', extra: {'phone': widget.phone});
         }
       }
