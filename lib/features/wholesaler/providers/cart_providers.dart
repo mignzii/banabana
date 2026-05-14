@@ -1,14 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CartItem {
-  final String variantId;
-  final String productId;
-  final String productTitle;
-  final String variantLabel;
-  final double unitPrice;
-  int quantity;
-
-  CartItem({
+  const CartItem({
     required this.variantId,
     required this.productId,
     required this.productTitle,
@@ -16,6 +9,22 @@ class CartItem {
     required this.unitPrice,
     required this.quantity,
   });
+
+  final String variantId;
+  final String productId;
+  final String productTitle;
+  final String variantLabel;
+  final double unitPrice;
+  final int quantity;
+
+  CartItem copyWith({int? quantity}) => CartItem(
+        variantId: variantId,
+        productId: productId,
+        productTitle: productTitle,
+        variantLabel: variantLabel,
+        unitPrice: unitPrice,
+        quantity: quantity ?? this.quantity,
+      );
 }
 
 class CartNotifier extends StateNotifier<List<CartItem>> {
@@ -31,9 +40,13 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
   }) {
     final idx = state.indexWhere((i) => i.variantId == variantId);
     if (idx >= 0) {
-      final updated = List<CartItem>.from(state);
-      updated[idx].quantity += quantity;
-      state = updated;
+      state = [
+        for (var i = 0; i < state.length; i++)
+          if (i == idx)
+            state[i].copyWith(quantity: state[i].quantity + quantity)
+          else
+            state[i],
+      ];
     } else {
       state = [
         ...state,
@@ -55,16 +68,7 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
       return;
     }
     state = state
-        .map((i) => i.variantId == variantId
-            ? CartItem(
-                variantId: i.variantId,
-                productId: i.productId,
-                productTitle: i.productTitle,
-                variantLabel: i.variantLabel,
-                unitPrice: i.unitPrice,
-                quantity: quantity,
-              )
-            : i)
+        .map((i) => i.variantId == variantId ? i.copyWith(quantity: quantity) : i)
         .toList();
   }
 
@@ -73,9 +77,6 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
   }
 
   void clear() => state = [];
-
-  double get total =>
-      state.fold(0, (sum, i) => sum + i.unitPrice * i.quantity);
 }
 
 final cartProvider = StateNotifierProvider<CartNotifier, List<CartItem>>((ref) {
@@ -83,7 +84,7 @@ final cartProvider = StateNotifierProvider<CartNotifier, List<CartItem>>((ref) {
 });
 
 final cartTotalProvider = Provider<double>((ref) {
-  return ref.watch(cartProvider.notifier).total;
+  return ref.watch(cartProvider).fold(0.0, (sum, i) => sum + i.unitPrice * i.quantity);
 });
 
 final cartItemCountProvider = Provider<int>((ref) {

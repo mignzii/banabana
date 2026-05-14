@@ -54,7 +54,7 @@ class CartItemTile extends ConsumerWidget {
                 Text(
                   item.variantLabel,
                   style: AppTextStyles.caption.copyWith(
-                    color: isDark ? AppColors.gray500 : AppColors.gray500,
+                    color: AppColors.gray500,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
