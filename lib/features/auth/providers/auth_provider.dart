@@ -9,6 +9,8 @@ class AuthState {
   const AuthState({
     this.isAuthenticated = false,
     this.isLoading = false,
+    this.needsPinUnlock = false,
+    this.pendingPhone,
     this.user,
     this.accessToken,
     this.refreshToken,
@@ -17,6 +19,8 @@ class AuthState {
 
   final bool isAuthenticated;
   final bool isLoading;
+  final bool needsPinUnlock;
+  final String? pendingPhone;
   final User? user;
   final String? accessToken;
   final String? refreshToken;
@@ -25,6 +29,8 @@ class AuthState {
   AuthState copyWith({
     bool? isAuthenticated,
     bool? isLoading,
+    bool? needsPinUnlock,
+    String? pendingPhone,
     User? user,
     String? accessToken,
     String? refreshToken,
@@ -33,6 +39,8 @@ class AuthState {
       AuthState(
         isAuthenticated: isAuthenticated ?? this.isAuthenticated,
         isLoading: isLoading ?? this.isLoading,
+        needsPinUnlock: needsPinUnlock ?? this.needsPinUnlock,
+        pendingPhone: pendingPhone ?? this.pendingPhone,
         user: user ?? this.user,
         accessToken: accessToken ?? this.accessToken,
         refreshToken: refreshToken ?? this.refreshToken,
@@ -47,6 +55,28 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository repo;
   final StorageService storage;
 
+  /// Called at app startup — restores "locked" state if tokens exist.
+  /// Does NOT auto-authenticate; the user must re-enter their PIN.
+  Future<void> checkStoredAuth() async {
+    state = state.copyWith(isLoading: true);
+    final accessToken = await storage.getAccessToken();
+    final refreshToken = await storage.getRefreshToken();
+    final lastPhone = await storage.getLastPhone();
+
+    if (accessToken != null && refreshToken != null && lastPhone != null) {
+      state = AuthState(
+        isLoading: false,
+        needsPinUnlock: true,
+        pendingPhone: lastPhone,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
+    } else {
+      state = const AuthState(isLoading: false);
+    }
+  }
+
+  /// Called from biometric auth — re-authenticates via stored tokens.
   Future<void> initialize() async {
     state = state.copyWith(isLoading: true);
     final accessToken = await storage.getAccessToken();
@@ -71,6 +101,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } else {
       state = const AuthState(isLoading: false);
     }
+  }
+
+  /// Clears stored auth — called when user cancels PIN unlock screen.
+  Future<void> cancelPinUnlock() async {
+    await storage.clearAll();
+    state = const AuthState();
   }
 
   Future<void> login(AuthResponse auth) async {

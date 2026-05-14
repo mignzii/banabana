@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:banabana_b2b/core/router/app_router.dart';
 import 'package:banabana_b2b/core/theme/app_theme.dart';
+import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/auth/providers/theme_provider.dart';
 
 void main() async {
@@ -11,11 +12,24 @@ void main() async {
   runApp(const ProviderScope(child: BanaBanaApp()));
 }
 
-class BanaBanaApp extends ConsumerWidget {
+class BanaBanaApp extends ConsumerStatefulWidget {
   const BanaBanaApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BanaBanaApp> createState() => _BanaBanaAppState();
+}
+
+class _BanaBanaAppState extends ConsumerState<BanaBanaApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authProvider.notifier).checkStoredAuth();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(themeModeProvider);
     return MaterialApp.router(

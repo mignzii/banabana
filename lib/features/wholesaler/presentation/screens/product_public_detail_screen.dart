@@ -223,68 +223,47 @@ class _ProductPublicDetailScreenState
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              // Image carousel
-              _buildImageCarousel(product, isDark),
-
-              // Body padding starts here
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.s20, vertical: AppSpacing.s20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title + category chip row
-                    _buildTitleSection(product, isDark),
-
-                    // Producer info row
-                    if (product.producer != null) ...[
-                      const SizedBox(height: AppSpacing.s12),
-                      _buildProducerInfo(product.producer!, isDark),
-                    ],
-                    const SizedBox(height: AppSpacing.s16),
-
-                    // Description
-                    if (product.description != null &&
-                        product.description!.isNotEmpty) ...[
-                      _buildDescription(product.description!, isDark),
-                      const SizedBox(height: AppSpacing.s20),
-                    ],
-
-                    // Divider
-                    Divider(
-                      color: isDark
-                          ? AppColors.darkBorder2
-                          : AppColors.gray200,
-                      thickness: 1,
-                    ),
-                    const SizedBox(height: AppSpacing.s20),
-
-                    // Variants
-                    _buildVariantsSection(product, isDark),
-                    const SizedBox(height: AppSpacing.s24),
-
-                    // Wholesale info card
-                    if (_hasWholesaleInfo(_selectedVariant)) ...[
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: _buildImageCarousel(product, isDark)),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s20, vertical: AppSpacing.s20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTitleSection(product, isDark),
+                      if (product.producer != null) ...[
+                        const SizedBox(height: AppSpacing.s12),
+                        _buildProducerInfo(product.producer!, isDark),
+                      ],
                       const SizedBox(height: AppSpacing.s16),
-                      _buildWholesaleInfoCard(isDark),
+                      if (product.description != null &&
+                          product.description!.isNotEmpty) ...[
+                        _buildDescription(product.description!, isDark),
+                        const SizedBox(height: AppSpacing.s20),
+                      ],
+                      Divider(
+                        color: isDark ? AppColors.darkBorder2 : AppColors.gray200,
+                        thickness: 1,
+                      ),
+                      const SizedBox(height: AppSpacing.s20),
+                      _buildVariantsSection(product, isDark),
+                      const SizedBox(height: AppSpacing.s24),
+                      if (_hasWholesaleInfo(_selectedVariant)) ...[
+                        const SizedBox(height: AppSpacing.s16),
+                        _buildWholesaleInfoCard(isDark),
+                      ],
+                      Divider(
+                        color: isDark ? AppColors.darkBorder2 : AppColors.gray200,
+                        thickness: 1,
+                      ),
+                      const SizedBox(height: AppSpacing.s20),
+                      _buildQuantityStepper(isDark),
+                      const SizedBox(height: AppSpacing.s96),
                     ],
-
-                    // Divider
-                    Divider(
-                      color: isDark
-                          ? AppColors.darkBorder2
-                          : AppColors.gray200,
-                      thickness: 1,
-                    ),
-                    const SizedBox(height: AppSpacing.s20),
-
-                    // Quantity stepper
-                    _buildQuantityStepper(isDark),
-                    const SizedBox(height: AppSpacing.s96),
-                  ],
+                  ),
                 ),
               ),
             ],

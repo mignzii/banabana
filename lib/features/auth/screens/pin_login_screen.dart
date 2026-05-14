@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:go_router/go_router.dart';
 import 'package:banabana_b2b/features/auth/data/auth_repository.dart';
 import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/auth/providers/biometric_provider.dart';
 import 'package:banabana_b2b/features/auth/screens/pin_widgets.dart';
+import 'package:banabana_b2b/core/storage/storage_service.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
@@ -13,8 +15,8 @@ import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 export 'package:banabana_b2b/features/auth/screens/pin_widgets.dart' show PinDot;
 
 class PinLoginScreen extends ConsumerStatefulWidget {
-  const PinLoginScreen({super.key, required this.phone});
-  final String phone;
+  const PinLoginScreen({super.key, this.phone});
+  final String? phone;
 
   @override
   ConsumerState<PinLoginScreen> createState() => _PinLoginScreenState();
@@ -68,11 +70,16 @@ class _PinLoginScreenState extends ConsumerState<PinLoginScreen> {
     });
   }
 
+  String get _effectivePhone =>
+      widget.phone ?? ref.read(authProvider).pendingPhone ?? '';
+
   Future<void> _verify() async {
     setState(() => _loading = true);
     try {
       final repo = ref.read(authRepositoryProvider);
-      final auth = await repo.verifyPin(phone: widget.phone, pin: _pin);
+      final phone = _effectivePhone;
+      final auth = await repo.verifyPin(phone: phone, pin: _pin);
+      await ref.read(storageServiceProvider).setLastPhone(phone);
       await ref.read(authProvider.notifier).login(auth);
     } catch (_) {
       _attempts++;
@@ -119,6 +126,18 @@ class _PinLoginScreenState extends ConsumerState<PinLoginScreen> {
   Widget build(BuildContext context) {
     final biometric = ref.watch(biometricProvider);
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Symbols.arrow_back),
+          tooltip: 'Retour',
+          onPressed: () async {
+            await ref.read(authProvider.notifier).cancelPinUnlock();
+            if (mounted) context.go('/auth/login');
+          },
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),

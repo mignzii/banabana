@@ -97,6 +97,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       await storage.setAccessToken(auth.accessToken);
       await storage.setRefreshToken(auth.refreshToken);
       await storage.setUserJson(jsonEncode(auth.user.toJson()));
+      await storage.setLastPhone(widget.phone);
       if (auth.user.kycStatus == 'none') {
         if (mounted) {
           context.go('/auth/register', extra: {'phone': widget.phone});

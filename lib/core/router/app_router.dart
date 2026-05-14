@@ -71,10 +71,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     navigatorKey: _rootNavKey,
     initialLocation: '/auth/login',
     redirect: (context, state) {
+      if (authState.isLoading) return null;
+
       final isAuth = authState.isAuthenticated;
       final isAuthRoute = state.matchedLocation.startsWith('/auth');
+      final needsPin = authState.needsPinUnlock;
 
-      if (!isAuth && !isAuthRoute) return '/auth/login';
+      if (needsPin && state.matchedLocation != '/auth/pin-unlock') {
+        return '/auth/pin-unlock';
+      }
+      if (!isAuth && !needsPin && !isAuthRoute) return '/auth/login';
       if (isAuth && isAuthRoute) return _roleHome(authState.user?.role);
       return null;
     },
@@ -112,6 +118,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/auth/quick-register',
         pageBuilder: (_, __) => _fadePage(const QuickRegisterScreen()),
+      ),
+      GoRoute(
+        path: '/auth/pin-unlock',
+        pageBuilder: (_, __) => _fadePage(const PinLoginScreen()),
       ),
 
       // Producer shell
