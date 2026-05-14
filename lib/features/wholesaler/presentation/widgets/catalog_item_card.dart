@@ -80,7 +80,7 @@ class _CatalogItemCardState extends ConsumerState<CatalogItemCard>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: isOutOfStock ? null : widget.onTap,
+          onTap: widget.onTap,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
           splashColor: AppColors.primary.withValues(alpha: 0.08),
           highlightColor: AppColors.primary.withValues(alpha: 0.04),
