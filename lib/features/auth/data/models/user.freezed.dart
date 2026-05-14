@@ -26,6 +26,8 @@ mixin _$User {
   String? get firstName => throw _privateConstructorUsedError;
   String? get lastName => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
+  String? get businessName => throw _privateConstructorUsedError;
+  String? get businessAddress => throw _privateConstructorUsedError;
   String get kycStatus => throw _privateConstructorUsedError;
   String? get profileImage => throw _privateConstructorUsedError;
 
@@ -50,6 +52,8 @@ abstract class $UserCopyWith<$Res> {
       String? firstName,
       String? lastName,
       String? email,
+      String? businessName,
+      String? businessAddress,
       String kycStatus,
       String? profileImage});
 }
@@ -75,6 +79,8 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? firstName = freezed,
     Object? lastName = freezed,
     Object? email = freezed,
+    Object? businessName = freezed,
+    Object? businessAddress = freezed,
     Object? kycStatus = null,
     Object? profileImage = freezed,
   }) {
@@ -103,6 +109,14 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String?,
+      businessName: freezed == businessName
+          ? _value.businessName
+          : businessName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      businessAddress: freezed == businessAddress
+          ? _value.businessAddress
+          : businessAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
       kycStatus: null == kycStatus
           ? _value.kycStatus
           : kycStatus // ignore: cast_nullable_to_non_nullable
@@ -129,6 +143,8 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       String? firstName,
       String? lastName,
       String? email,
+      String? businessName,
+      String? businessAddress,
       String kycStatus,
       String? profileImage});
 }
@@ -151,6 +167,8 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? firstName = freezed,
     Object? lastName = freezed,
     Object? email = freezed,
+    Object? businessName = freezed,
+    Object? businessAddress = freezed,
     Object? kycStatus = null,
     Object? profileImage = freezed,
   }) {
@@ -179,6 +197,14 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String?,
+      businessName: freezed == businessName
+          ? _value.businessName
+          : businessName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      businessAddress: freezed == businessAddress
+          ? _value.businessAddress
+          : businessAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
       kycStatus: null == kycStatus
           ? _value.kycStatus
           : kycStatus // ignore: cast_nullable_to_non_nullable
@@ -201,6 +227,8 @@ class _$UserImpl implements _User {
       this.firstName,
       this.lastName,
       this.email,
+      this.businessName,
+      this.businessAddress,
       this.kycStatus = 'pending',
       this.profileImage});
 
@@ -220,6 +248,10 @@ class _$UserImpl implements _User {
   @override
   final String? email;
   @override
+  final String? businessName;
+  @override
+  final String? businessAddress;
+  @override
   @JsonKey()
   final String kycStatus;
   @override
@@ -227,7 +259,7 @@ class _$UserImpl implements _User {
 
   @override
   String toString() {
-    return 'User(id: $id, phone: $phone, role: $role, firstName: $firstName, lastName: $lastName, email: $email, kycStatus: $kycStatus, profileImage: $profileImage)';
+    return 'User(id: $id, phone: $phone, role: $role, firstName: $firstName, lastName: $lastName, email: $email, businessName: $businessName, businessAddress: $businessAddress, kycStatus: $kycStatus, profileImage: $profileImage)';
   }
 
   @override
@@ -243,6 +275,10 @@ class _$UserImpl implements _User {
             (identical(other.lastName, lastName) ||
                 other.lastName == lastName) &&
             (identical(other.email, email) || other.email == email) &&
+            (identical(other.businessName, businessName) ||
+                other.businessName == businessName) &&
+            (identical(other.businessAddress, businessAddress) ||
+                other.businessAddress == businessAddress) &&
             (identical(other.kycStatus, kycStatus) ||
                 other.kycStatus == kycStatus) &&
             (identical(other.profileImage, profileImage) ||
@@ -252,7 +288,7 @@ class _$UserImpl implements _User {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, phone, role, firstName,
-      lastName, email, kycStatus, profileImage);
+      lastName, email, businessName, businessAddress, kycStatus, profileImage);
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -278,6 +314,8 @@ abstract class _User implements User {
       final String? firstName,
       final String? lastName,
       final String? email,
+      final String? businessName,
+      final String? businessAddress,
       final String kycStatus,
       final String? profileImage}) = _$UserImpl;
 
@@ -295,6 +333,10 @@ abstract class _User implements User {
   String? get lastName;
   @override
   String? get email;
+  @override
+  String? get businessName;
+  @override
+  String? get businessAddress;
   @override
   String get kycStatus;
   @override

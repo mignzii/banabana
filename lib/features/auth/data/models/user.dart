@@ -12,6 +12,8 @@ class User with _$User {
     String? firstName,
     String? lastName,
     String? email,
+    String? businessName,
+    String? businessAddress,
     @Default('pending') String kycStatus,
     String? profileImage,
   }) = _User;

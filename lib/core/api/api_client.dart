@@ -5,8 +5,18 @@ import 'package:banabana_b2b/core/api/auth_interceptor.dart';
 
 const _kBaseUrl = String.fromEnvironment(
   'API_URL',
-  defaultValue: 'http://localhost:3004/v1',
+  defaultValue: 'http://3.227.108.30/v1',
 );
+
+/// Resolves a possibly-relative image URL from the backend.
+/// TypeORM uploads return paths like "/uploads/xxx.jpg" — prefix with the server origin.
+String resolveImageUrl(String url) {
+  if (url.startsWith('/')) {
+    final origin = _kBaseUrl.replaceFirst(RegExp(r'/v1.*'), '');
+    return '$origin$url';
+  }
+  return url;
+}
 
 final apiClientProvider = Provider<Dio>((ref) {
   final storage = ref.read(storageServiceProvider);

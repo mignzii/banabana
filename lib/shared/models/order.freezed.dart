@@ -1,0 +1,658 @@
+// coverage:ignore-file
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'order.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+T _$identity<T>(T value) => value;
+
+final _privateConstructorUsedError = UnsupportedError(
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+
+OrderItem _$OrderItemFromJson(Map<String, dynamic> json) {
+  return _OrderItem.fromJson(json);
+}
+
+/// @nodoc
+mixin _$OrderItem {
+  String get id => throw _privateConstructorUsedError;
+  String get orderId => throw _privateConstructorUsedError;
+  String get productId => throw _privateConstructorUsedError;
+  String get variantId => throw _privateConstructorUsedError;
+  String get producerId => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseInt)
+  int get quantity => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseDouble)
+  double get unitPrice => throw _privateConstructorUsedError;
+  String? get productName => throw _privateConstructorUsedError;
+  String? get variantName => throw _privateConstructorUsedError;
+  String? get unit => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $OrderItemCopyWith<OrderItem> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $OrderItemCopyWith<$Res> {
+  factory $OrderItemCopyWith(OrderItem value, $Res Function(OrderItem) then) =
+      _$OrderItemCopyWithImpl<$Res, OrderItem>;
+  @useResult
+  $Res call(
+      {String id,
+      String orderId,
+      String productId,
+      String variantId,
+      String producerId,
+      @JsonKey(fromJson: _parseInt) int quantity,
+      @JsonKey(fromJson: _parseDouble) double unitPrice,
+      String? productName,
+      String? variantName,
+      String? unit});
+}
+
+/// @nodoc
+class _$OrderItemCopyWithImpl<$Res, $Val extends OrderItem>
+    implements $OrderItemCopyWith<$Res> {
+  _$OrderItemCopyWithImpl(this._value, this._then);
+
+  final $Val _value;
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? orderId = null,
+    Object? productId = null,
+    Object? variantId = null,
+    Object? producerId = null,
+    Object? quantity = null,
+    Object? unitPrice = null,
+    Object? productName = freezed,
+    Object? variantName = freezed,
+    Object? unit = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      orderId: null == orderId
+          ? _value.orderId
+          : orderId // ignore: cast_nullable_to_non_nullable
+              as String,
+      productId: null == productId
+          ? _value.productId
+          : productId // ignore: cast_nullable_to_non_nullable
+              as String,
+      variantId: null == variantId
+          ? _value.variantId
+          : variantId // ignore: cast_nullable_to_non_nullable
+              as String,
+      producerId: null == producerId
+          ? _value.producerId
+          : producerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      quantity: null == quantity
+          ? _value.quantity
+          : quantity // ignore: cast_nullable_to_non_nullable
+              as int,
+      unitPrice: null == unitPrice
+          ? _value.unitPrice
+          : unitPrice // ignore: cast_nullable_to_non_nullable
+              as double,
+      productName: freezed == productName
+          ? _value.productName
+          : productName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      variantName: freezed == variantName
+          ? _value.variantName
+          : variantName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      unit: freezed == unit
+          ? _value.unit
+          : unit // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$OrderItemImplCopyWith<$Res>
+    implements $OrderItemCopyWith<$Res> {
+  factory _$$OrderItemImplCopyWith(
+          _$OrderItemImpl value, $Res Function(_$OrderItemImpl) then) =
+      __$$OrderItemImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String orderId,
+      String productId,
+      String variantId,
+      String producerId,
+      @JsonKey(fromJson: _parseInt) int quantity,
+      @JsonKey(fromJson: _parseDouble) double unitPrice,
+      String? productName,
+      String? variantName,
+      String? unit});
+}
+
+/// @nodoc
+class __$$OrderItemImplCopyWithImpl<$Res>
+    extends _$OrderItemCopyWithImpl<$Res, _$OrderItemImpl>
+    implements _$$OrderItemImplCopyWith<$Res> {
+  __$$OrderItemImplCopyWithImpl(
+      _$OrderItemImpl _value, $Res Function(_$OrderItemImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? orderId = null,
+    Object? productId = null,
+    Object? variantId = null,
+    Object? producerId = null,
+    Object? quantity = null,
+    Object? unitPrice = null,
+    Object? productName = freezed,
+    Object? variantName = freezed,
+    Object? unit = freezed,
+  }) {
+    return _then(_$OrderItemImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      orderId: null == orderId
+          ? _value.orderId
+          : orderId // ignore: cast_nullable_to_non_nullable
+              as String,
+      productId: null == productId
+          ? _value.productId
+          : productId // ignore: cast_nullable_to_non_nullable
+              as String,
+      variantId: null == variantId
+          ? _value.variantId
+          : variantId // ignore: cast_nullable_to_non_nullable
+              as String,
+      producerId: null == producerId
+          ? _value.producerId
+          : producerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      quantity: null == quantity
+          ? _value.quantity
+          : quantity // ignore: cast_nullable_to_non_nullable
+              as int,
+      unitPrice: null == unitPrice
+          ? _value.unitPrice
+          : unitPrice // ignore: cast_nullable_to_non_nullable
+              as double,
+      productName: freezed == productName
+          ? _value.productName
+          : productName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      variantName: freezed == variantName
+          ? _value.variantName
+          : variantName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      unit: freezed == unit
+          ? _value.unit
+          : unit // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$OrderItemImpl implements _OrderItem {
+  const _$OrderItemImpl(
+      {required this.id,
+      required this.orderId,
+      required this.productId,
+      required this.variantId,
+      required this.producerId,
+      @JsonKey(fromJson: _parseInt) required this.quantity,
+      @JsonKey(fromJson: _parseDouble) required this.unitPrice,
+      this.productName,
+      this.variantName,
+      this.unit});
+
+  factory _$OrderItemImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OrderItemImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String orderId;
+  @override
+  final String productId;
+  @override
+  final String variantId;
+  @override
+  final String producerId;
+  @override
+  @JsonKey(fromJson: _parseInt)
+  final int quantity;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  final double unitPrice;
+  @override
+  final String? productName;
+  @override
+  final String? variantName;
+  @override
+  final String? unit;
+
+  @override
+  String toString() {
+    return 'OrderItem(id: $id, orderId: $orderId, productId: $productId, variantId: $variantId, producerId: $producerId, quantity: $quantity, unitPrice: $unitPrice, productName: $productName, variantName: $variantName, unit: $unit)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$OrderItemImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.orderId, orderId) || other.orderId == orderId) &&
+            (identical(other.productId, productId) ||
+                other.productId == productId) &&
+            (identical(other.variantId, variantId) ||
+                other.variantId == variantId) &&
+            (identical(other.producerId, producerId) ||
+                other.producerId == producerId) &&
+            (identical(other.quantity, quantity) ||
+                other.quantity == quantity) &&
+            (identical(other.unitPrice, unitPrice) ||
+                other.unitPrice == unitPrice) &&
+            (identical(other.productName, productName) ||
+                other.productName == productName) &&
+            (identical(other.variantName, variantName) ||
+                other.variantName == variantName) &&
+            (identical(other.unit, unit) || other.unit == unit));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, orderId, productId,
+      variantId, producerId, quantity, unitPrice, productName, variantName, unit);
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$OrderItemImplCopyWith<_$OrderItemImpl> get copyWith =>
+      __$$OrderItemImplCopyWithImpl<_$OrderItemImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$OrderItemImplToJson(this);
+  }
+}
+
+abstract class _OrderItem implements OrderItem {
+  const factory _OrderItem(
+      {required final String id,
+      required final String orderId,
+      required final String productId,
+      required final String variantId,
+      required final String producerId,
+      @JsonKey(fromJson: _parseInt) required final int quantity,
+      @JsonKey(fromJson: _parseDouble) required final double unitPrice,
+      final String? productName,
+      final String? variantName,
+      final String? unit}) = _$OrderItemImpl;
+
+  factory _OrderItem.fromJson(Map<String, dynamic> json) =
+      _$OrderItemImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get orderId;
+  @override
+  String get productId;
+  @override
+  String get variantId;
+  @override
+  String get producerId;
+  @override
+  @JsonKey(fromJson: _parseInt)
+  int get quantity;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  double get unitPrice;
+  @override
+  String? get productName;
+  @override
+  String? get variantName;
+  @override
+  String? get unit;
+
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$OrderItemImplCopyWith<_$OrderItemImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+Order _$OrderFromJson(Map<String, dynamic> json) {
+  return _Order.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Order {
+  String get id => throw _privateConstructorUsedError;
+  String get wholesalerId => throw _privateConstructorUsedError;
+  OrderStatus get status => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseDouble)
+  double get totalAmount => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  List<OrderItem> get items => throw _privateConstructorUsedError;
+  String? get wholesalerName => throw _privateConstructorUsedError;
+  String? get notes => throw _privateConstructorUsedError;
+  String? get deliveryAddress => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $OrderCopyWith<Order> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $OrderCopyWith<$Res> {
+  factory $OrderCopyWith(Order value, $Res Function(Order) then) =
+      _$OrderCopyWithImpl<$Res, Order>;
+  @useResult
+  $Res call(
+      {String id,
+      String wholesalerId,
+      OrderStatus status,
+      @JsonKey(fromJson: _parseDouble) double totalAmount,
+      DateTime createdAt,
+      List<OrderItem> items,
+      String? wholesalerName,
+      String? notes,
+      String? deliveryAddress});
+}
+
+/// @nodoc
+class _$OrderCopyWithImpl<$Res, $Val extends Order>
+    implements $OrderCopyWith<$Res> {
+  _$OrderCopyWithImpl(this._value, this._then);
+
+  final $Val _value;
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? wholesalerId = null,
+    Object? status = null,
+    Object? totalAmount = null,
+    Object? createdAt = null,
+    Object? items = null,
+    Object? wholesalerName = freezed,
+    Object? notes = freezed,
+    Object? deliveryAddress = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      wholesalerId: null == wholesalerId
+          ? _value.wholesalerId
+          : wholesalerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as OrderStatus,
+      totalAmount: null == totalAmount
+          ? _value.totalAmount
+          : totalAmount // ignore: cast_nullable_to_non_nullable
+              as double,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      items: null == items
+          ? _value.items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<OrderItem>,
+      wholesalerName: freezed == wholesalerName
+          ? _value.wholesalerName
+          : wholesalerName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+      deliveryAddress: freezed == deliveryAddress
+          ? _value.deliveryAddress
+          : deliveryAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$OrderImplCopyWith<$Res> implements $OrderCopyWith<$Res> {
+  factory _$$OrderImplCopyWith(
+          _$OrderImpl value, $Res Function(_$OrderImpl) then) =
+      __$$OrderImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String wholesalerId,
+      OrderStatus status,
+      @JsonKey(fromJson: _parseDouble) double totalAmount,
+      DateTime createdAt,
+      List<OrderItem> items,
+      String? wholesalerName,
+      String? notes,
+      String? deliveryAddress});
+}
+
+/// @nodoc
+class __$$OrderImplCopyWithImpl<$Res>
+    extends _$OrderCopyWithImpl<$Res, _$OrderImpl>
+    implements _$$OrderImplCopyWith<$Res> {
+  __$$OrderImplCopyWithImpl(
+      _$OrderImpl _value, $Res Function(_$OrderImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? wholesalerId = null,
+    Object? status = null,
+    Object? totalAmount = null,
+    Object? createdAt = null,
+    Object? items = null,
+    Object? wholesalerName = freezed,
+    Object? notes = freezed,
+    Object? deliveryAddress = freezed,
+  }) {
+    return _then(_$OrderImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      wholesalerId: null == wholesalerId
+          ? _value.wholesalerId
+          : wholesalerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as OrderStatus,
+      totalAmount: null == totalAmount
+          ? _value.totalAmount
+          : totalAmount // ignore: cast_nullable_to_non_nullable
+              as double,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      items: null == items
+          ? _value._items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<OrderItem>,
+      wholesalerName: freezed == wholesalerName
+          ? _value.wholesalerName
+          : wholesalerName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+      deliveryAddress: freezed == deliveryAddress
+          ? _value.deliveryAddress
+          : deliveryAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$OrderImpl implements _Order {
+  const _$OrderImpl(
+      {required this.id,
+      required this.wholesalerId,
+      required this.status,
+      @JsonKey(fromJson: _parseDouble) required this.totalAmount,
+      required this.createdAt,
+      final List<OrderItem> items = const [],
+      this.wholesalerName,
+      this.notes,
+      this.deliveryAddress})
+      : _items = items;
+
+  factory _$OrderImpl.fromJson(Map<String, dynamic> json) =>
+      _$$OrderImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String wholesalerId;
+  @override
+  final OrderStatus status;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  final double totalAmount;
+  @override
+  final DateTime createdAt;
+  final List<OrderItem> _items;
+  @override
+  @JsonKey()
+  List<OrderItem> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
+
+  @override
+  final String? wholesalerName;
+  @override
+  final String? notes;
+  @override
+  final String? deliveryAddress;
+
+  @override
+  String toString() {
+    return 'Order(id: $id, wholesalerId: $wholesalerId, status: $status, totalAmount: $totalAmount, createdAt: $createdAt, items: $items, wholesalerName: $wholesalerName, notes: $notes, deliveryAddress: $deliveryAddress)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$OrderImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.wholesalerId, wholesalerId) ||
+                other.wholesalerId == wholesalerId) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.totalAmount, totalAmount) ||
+                other.totalAmount == totalAmount) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.wholesalerName, wholesalerName) ||
+                other.wholesalerName == wholesalerName) &&
+            (identical(other.notes, notes) || other.notes == notes) &&
+            (identical(other.deliveryAddress, deliveryAddress) ||
+                other.deliveryAddress == deliveryAddress));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, wholesalerId, status,
+      totalAmount, createdAt, const DeepCollectionEquality().hash(_items),
+      wholesalerName, notes, deliveryAddress);
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$OrderImplCopyWith<_$OrderImpl> get copyWith =>
+      __$$OrderImplCopyWithImpl<_$OrderImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$OrderImplToJson(this);
+  }
+}
+
+abstract class _Order implements Order {
+  const factory _Order(
+      {required final String id,
+      required final String wholesalerId,
+      required final OrderStatus status,
+      @JsonKey(fromJson: _parseDouble) required final double totalAmount,
+      required final DateTime createdAt,
+      final List<OrderItem> items,
+      final String? wholesalerName,
+      final String? notes,
+      final String? deliveryAddress}) = _$OrderImpl;
+
+  factory _Order.fromJson(Map<String, dynamic> json) = _$OrderImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get wholesalerId;
+  @override
+  OrderStatus get status;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  double get totalAmount;
+  @override
+  DateTime get createdAt;
+  @override
+  List<OrderItem> get items;
+  @override
+  String? get wholesalerName;
+  @override
+  String? get notes;
+  @override
+  String? get deliveryAddress;
+
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$OrderImplCopyWith<_$OrderImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

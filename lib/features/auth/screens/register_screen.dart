@@ -56,6 +56,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Center(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 64,
+                    height: 64,
+                  ),
+                ),
+                const SizedBox(height: 16),
                 Text('Créer votre compte', style: AppTextStyles.screenTitle),
                 const SizedBox(height: 8),
                 Text('Quelques informations pour commencer',

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/features/auth/data/auth_repository.dart';
+import 'package:banabana_b2b/core/storage/storage_service.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
@@ -91,6 +92,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     try {
       final repo = ref.read(authRepositoryProvider);
       final auth = await repo.verifyOtp(phone: widget.phone, otp: _otp);
+      final storage = ref.read(storageServiceProvider);
+      await storage.setAccessToken(auth.accessToken);
+      await storage.setRefreshToken(auth.refreshToken);
       if (auth.user.kycStatus == 'none') {
         if (mounted) {
           context.go('/auth/register', extra: {'phone': widget.phone});

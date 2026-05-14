@@ -55,6 +55,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  void _loginWithPin() {
+    if (!_canSubmit) {
+      context.showSnack('Entrez un numéro valide', type: SnackType.error);
+      return;
+    }
+    context.push('/auth/pin', extra: {'phone': _phoneCtrl.text.trim()});
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
@@ -69,8 +77,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Symbols.storefront, size: 56, color: AppColors.primary),
-                const SizedBox(height: 16),
+                Center(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 90,
+                    height: 90,
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Text('BanaBana Business',
                     style: AppTextStyles.screenTitle,
                     textAlign: TextAlign.center),
@@ -113,6 +127,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: AppColors.white))
                       : const Text('Continuer'),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        'TEST',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.gray400,
+                          letterSpacing: 1,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: _loginWithPin,
+                  icon: const Icon(Symbols.lock_open, size: 18),
+                  label: const Text('Connexion PIN directe (sans OTP)'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.gray500,
+                    side: const BorderSide(color: AppColors.gray200),
+                    textStyle: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'PIN par défaut : 0000',
+                  style: AppTextStyles.caption.copyWith(color: AppColors.gray400),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
