@@ -40,7 +40,12 @@ class _ProductPublicDetailScreenState
           unitPrice: _selectedVariant!.price,
           quantity: _quantity,
         );
-    context.showSnack('Ajouté au panier ✓', type: SnackType.success);
+    context.showSnack(
+      'Ajouté au panier ✓',
+      type: SnackType.success,
+      actionLabel: 'Voir',
+      onAction: () => context.push('/shop/cart'),
+    );
   }
 
   @override
