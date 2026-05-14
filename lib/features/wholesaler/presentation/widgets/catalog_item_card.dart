@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/api/api_client.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
-import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/shared/models/catalog_item.dart';
-import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
-class CatalogItemCard extends ConsumerStatefulWidget {
+class CatalogItemCard extends StatelessWidget {
   const CatalogItemCard({
     super.key,
     required this.item,
@@ -22,54 +19,15 @@ class CatalogItemCard extends ConsumerStatefulWidget {
   final CatalogItem item;
   final VoidCallback? onTap;
 
-  @override
-  ConsumerState<CatalogItemCard> createState() => _CatalogItemCardState();
-}
-
-class _CatalogItemCardState extends ConsumerState<CatalogItemCard>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _scaleCtrl;
-  late final Animation<double> _scaleAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _scaleCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-      lowerBound: 0.9,
-      upperBound: 1.0,
-      value: 1.0,
-    );
-    _scaleAnim = _scaleCtrl;
-  }
-
-  @override
-  void dispose() {
-    _scaleCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _onAddToCart() async {
+  void _onAddToCart() {
     HapticFeedback.lightImpact();
-    await _scaleCtrl.reverse();
-    if (!mounted) return;
-    await _scaleCtrl.forward();
-    if (!mounted) return;
-    ref.read(cartProvider.notifier).add(
-      variantId: widget.item.id,
-      productId: widget.item.id,
-      productTitle: widget.item.title,
-      variantLabel: widget.item.category,
-      unitPrice: widget.item.minPrice,
-    );
-    if (mounted) context.showSnack('Ajouté au panier', type: SnackType.success);
+    // CatalogItem has no variantId — navigate to product detail for variant selection
+    onTap?.call();
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final item = widget.item;
     final imageUrl = (item.mainImage != null && item.mainImage!.isNotEmpty)
         ? resolveImageUrl(item.mainImage!)
         : null;
@@ -82,7 +40,7 @@ class _CatalogItemCardState extends ConsumerState<CatalogItemCard>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: widget.onTap,
+          onTap: onTap,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
           splashColor: AppColors.primary.withValues(alpha: 0.08),
           highlightColor: AppColors.primary.withValues(alpha: 0.04),
@@ -183,27 +141,24 @@ class _CatalogItemCardState extends ConsumerState<CatalogItemCard>
                               ),
                             ),
                           ),
-                          // Bouton + avec ScaleTransition
-                          ScaleTransition(
-                            scale: _scaleAnim,
-                            child: GestureDetector(
-                              onTap: isOutOfStock ? null : _onAddToCart,
-                              child: Container(
-                                width: 28,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  color: isOutOfStock
-                                      ? (isDark ? AppColors.darkSurface2 : AppColors.gray200)
-                                      : AppColors.primary,
-                                  borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
-                                ),
-                                child: Icon(
-                                  Symbols.add,
-                                  size: 16,
-                                  color: isOutOfStock
-                                      ? AppColors.gray500
-                                      : AppColors.white,
-                                ),
+                          // Bouton + — ouvre la fiche produit pour choisir variante
+                          GestureDetector(
+                            onTap: isOutOfStock ? null : _onAddToCart,
+                            child: Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: isOutOfStock
+                                    ? (isDark ? AppColors.darkSurface2 : AppColors.gray200)
+                                    : AppColors.primary,
+                                borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
+                              ),
+                              child: Icon(
+                                Symbols.add,
+                                size: 16,
+                                color: isOutOfStock
+                                    ? AppColors.gray500
+                                    : AppColors.white,
                               ),
                             ),
                           ),

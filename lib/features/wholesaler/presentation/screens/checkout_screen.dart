@@ -115,7 +115,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           color: isDark ? AppColors.white : AppColors.gray900,
         ),
       ),
-      body: Form(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.s16),
@@ -396,6 +399,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             const SizedBox(height: AppSpacing.s16),
           ],
         ),
+      ),
       ),
     );
   }
