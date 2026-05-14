@@ -15,6 +15,13 @@ class AuthRepository {
     await dio.post('/auth/otp/request', data: {'phone': phone, 'role': role});
   }
 
+  Future<void> requestPin({
+    required String phone,
+    required String role,
+  }) async {
+    await dio.post('/auth/pin/request', data: {'phone': phone, 'role': role});
+  }
+
   Future<AuthResponse> verifyOtp({
     required String phone,
     required String otp,
@@ -55,9 +62,11 @@ class AuthRepository {
     return User.fromJson(res.data as Map<String, dynamic>);
   }
 
-  Future<User> updateProfile({String? email}) async {
+  Future<User> updateProfile({String? email, String? firstName, String? lastName}) async {
     final res = await dio.patch('/users/profile', data: {
       if (email != null && email.isNotEmpty) 'email': email,
+      if (firstName != null && firstName.isNotEmpty) 'firstName': firstName,
+      if (lastName != null && lastName.isNotEmpty) 'lastName': lastName,
     });
     return User.fromJson(res.data as Map<String, dynamic>);
   }
