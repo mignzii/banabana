@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
+import 'package:banabana_b2b/core/theme/app_text_styles.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/features/producer/data/analytics_repository.dart';
 import 'package:banabana_b2b/features/producer/providers/analytics_providers.dart';
 import 'package:banabana_b2b/shared/widgets/error_state_widget.dart';
@@ -13,14 +15,22 @@ class AnalyticsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? AppColors.darkBg : AppColors.gray50;
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+    final border = isDark ? AppColors.darkBorder : AppColors.gray100;
     final analyticsAsync = ref.watch(analyticsSummaryProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.gray50,
+      backgroundColor: bg,
       appBar: AppBar(
-        title: const Text('Analytiques'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
+        elevation: 0,
+        title: Text('Analytiques', style: AppTextStyles.sectionTitle.copyWith(color: textPrimary)),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Divider(height: 1, color: border),
+        ),
       ),
       body: analyticsAsync.when(
         loading: () => const Padding(
@@ -38,12 +48,12 @@ class AnalyticsScreen extends ConsumerWidget {
           onRetry: () => ref.invalidate(analyticsSummaryProvider),
         ),
         data: (summary) => ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.screenPadding),
           children: [
             _SummaryRow(summary: summary),
-            const SizedBox(height: 24),
+            SizedBox(height: AppSpacing.s24),
             _RevenueChart(data: summary.revenueByDay),
-            const SizedBox(height: 24),
+            SizedBox(height: AppSpacing.s24),
             if (summary.topProducts.isNotEmpty)
               _TopProductsChart(products: summary.topProducts),
             const SizedBox(height: 80),
@@ -70,7 +80,7 @@ class _SummaryRow extends StatelessWidget {
             color: AppColors.success,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: AppSpacing.s12),
         Expanded(
           child: _InfoCard(
             label: 'Commandes',
@@ -78,7 +88,7 @@ class _SummaryRow extends StatelessWidget {
             color: AppColors.primary,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: AppSpacing.s12),
         Expanded(
           child: _InfoCard(
             label: 'En attente',
@@ -103,33 +113,34 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surface = isDark ? AppColors.darkSurface : AppColors.white;
+    final shadowColor = isDark
+        ? AppColors.black.withValues(alpha: 0.2)
+        : AppColors.black.withValues(alpha: 0.05);
+    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(AppSpacing.s12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-          ),
-        ],
+        color: surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSmall + 2),
+        boxShadow: [BoxShadow(color: shadowColor, blurRadius: 6)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontSize: 16,
+            style: AppTextStyles.label.copyWith(
               fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
-          const SizedBox(height: 2),
+          SizedBox(height: AppSpacing.s4),
           Text(
             label,
-            style: const TextStyle(fontSize: 10, color: AppColors.gray500),
+            style: AppTextStyles.caption.copyWith(color: textSecondary),
           ),
         ],
       ),
@@ -143,31 +154,37 @@ class _RevenueChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surface = isDark ? AppColors.darkSurface : AppColors.white;
+    final shadowColor = isDark
+        ? AppColors.black.withValues(alpha: 0.2)
+        : AppColors.black.withValues(alpha: 0.05);
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+
     final spots = data
         .asMap()
         .entries
         .map((e) => FlSpot(e.key.toDouble(), e.value.revenue))
         .toList();
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppSpacing.screenPadding),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-          ),
-        ],
+        color: surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        boxShadow: [BoxShadow(color: shadowColor, blurRadius: 8)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Revenus (30 derniers jours)',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            style: AppTextStyles.label.copyWith(
+              fontWeight: FontWeight.bold,
+              color: textPrimary,
+            ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: AppSpacing.s16),
           SizedBox(
             height: 160,
             child: LineChart(
@@ -203,30 +220,36 @@ class _TopProductsChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surface = isDark ? AppColors.darkSurface : AppColors.white;
+    final shadowColor = isDark
+        ? AppColors.black.withValues(alpha: 0.2)
+        : AppColors.black.withValues(alpha: 0.05);
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+
     final maxQty = products
         .map((p) => p.totalQuantity)
         .reduce((a, b) => a > b ? a : b)
         .toDouble();
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppSpacing.screenPadding),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-          ),
-        ],
+        color: surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        boxShadow: [BoxShadow(color: shadowColor, blurRadius: 8)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Top 5 produits (quantité)',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            style: AppTextStyles.label.copyWith(
+              fontWeight: FontWeight.bold,
+              color: textPrimary,
+            ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: AppSpacing.s16),
           SizedBox(
             height: 160,
             child: BarChart(
@@ -246,7 +269,7 @@ class _TopProductsChart extends StatelessWidget {
                             toY: e.value.totalQuantity.toDouble(),
                             color: AppColors.primary,
                             width: 18,
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(AppSpacing.s4.toDouble()),
                           ),
                         ],
                       ),

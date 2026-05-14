@@ -52,6 +52,13 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
           ),
         ),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Symbols.search, size: 22),
+            color: isDark ? AppColors.gray100 : AppColors.gray900,
+            onPressed: () => context.push('/shop/search'),
+          ),
+        ],
       ),
       body: Column(
         children: [

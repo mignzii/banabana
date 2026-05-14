@@ -157,7 +157,7 @@ class ProducerHomeScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.s8),
             productsAsync.when(
               loading: () => SizedBox(
-                height: 210,
+                height: 240,
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.s16,
@@ -178,7 +178,7 @@ class ProducerHomeScreen extends ConsumerWidget {
                 final recent =
                     products.length > 6 ? products.sublist(0, 6) : products;
                 return SizedBox(
-                  height: 210,
+                  height: 240,
                   child: ListView.separated(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.s16,
@@ -306,24 +306,28 @@ class _StatChip extends StatelessWidget {
             child: Icon(icon, size: 18, color: color),
           ),
           const SizedBox(width: AppSpacing.s8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                value,
-                style: AppTextStyles.sectionTitle.copyWith(
-                  fontSize: 18,
-                  color: isDark ? AppColors.white : AppColors.gray900,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  value,
+                  style: AppTextStyles.sectionTitle.copyWith(
+                    fontSize: 18,
+                    color: isDark ? AppColors.white : AppColors.gray900,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              Text(
-                label,
-                style: AppTextStyles.caption.copyWith(
-                  color: isDark ? AppColors.gray500 : AppColors.gray400,
+                Text(
+                  label,
+                  style: AppTextStyles.caption.copyWith(
+                    color: isDark ? AppColors.gray500 : AppColors.gray400,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

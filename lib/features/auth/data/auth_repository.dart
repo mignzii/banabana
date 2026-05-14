@@ -55,6 +55,13 @@ class AuthRepository {
     return User.fromJson(res.data as Map<String, dynamic>);
   }
 
+  Future<User> updateProfile({String? email}) async {
+    final res = await dio.patch('/users/profile', data: {
+      if (email != null && email.isNotEmpty) 'email': email,
+    });
+    return User.fromJson(res.data as Map<String, dynamic>);
+  }
+
   Future<void> submitKyc({
     required String frontPath,
     required String backPath,

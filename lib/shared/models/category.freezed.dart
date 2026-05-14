@@ -23,13 +23,13 @@ mixin _$Category {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  String? get icon => throw _privateConstructorUsedError;
+  String? get slug => throw _privateConstructorUsedError;
+  int? get order => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
 
-  /// Serializes this Category to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of Category
-  /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   $CategoryCopyWith<Category> get copyWith =>
       throw _privateConstructorUsedError;
@@ -40,7 +40,15 @@ abstract class $CategoryCopyWith<$Res> {
   factory $CategoryCopyWith(Category value, $Res Function(Category) then) =
       _$CategoryCopyWithImpl<$Res, Category>;
   @useResult
-  $Res call({String id, String name, String? description, bool isActive});
+  $Res call({
+    String id,
+    String name,
+    String? description,
+    String? icon,
+    String? slug,
+    int? order,
+    bool isActive,
+  });
 }
 
 /// @nodoc
@@ -48,19 +56,18 @@ class _$CategoryCopyWithImpl<$Res, $Val extends Category>
     implements $CategoryCopyWith<$Res> {
   _$CategoryCopyWithImpl(this._value, this._then);
 
-  // ignore: unused_field
   final $Val _value;
-  // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Category
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
     Object? name = null,
     Object? description = freezed,
+    Object? icon = freezed,
+    Object? slug = freezed,
+    Object? order = freezed,
     Object? isActive = null,
   }) {
     return _then(_value.copyWith(
@@ -76,6 +83,18 @@ class _$CategoryCopyWithImpl<$Res, $Val extends Category>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      icon: freezed == icon
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
+              as String?,
+      slug: freezed == slug
+          ? _value.slug
+          : slug // ignore: cast_nullable_to_non_nullable
+              as String?,
+      order: freezed == order
+          ? _value.order
+          : order // ignore: cast_nullable_to_non_nullable
+              as int?,
       isActive: null == isActive
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
@@ -92,7 +111,15 @@ abstract class _$$CategoryImplCopyWith<$Res>
       __$$CategoryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String name, String? description, bool isActive});
+  $Res call({
+    String id,
+    String name,
+    String? description,
+    String? icon,
+    String? slug,
+    int? order,
+    bool isActive,
+  });
 }
 
 /// @nodoc
@@ -103,14 +130,15 @@ class __$$CategoryImplCopyWithImpl<$Res>
       _$CategoryImpl _value, $Res Function(_$CategoryImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Category
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
     Object? name = null,
     Object? description = freezed,
+    Object? icon = freezed,
+    Object? slug = freezed,
+    Object? order = freezed,
     Object? isActive = null,
   }) {
     return _then(_$CategoryImpl(
@@ -126,6 +154,18 @@ class __$$CategoryImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
+      icon: freezed == icon
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
+              as String?,
+      slug: freezed == slug
+          ? _value.slug
+          : slug // ignore: cast_nullable_to_non_nullable
+              as String?,
+      order: freezed == order
+          ? _value.order
+          : order // ignore: cast_nullable_to_non_nullable
+              as int?,
       isActive: null == isActive
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
@@ -137,11 +177,15 @@ class __$$CategoryImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$CategoryImpl implements _Category {
-  const _$CategoryImpl(
-      {required this.id,
-      required this.name,
-      this.description,
-      required this.isActive});
+  const _$CategoryImpl({
+    required this.id,
+    required this.name,
+    this.description,
+    this.icon,
+    this.slug,
+    @JsonKey(defaultValue: 0) this.order,
+    required this.isActive,
+  });
 
   factory _$CategoryImpl.fromJson(Map<String, dynamic> json) =>
       _$$CategoryImplFromJson(json);
@@ -153,11 +197,17 @@ class _$CategoryImpl implements _Category {
   @override
   final String? description;
   @override
+  final String? icon;
+  @override
+  final String? slug;
+  @override
+    final int? order;
+  @override
   final bool isActive;
 
   @override
   String toString() {
-    return 'Category(id: $id, name: $name, description: $description, isActive: $isActive)';
+    return 'Category(id: $id, name: $name, description: $description, icon: $icon, slug: $slug, order: $order, isActive: $isActive)';
   }
 
   @override
@@ -169,16 +219,18 @@ class _$CategoryImpl implements _Category {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
+            (identical(other.icon, icon) || other.icon == icon) &&
+            (identical(other.slug, slug) || other.slug == slug) &&
+            (identical(other.order, order) || other.order == order) &&
             (identical(other.isActive, isActive) ||
                 other.isActive == isActive));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, description, isActive);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, description, icon, slug, order, isActive);
 
-  /// Create a copy of Category
-  /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
@@ -187,18 +239,20 @@ class _$CategoryImpl implements _Category {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CategoryImplToJson(
-      this,
-    );
+    return _$$CategoryImplToJson(this);
   }
 }
 
 abstract class _Category implements Category {
-  const factory _Category(
-      {required final String id,
-      required final String name,
-      final String? description,
-      required final bool isActive}) = _$CategoryImpl;
+  const factory _Category({
+    required final String id,
+    required final String name,
+    final String? description,
+    final String? icon,
+    final String? slug,
+    @JsonKey(defaultValue: 0) final int? order,
+    required final bool isActive,
+  }) = _$CategoryImpl;
 
   factory _Category.fromJson(Map<String, dynamic> json) =
       _$CategoryImpl.fromJson;
@@ -210,10 +264,14 @@ abstract class _Category implements Category {
   @override
   String? get description;
   @override
+  String? get icon;
+  @override
+  String? get slug;
+  @override
+    int? get order;
+  @override
   bool get isActive;
 
-  /// Create a copy of Category
-  /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CategoryImplCopyWith<_$CategoryImpl> get copyWith =>

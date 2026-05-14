@@ -27,6 +27,9 @@ class OrderItem with _$OrderItem {
     required String producerId,
     @JsonKey(fromJson: _parseInt) required int quantity,
     @JsonKey(fromJson: _parseDouble) required double unitPrice,
+    String? productName,
+    String? variantName,
+    String? unit,
   }) = _OrderItem;
 
   factory OrderItem.fromJson(Map<String, dynamic> json) =>
@@ -42,6 +45,9 @@ class Order with _$Order {
     @JsonKey(fromJson: _parseDouble) required double totalAmount,
     required DateTime createdAt,
     @Default([]) List<OrderItem> items,
+    String? wholesalerName,
+    String? notes,
+    String? deliveryAddress,
   }) = _Order;
 
   factory Order.fromJson(Map<String, dynamic> json) =>

@@ -9,6 +9,7 @@ import 'package:banabana_b2b/features/auth/screens/set_pin_screen.dart';
 import 'package:banabana_b2b/features/auth/screens/pin_login_screen.dart';
 import 'package:banabana_b2b/features/auth/screens/kyc_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/analytics_screen.dart';
+import 'package:banabana_b2b/features/producer/presentation/screens/categories_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/inventory_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/messages_stub_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/conversation_screen.dart';
@@ -25,15 +26,17 @@ import 'package:banabana_b2b/features/wholesaler/presentation/screens/shop_home_
 import 'package:banabana_b2b/features/wholesaler/presentation/screens/catalog_screen.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/screens/product_public_detail_screen.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/screens/cart_screen.dart';
+import 'package:banabana_b2b/features/wholesaler/presentation/screens/search_screen.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/screens/wholesaler_orders_screen.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/screens/wholesaler_order_detail_screen.dart';
+import 'package:banabana_b2b/features/wholesaler/presentation/screens/checkout_screen.dart';
 import 'package:banabana_b2b/core/widgets/producer_shell.dart';
 import 'package:banabana_b2b/core/widgets/wholesaler_shell.dart';
 import 'package:banabana_b2b/shared/screens/profile_screen.dart';
 
-final _producerShellKey = GlobalKey<NavigatorState>(debugLabel: 'producerShell');
-final _wholesalerShellKey =
-    GlobalKey<NavigatorState>(debugLabel: 'wholesalerShell');
+final _rootNavKey        = GlobalKey<NavigatorState>(debugLabel: 'root');
+final _producerShellKey  = GlobalKey<NavigatorState>(debugLabel: 'producerShell');
+final _wholesalerShellKey = GlobalKey<NavigatorState>(debugLabel: 'wholesalerShell');
 
 Page<void> _fadePage(Widget child) => CustomTransitionPage(
   child: child,
@@ -64,6 +67,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
+    navigatorKey: _rootNavKey,
     initialLocation: '/auth/login',
     redirect: (context, state) {
       final isAuth = authState.isAuthenticated;
@@ -130,32 +134,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             pageBuilder: (_, __) => _fadePage(const ProductsScreen()),
           ),
           GoRoute(
-            path: '/producer/products/new',
-            name: 'producer-product-new',
-            pageBuilder: (_, __) => _fadePage(const ProductFormScreen()),
-          ),
-          GoRoute(
-            path: '/producer/products/:id',
-            name: 'producer-product-detail',
-            pageBuilder: (_, state) =>
-                _fadePage(ProductDetailScreen(productId: state.pathParameters['id']!)),
-          ),
-          GoRoute(
-            path: '/producer/products/:id/edit',
-            name: 'producer-product-edit',
-            pageBuilder: (_, state) =>
-                _fadePage(ProductFormScreen(productId: state.pathParameters['id'])),
-          ),
-          GoRoute(
             path: '/producer/orders',
             name: 'producer-orders',
             pageBuilder: (_, __) => _fadePage(const OrdersScreen()),
-          ),
-          GoRoute(
-            path: '/producer/orders/:id',
-            name: 'producer-order-detail',
-            pageBuilder: (_, state) =>
-                _fadePage(OrderDetailScreen(orderId: state.pathParameters['id']!)),
           ),
           GoRoute(
             path: '/producer/inventory',
@@ -173,21 +154,57 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             pageBuilder: (_, __) => _fadePage(const MessagesStubScreen()),
           ),
           GoRoute(
-            path: '/producer/messages/:conversationId',
-            name: 'producer-conversation',
-            pageBuilder: (_, state) => _fadePage(
-              ConversationScreen(
-                conversationId: state.pathParameters['conversationId']!,
-                conversation: state.extra as MockConversation?,
-              ),
-            ),
-          ),
-          GoRoute(
             path: '/producer/profile',
             name: 'producer-profile',
             pageBuilder: (_, __) => _fadePage(const ProfileScreen()),
           ),
         ],
+      ),
+
+      // Producer full-screen routes (over shell, no bottom nav)
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/producer/products/new',
+        name: 'producer-product-new',
+        pageBuilder: (_, __) => _fadePage(const ProductFormScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/producer/products/:id',
+        name: 'producer-product-detail',
+        pageBuilder: (_, state) =>
+            _fadePage(ProductDetailScreen(productId: state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/producer/products/:id/edit',
+        name: 'producer-product-edit',
+        pageBuilder: (_, state) =>
+            _fadePage(ProductFormScreen(productId: state.pathParameters['id'])),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/producer/orders/:id',
+        name: 'producer-order-detail',
+        pageBuilder: (_, state) =>
+            _fadePage(OrderDetailScreen(orderId: state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/producer/categories',
+        name: 'producer-categories',
+        pageBuilder: (_, __) => _fadePage(const CategoriesScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/producer/messages/:conversationId',
+        name: 'producer-conversation',
+        pageBuilder: (_, state) => _fadePage(
+          ConversationScreen(
+            conversationId: state.pathParameters['conversationId']!,
+            conversation: state.extra as MockConversation?,
+          ),
+        ),
       ),
 
       // Wholesaler shell
@@ -214,26 +231,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             pageBuilder: (_, __) => _fadePage(const CatalogScreen()),
           ),
           GoRoute(
-            path: '/shop/product/:id',
-            name: 'shop-product-detail',
-            pageBuilder: (_, state) =>
-                _fadePage(ProductPublicDetailScreen(productId: state.pathParameters['id']!)),
-          ),
-          GoRoute(
-            path: '/shop/cart',
-            name: 'shop-cart',
-            pageBuilder: (_, __) => _fadePage(const CartScreen()),
-          ),
-          GoRoute(
             path: '/shop/orders',
             name: 'shop-orders',
             pageBuilder: (_, __) => _fadePage(const WholesalerOrdersScreen()),
-          ),
-          GoRoute(
-            path: '/shop/orders/:id',
-            name: 'shop-order-detail',
-            pageBuilder: (_, state) =>
-                _fadePage(WholesalerOrderDetailScreen(orderId: state.pathParameters['id']!)),
           ),
           GoRoute(
             path: '/shop/profile',
@@ -241,6 +241,40 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             pageBuilder: (_, __) => _fadePage(const ProfileScreen()),
           ),
         ],
+      ),
+
+      // Wholesaler full-screen routes (over shell, no bottom nav)
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/product/:id',
+        name: 'shop-product-detail',
+        pageBuilder: (_, state) =>
+            _fadePage(ProductPublicDetailScreen(productId: state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/cart',
+        name: 'shop-cart',
+        pageBuilder: (_, __) => _fadePage(const CartScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/search',
+        name: 'shop-search',
+        pageBuilder: (_, __) => _fadePage(const SearchScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/checkout',
+        name: 'shop-checkout',
+        pageBuilder: (_, __) => _fadePage(const CheckoutScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/orders/:id',
+        name: 'shop-order-detail',
+        pageBuilder: (_, state) =>
+            _fadePage(WholesalerOrderDetailScreen(orderId: state.pathParameters['id']!)),
       ),
 
       // Vendor (no shell yet)

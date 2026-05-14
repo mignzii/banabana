@@ -1,16 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:banabana_b2b/core/api/api_client.dart';
+import 'package:banabana_b2b/features/producer/data/category_repository.dart';
 import 'package:banabana_b2b/features/wholesaler/data/catalog_repository.dart';
 import 'package:banabana_b2b/shared/models/catalog_item.dart';
+import 'package:banabana_b2b/shared/models/category.dart';
 
-final shopCategoriesProvider = FutureProvider<List<String>>((ref) async {
+/// Global categories from /v1/categories for shop display and filtering.
+final shopCategoriesProvider = FutureProvider<List<Category>>((ref) async {
   try {
-    final cats = await ref.watch(catalogRepositoryProvider).getCategories();
+    final repo = CategoryRepository(ref.watch(apiClientProvider));
+    final cats = await repo.getAll();
     if (cats.isNotEmpty) return cats;
   } catch (_) {}
-  final result = await ref.watch(catalogResultProvider.future);
-  final cats = result.data.map((e) => e.category).toSet().toList()..sort();
-  return cats;
+  return [];
 });
 
 final catalogRepositoryProvider = Provider<CatalogRepository>((ref) {
@@ -94,5 +96,23 @@ final catalogResultProvider = FutureProvider<CatalogResult>((ref) {
         page: params.page,
         sort: sort,
         order: order,
+      );
+});
+
+/// Dedicated search — used by the search screen only.
+/// FutureProvider.family keyed by query string, bypasses the shared params state.
+final catalogSearchProvider =
+    FutureProvider.family<CatalogResult, String>((ref, q) async {
+  if (q.trim().isEmpty) {
+    return CatalogResult(
+      data: const [],
+      pagination: CatalogPagination(page: 1, limit: 20, total: 0, pages: 1),
+    );
+  }
+  return ref.watch(catalogRepositoryProvider).search(
+        q: q,
+        page: 1,
+        sort: 'createdAt',
+        order: 'desc',
       );
 });

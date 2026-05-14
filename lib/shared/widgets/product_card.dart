@@ -71,7 +71,10 @@ class ProductCard extends StatelessWidget {
                           CachedNetworkImage(
                             imageUrl: imageUrl,
                             fit: BoxFit.cover,
-                            placeholder: (_, __) => const ProductCardShimmer(),
+                            placeholder: (_, __) => const ShimmerBox(
+                              height: double.infinity,
+                              borderRadius: 0,
+                            ),
                             errorWidget: (_, __, ___) => _ImagePlaceholder(isDark: isDark),
                           )
                         else

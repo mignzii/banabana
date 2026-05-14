@@ -9,6 +9,9 @@ class Category with _$Category {
     required String id,
     required String name,
     String? description,
+    String? icon,
+    String? slug,
+    int? order,
     required bool isActive,
   }) = _Category;
 

@@ -6,7 +6,6 @@ import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
-import 'package:banabana_b2b/features/wholesaler/providers/wholesaler_order_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/widgets/cart_item_tile.dart';
 import 'package:banabana_b2b/shared/widgets/app_button.dart';
 import 'package:banabana_b2b/shared/widgets/empty_state_widget.dart';
@@ -84,13 +83,15 @@ class CartScreen extends ConsumerWidget {
         content: const Text('Tous les articles seront supprimés.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+            onPressed: () => ctx.pop(false),
             child: const Text('Annuler'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Vider',
-                style: TextStyle(color: AppColors.error)),
+            onPressed: () => ctx.pop(true),
+            child: Text(
+              'Vider',
+              style: AppTextStyles.label.copyWith(color: AppColors.error),
+            ),
           ),
         ],
       ),
@@ -115,43 +116,8 @@ class _CheckoutBar extends ConsumerStatefulWidget {
 }
 
 class _CheckoutBarState extends ConsumerState<_CheckoutBar> {
-  bool _loading = false;
-
-  Future<void> _placeOrder() async {
-    final cartItems = ref.read(cartProvider);
-    if (cartItems.isEmpty) return;
-    setState(() => _loading = true);
-    try {
-      final items = cartItems
-          .map((i) => {'variantId': i.variantId, 'quantity': i.quantity})
-          .toList();
-      final order = await ref
-          .read(wholesalerOrdersProvider.notifier)
-          .placeOrder(items);
-      ref.read(cartProvider.notifier).clear();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Commande passée !'),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        context.pushReplacement('/shop/orders/${order.id}');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+  void _goToCheckout() {
+    context.push('/shop/checkout');
   }
 
   @override
@@ -164,7 +130,7 @@ class _CheckoutBarState extends ConsumerState<_CheckoutBar> {
         MediaQuery.of(context).padding.bottom + AppSpacing.s16,
       ),
       decoration: BoxDecoration(
-        color: widget.isDark ? AppColors.gray900 : AppColors.white,
+        color: widget.isDark ? AppColors.darkSurface : AppColors.white,
         border: Border(
           top: BorderSide(
             color:
@@ -207,9 +173,8 @@ class _CheckoutBarState extends ConsumerState<_CheckoutBar> {
           ),
           const SizedBox(height: AppSpacing.s12),
           AppButton(
-            label: 'Commander — ${widget.fmt.format(widget.total)} F',
-            onPressed: _loading ? null : _placeOrder,
-            isLoading: _loading,
+            label: 'Passer la commande →',
+            onPressed: _goToCheckout,
           ),
         ],
       ),

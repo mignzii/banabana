@@ -15,6 +15,9 @@ _$OrderItemImpl _$$OrderItemImplFromJson(Map<String, dynamic> json) =>
       producerId: json['producerId'] as String,
       quantity: _parseInt(json['quantity']),
       unitPrice: _parseDouble(json['unitPrice']),
+      productName: json['productName'] as String?,
+      variantName: json['variantName'] as String?,
+      unit: json['unit'] as String?,
     );
 
 Map<String, dynamic> _$$OrderItemImplToJson(_$OrderItemImpl instance) =>
@@ -26,6 +29,9 @@ Map<String, dynamic> _$$OrderItemImplToJson(_$OrderItemImpl instance) =>
       'producerId': instance.producerId,
       'quantity': instance.quantity,
       'unitPrice': instance.unitPrice,
+      'productName': instance.productName,
+      'variantName': instance.variantName,
+      'unit': instance.unit,
     };
 
 _$OrderImpl _$$OrderImplFromJson(Map<String, dynamic> json) => _$OrderImpl(
@@ -38,6 +44,9 @@ _$OrderImpl _$$OrderImplFromJson(Map<String, dynamic> json) => _$OrderImpl(
               ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      wholesalerName: json['wholesalerName'] as String?,
+      notes: json['notes'] as String?,
+      deliveryAddress: json['deliveryAddress'] as String?,
     );
 
 Map<String, dynamic> _$$OrderImplToJson(_$OrderImpl instance) =>
@@ -48,6 +57,9 @@ Map<String, dynamic> _$$OrderImplToJson(_$OrderImpl instance) =>
       'totalAmount': instance.totalAmount,
       'createdAt': instance.createdAt.toIso8601String(),
       'items': instance.items,
+      'wholesalerName': instance.wholesalerName,
+      'notes': instance.notes,
+      'deliveryAddress': instance.deliveryAddress,
     };
 
 const _$OrderStatusEnumMap = {

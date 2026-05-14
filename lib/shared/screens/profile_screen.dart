@@ -7,12 +7,58 @@ import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/auth/providers/theme_provider.dart';
+import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  final _emailCtrl = TextEditingController();
+  bool _isEditing = false;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = ref.read(authProvider).user;
+    _emailCtrl.text = user?.email ?? '';
+  }
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveProfile() async {
+    setState(() => _saving = true);
+    try {
+      await ref.read(authProvider.notifier).updateProfile(
+            email: _emailCtrl.text.trim(),
+          );
+      if (mounted) {
+        setState(() => _isEditing = false);
+        context.showSnack('Profil mis à jour', type: SnackType.success);
+      }
+    } catch (e) {
+      if (mounted) context.showSnack(e.toString(), type: SnackType.error);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  void _cancelEdit() {
+    final user = ref.read(authProvider).user;
+    _emailCtrl.text = user?.email ?? '';
+    setState(() => _isEditing = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(authProvider).user;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isDarkMode = ref.watch(themeModeProvider) == ThemeMode.dark;
@@ -62,6 +108,48 @@ class ProfileScreen extends ConsumerWidget {
           preferredSize: const Size.fromHeight(1),
           child: Divider(height: 1, color: border),
         ),
+        actions: _isEditing
+            ? [
+                TextButton(
+                  onPressed: _saving ? null : _cancelEdit,
+                  child: Text(
+                    'Annuler',
+                    style: AppTextStyles.label.copyWith(
+                      color: isDark ? AppColors.gray400 : AppColors.gray500,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: AppSpacing.s8),
+                  child: FilledButton(
+                    onPressed: _saving ? null : _saveProfile,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: _saving
+                        ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.white,
+                            ),
+                          )
+                        : Text('Enregistrer', style: AppTextStyles.label.copyWith(color: AppColors.white)),
+                  ),
+                ),
+              ]
+            : [
+                IconButton(
+                  icon: const Icon(Symbols.edit, size: 20),
+                  color: isDark ? AppColors.gray300 : AppColors.gray600,
+                  onPressed: () => setState(() => _isEditing = true),
+                  tooltip: 'Modifier',
+                ),
+              ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.screenPadding),
@@ -151,12 +239,65 @@ class ProfileScreen extends ConsumerWidget {
                   isDark: isDark,
                 ),
                 Divider(height: AppSpacing.s24, color: border),
-                _InfoRow(
-                  icon: Symbols.email,
-                  label: 'Email',
-                  value: user?.email?.isNotEmpty == true ? user!.email! : 'Non renseigné',
-                  isDark: isDark,
-                ),
+                // Email — editable in edit mode
+                if (_isEditing) ...[
+                  Row(
+                    children: [
+                      Icon(Symbols.email, size: 20, color: textSecondary),
+                      const SizedBox(width: AppSpacing.s12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Email',
+                              style: AppTextStyles.caption.copyWith(color: textSecondary),
+                            ),
+                            const SizedBox(height: AppSpacing.s6),
+                            TextFormField(
+                              controller: _emailCtrl,
+                              keyboardType: TextInputType.emailAddress,
+                              autocorrect: false,
+                              style: AppTextStyles.body.copyWith(color: textPrimary),
+                              decoration: InputDecoration(
+                                hintText: 'votre@email.com',
+                                hintStyle: AppTextStyles.bodySecondary.copyWith(
+                                  color: isDark ? AppColors.gray600 : AppColors.gray400,
+                                ),
+                                filled: true,
+                                fillColor: isDark ? AppColors.darkSurface2 : AppColors.gray50,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.s14,
+                                  vertical: AppSpacing.s10,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+                                  borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.gray200),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+                                  borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.gray200),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+                                  borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                                ),
+                                isDense: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  _InfoRow(
+                    icon: Symbols.email,
+                    label: 'Email',
+                    value: user?.email?.isNotEmpty == true ? user!.email! : 'Non renseigné',
+                    isDark: isDark,
+                  ),
+                ],
                 Divider(height: AppSpacing.s24, color: border),
                 Row(
                   children: [
@@ -268,7 +409,7 @@ class ProfileScreen extends ConsumerWidget {
 
           // Déconnexion
           OutlinedButton.icon(
-            onPressed: () => _confirmLogout(context, ref),
+            onPressed: _isEditing ? null : () => _confirmLogout(context, ref),
             icon: const Icon(Symbols.logout, color: AppColors.error),
             label: const Text('Déconnexion'),
             style: OutlinedButton.styleFrom(

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
+import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/producer/providers/order_providers.dart';
 import 'package:banabana_b2b/shared/models/order.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
@@ -13,6 +17,7 @@ class OrderActionsSheet extends ConsumerStatefulWidget {
   static void show(BuildContext context, {required Order order}) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -36,7 +41,7 @@ class _OrderActionsSheetState extends ConsumerState<OrderActionsSheet> {
           .accept(widget.order.id);
       if (mounted) {
         context.showSnack('Commande acceptée', type: SnackType.success);
-        Navigator.pop(context);
+        context.pop();
       }
     } catch (e) {
       if (mounted) context.showSnack(e.toString(), type: SnackType.error);
@@ -58,11 +63,11 @@ class _OrderActionsSheetState extends ConsumerState<OrderActionsSheet> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () => ctx.pop(),
             child: const Text('Annuler'),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, reasonCtrl.text.trim()),
+          FilledButton(
+            onPressed: () => ctx.pop(reasonCtrl.text.trim()),
             child: const Text('Confirmer'),
           ),
         ],
@@ -76,7 +81,7 @@ class _OrderActionsSheetState extends ConsumerState<OrderActionsSheet> {
           .reject(widget.order.id, reason);
       if (mounted) {
         context.showSnack('Commande refusée', type: SnackType.info);
-        Navigator.pop(context);
+        context.pop();
       }
     } catch (e) {
       if (mounted) context.showSnack(e.toString(), type: SnackType.error);
@@ -87,11 +92,17 @@ class _OrderActionsSheetState extends ConsumerState<OrderActionsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final canAccept = widget.order.status == OrderStatus.created;
     final canReject = widget.order.status == OrderStatus.created;
 
-    return Padding(
-      padding: const EdgeInsets.all(24),
+    return Container(
+      margin: const EdgeInsets.all(AppSpacing.s12),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+      ),
+      padding: const EdgeInsets.all(AppSpacing.s24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -99,45 +110,44 @@ class _OrderActionsSheetState extends ConsumerState<OrderActionsSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: AppColors.gray300,
+              color: isDark ? AppColors.darkBorder2 : AppColors.gray200,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s16),
           Text(
             'Actions — #${widget.order.id.substring(0, 8).toUpperCase()}',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+            style: AppTextStyles.sectionTitle.copyWith(
+              color: isDark ? AppColors.white : AppColors.gray900,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s20),
           if (canAccept)
-            ElevatedButton.icon(
+            FilledButton.icon(
               onPressed: _loading ? null : _accept,
-              icon: const Icon(Icons.check_circle_outline),
+              icon: Icon(Symbols.check_circle, size: 18),
               label: const Text('Accepter la commande'),
-              style: ElevatedButton.styleFrom(
+              style: FilledButton.styleFrom(
                 backgroundColor: AppColors.success,
-                foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(48),
+                minimumSize: const Size.fromHeight(AppSpacing.touchTarget),
               ),
             ),
           if (canReject) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.s12),
             OutlinedButton.icon(
               onPressed: _loading ? null : _reject,
-              icon: const Icon(Icons.cancel_outlined, color: AppColors.error),
-              label: const Text(
+              icon: Icon(Symbols.cancel, size: 18, color: AppColors.error),
+              label: Text(
                 'Refuser',
-                style: TextStyle(color: AppColors.error),
+                style: AppTextStyles.label.copyWith(color: AppColors.error),
               ),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.error),
-                minimumSize: const Size.fromHeight(48),
+                minimumSize: const Size.fromHeight(AppSpacing.touchTarget),
               ),
             ),
           ],
+          const SizedBox(height: AppSpacing.s8),
         ],
       ),
     );

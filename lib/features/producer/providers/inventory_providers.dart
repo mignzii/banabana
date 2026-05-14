@@ -44,3 +44,7 @@ final inventoryNotifierProvider =
 final inventoryAlertsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
   return ref.watch(inventoryRepositoryProvider).getAlerts();
 });
+
+final stockMovementsProvider = FutureProvider<List<StockMovement>>((ref) {
+  return ref.watch(inventoryRepositoryProvider).getMovements();
+});

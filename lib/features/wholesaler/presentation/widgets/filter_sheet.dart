@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
+import 'package:banabana_b2b/features/producer/providers/category_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/catalog_providers.dart';
 import 'package:banabana_b2b/shared/widgets/app_button.dart';
 
@@ -138,6 +139,119 @@ class _FilterSheetState extends ConsumerState<FilterSheet> {
                 controller: scrollCtrl,
                 padding: const EdgeInsets.all(AppSpacing.s20),
                 children: [
+                  // ── Catégorie ──────────────────────────────────────
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final categoriesAsync = ref.watch(allCategoriesProvider);
+                      return categoriesAsync.when(
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, __) => const SizedBox.shrink(),
+                        data: (cats) {
+                          if (cats.isEmpty) return const SizedBox.shrink();
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Catégorie',
+                                style: AppTextStyles.label.copyWith(
+                                  color: isDark
+                                      ? AppColors.gray300
+                                      : AppColors.gray700,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.s8),
+                              Wrap(
+                                spacing: AppSpacing.s8,
+                                runSpacing: AppSpacing.s8,
+                                children: [
+                                  // "Toutes" chip
+                                  GestureDetector(
+                                    onTap: () =>
+                                        setState(() => _category = null),
+                                    child: AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 150),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: AppSpacing.s12,
+                                          vertical: AppSpacing.s6),
+                                      decoration: BoxDecoration(
+                                        color: _category == null
+                                            ? AppColors.primary
+                                            : (isDark
+                                                ? AppColors.darkBorder
+                                                : AppColors.gray100),
+                                        borderRadius: BorderRadius.circular(
+                                            AppSpacing.radiusLarge),
+                                      ),
+                                      child: Text(
+                                        'Toutes',
+                                        style: AppTextStyles.caption.copyWith(
+                                          color: _category == null
+                                              ? AppColors.white
+                                              : (isDark
+                                                  ? AppColors.gray300
+                                                  : AppColors.gray600),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  ...cats.map((cat) {
+                                    final selected = _category == cat.name;
+                                    return GestureDetector(
+                                      onTap: () => setState(
+                                          () => _category = cat.name),
+                                      child: AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 150),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: AppSpacing.s12,
+                                            vertical: AppSpacing.s6),
+                                        decoration: BoxDecoration(
+                                          color: selected
+                                              ? AppColors.primary
+                                              : (isDark
+                                                  ? AppColors.darkBorder
+                                                  : AppColors.gray100),
+                                          borderRadius: BorderRadius.circular(
+                                              AppSpacing.radiusLarge),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            if (cat.icon != null &&
+                                                cat.icon!.isNotEmpty) ...[
+                                              Text(cat.icon!,
+                                                  style: const TextStyle(
+                                                      fontSize: 14)),
+                                              const SizedBox(width: 4),
+                                            ],
+                                            Text(
+                                              cat.name,
+                                              style: AppTextStyles.caption
+                                                  .copyWith(
+                                                color: selected
+                                                    ? AppColors.white
+                                                    : (isDark
+                                                        ? AppColors.gray300
+                                                        : AppColors.gray600),
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ],
+                              ),
+                              const SizedBox(height: AppSpacing.s20),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
                   Text(
                     'Fourchette de prix (FCFA)',
                     style: AppTextStyles.label.copyWith(

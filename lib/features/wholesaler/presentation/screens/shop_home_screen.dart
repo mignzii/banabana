@@ -8,6 +8,7 @@ import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/catalog_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/widgets/catalog_item_card.dart';
+import 'package:banabana_b2b/shared/models/category.dart';
 import 'package:banabana_b2b/shared/widgets/error_state_widget.dart';
 import 'package:banabana_b2b/shared/widgets/hero_banner_carousel.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
@@ -114,15 +115,15 @@ class ShopHomeScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.s24),
             categoriesAsync.when(
               loading: () => SizedBox(
-                height: 90,
+                height: 110,
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
                   scrollDirection: Axis.horizontal,
                   itemCount: 6,
                   separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.s8),
                   itemBuilder: (_, __) => const ShimmerBox(
-                    width: 72,
-                    height: 72,
+                    width: 80,
+                    height: 90,
                     borderRadius: AppSpacing.radiusLarge,
                   ),
                 ),
@@ -130,8 +131,7 @@ class ShopHomeScreen extends ConsumerWidget {
               error: (_, __) => const SizedBox.shrink(),
               data: (categories) {
                 if (categories.isEmpty) return const SizedBox.shrink();
-                final displayed =
-                    categories.length > 8 ? categories.sublist(0, 8) : categories;
+                final displayed = categories.take(10).toList();
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -147,7 +147,7 @@ class ShopHomeScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: AppSpacing.s12),
                     SizedBox(
-                      height: 80,
+                      height: 90,
                       child: ListView.separated(
                         padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.s16),
@@ -156,13 +156,14 @@ class ShopHomeScreen extends ConsumerWidget {
                         separatorBuilder: (_, __) =>
                             const SizedBox(width: AppSpacing.s8),
                         itemBuilder: (_, i) => _CategoryChip(
-                          name: displayed[i],
+                          category: displayed[i],
                           isDark: isDark,
                           onTap: () {
+                            // Filter by category name (new products) or id (old products)
                             ref
                                 .read(catalogSearchParamsProvider.notifier)
                                 .update((s) => s.copyWith(
-                                    category: displayed[i], page: 1));
+                                    category: displayed[i].name, page: 1));
                             context.push('/shop/catalog');
                           },
                         ),
@@ -254,51 +255,60 @@ class ShopHomeScreen extends ConsumerWidget {
 
 class _CategoryChip extends StatelessWidget {
   const _CategoryChip({
-    required this.name,
+    required this.category,
     required this.isDark,
     required this.onTap,
   });
 
-  final String name;
+  final Category category;
   final bool isDark;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
-        splashColor: AppColors.primary.withValues(alpha: 0.1),
-        child: Ink(
-          width: 72,
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.darkSurface : AppColors.white,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
-            border: Border.all(
-              color: isDark ? AppColors.darkBorder : AppColors.gray200,
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 80,
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkSurface : AppColors.white,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+          border: Border.all(
+            color: isDark ? AppColors.darkBorder : AppColors.gray200,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Symbols.category, size: 24, color: AppColors.primary),
-              const SizedBox(height: AppSpacing.s4),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
-                child: Text(
-                  name,
-                  style: AppTextStyles.caption.copyWith(
-                    color: isDark ? AppColors.gray300 : AppColors.gray600,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
+          boxShadow: isDark
+              ? null
+              : [
+                  BoxShadow(
+                      color: AppColors.black.withValues(alpha: 0.04),
+                      blurRadius: 4)
+                ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (category.icon != null && category.icon!.isNotEmpty)
+              Text(
+                category.icon!,
+                style: const TextStyle(fontSize: 26),
+              )
+            else
+              Icon(Symbols.category, size: 24, color: AppColors.primary),
+            const SizedBox(height: AppSpacing.s4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
+              child: Text(
+                category.name,
+                style: AppTextStyles.caption.copyWith(
+                  color: isDark ? AppColors.gray300 : AppColors.gray600,
+                  fontSize: 11,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
