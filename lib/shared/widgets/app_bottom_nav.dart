@@ -110,13 +110,13 @@ class _NavItem extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                AnimatedSwitcher(
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(end: isActive ? 1.0 : 0.0),
                   duration: const Duration(milliseconds: 150),
-                  child: Icon(
+                  builder: (_, fill, __) => Icon(
                     item.icon,
-                    key: ValueKey(isActive),
                     size: 24,
-                    fill: isActive ? 1.0 : 0.0,
+                    fill: fill,
                     color: isActive ? activeColor : inactiveColor,
                   ),
                 ),
