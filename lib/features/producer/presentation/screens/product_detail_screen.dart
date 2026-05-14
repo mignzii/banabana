@@ -18,9 +18,11 @@ class ProductDetailScreen extends ConsumerWidget {
     super.key,
     required this.productId,
     this.routePrefix = '/producer/products',
+    this.showRestockAction = false,
   });
   final String productId;
   final String routePrefix;
+  final bool showRestockAction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -66,7 +68,7 @@ class ProductDetailScreen extends ConsumerWidget {
           message: e.toString(),
           onRetry: () => ref.invalidate(productDetailProvider(productId)),
         ),
-        data: (product) => _ProductDetail(product: product, isDark: isDark, routePrefix: routePrefix),
+        data: (product) => _ProductDetail(product: product, isDark: isDark, routePrefix: routePrefix, showRestockAction: showRestockAction),
       ),
     );
   }
@@ -75,10 +77,11 @@ class ProductDetailScreen extends ConsumerWidget {
 // ─── Vue principale ───────────────────────────────────────────────────────────
 
 class _ProductDetail extends ConsumerStatefulWidget {
-  const _ProductDetail({required this.product, required this.isDark, required this.routePrefix});
+  const _ProductDetail({required this.product, required this.isDark, required this.routePrefix, this.showRestockAction = false});
   final Product product;
   final bool isDark;
   final String routePrefix;
+  final bool showRestockAction;
 
   @override
   ConsumerState<_ProductDetail> createState() => _ProductDetailState();
@@ -441,6 +444,7 @@ class _ProductDetailState extends ConsumerState<_ProductDetail> {
                 surface: surface,
                 textPrimary: textPrimary,
                 routePrefix: widget.routePrefix,
+                showRestockAction: widget.showRestockAction,
               ),
 
               const SizedBox(height: AppSpacing.s32),
@@ -746,6 +750,7 @@ class _ActionsBar extends ConsumerStatefulWidget {
     required this.surface,
     required this.textPrimary,
     required this.routePrefix,
+    this.showRestockAction = false,
   });
 
   final Product product;
@@ -754,6 +759,7 @@ class _ActionsBar extends ConsumerStatefulWidget {
   final Color surface;
   final Color textPrimary;
   final String routePrefix;
+  final bool showRestockAction;
 
   @override
   ConsumerState<_ActionsBar> createState() => _ActionsBarState();
@@ -853,6 +859,29 @@ class _ActionsBarState extends ConsumerState<_ActionsBar> {
             ),
           ],
         ),
+        if (widget.showRestockAction) ...[
+          const SizedBox(height: AppSpacing.s10),
+          FilledButton.tonal(
+            onPressed: () => context.push(
+              '/shop/search',
+              extra: {'query': widget.product.title},
+            ),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+              ),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Symbols.shopping_cart, size: 16),
+                SizedBox(width: AppSpacing.s8),
+                Text('Réapprovisionner chez un producteur'),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }

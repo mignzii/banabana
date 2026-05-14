@@ -272,7 +272,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavKey,
         path: '/shop/search',
         name: 'shop-search',
-        pageBuilder: (_, __) => _fadePage(const SearchScreen()),
+        pageBuilder: (_, state) {
+          final extra = state.extra as Map<String, String>?;
+          return _fadePage(SearchScreen(initialQuery: extra?['query']));
+        },
       ),
       GoRoute(
         parentNavigatorKey: _rootNavKey,
@@ -301,6 +304,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ProductDetailScreen(
             productId: state.pathParameters['id']!,
             routePrefix: '/shop/inventory',
+            showRestockAction: true,
           ),
         ),
       ),

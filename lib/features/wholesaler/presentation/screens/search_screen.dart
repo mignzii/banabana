@@ -11,7 +11,8 @@ import 'package:banabana_b2b/features/wholesaler/presentation/widgets/catalog_it
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({super.key, this.initialQuery});
+  final String? initialQuery;
 
   @override
   ConsumerState<SearchScreen> createState() => _SearchScreenState();
@@ -21,6 +22,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _ctrl = TextEditingController();
   Timer? _debounce;
   String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialQuery != null && widget.initialQuery!.isNotEmpty) {
+      _ctrl.text = widget.initialQuery!;
+      _query = widget.initialQuery!;
+    }
+  }
 
   @override
   void dispose() {

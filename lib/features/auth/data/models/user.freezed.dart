@@ -12,7 +12,8 @@ part of 'user.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 User _$UserFromJson(Map<String, dynamic> json) {
   return _User.fromJson(json);
@@ -45,17 +46,18 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call(
-      {String id,
-      String phone,
-      String role,
-      String? firstName,
-      String? lastName,
-      String? email,
-      String? businessName,
-      String? businessAddress,
-      String kycStatus,
-      String? profileImage});
+  $Res call({
+    String id,
+    String phone,
+    String role,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? businessName,
+    String? businessAddress,
+    String kycStatus,
+    String? profileImage,
+  });
 }
 
 /// @nodoc
@@ -84,69 +86,74 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? kycStatus = null,
     Object? profileImage = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String,
-      firstName: freezed == firstName
-          ? _value.firstName
-          : firstName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      lastName: freezed == lastName
-          ? _value.lastName
-          : lastName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      businessName: freezed == businessName
-          ? _value.businessName
-          : businessName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      businessAddress: freezed == businessAddress
-          ? _value.businessAddress
-          : businessAddress // ignore: cast_nullable_to_non_nullable
-              as String?,
-      kycStatus: null == kycStatus
-          ? _value.kycStatus
-          : kycStatus // ignore: cast_nullable_to_non_nullable
-              as String,
-      profileImage: freezed == profileImage
-          ? _value.profileImage
-          : profileImage // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            phone: null == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String,
+            role: null == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String,
+            firstName: freezed == firstName
+                ? _value.firstName
+                : firstName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            lastName: freezed == lastName
+                ? _value.lastName
+                : lastName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            email: freezed == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            businessName: freezed == businessName
+                ? _value.businessName
+                : businessName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            businessAddress: freezed == businessAddress
+                ? _value.businessAddress
+                : businessAddress // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            kycStatus: null == kycStatus
+                ? _value.kycStatus
+                : kycStatus // ignore: cast_nullable_to_non_nullable
+                      as String,
+            profileImage: freezed == profileImage
+                ? _value.profileImage
+                : profileImage // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$$UserImplCopyWith(
-          _$UserImpl value, $Res Function(_$UserImpl) then) =
-      __$$UserImplCopyWithImpl<$Res>;
+    _$UserImpl value,
+    $Res Function(_$UserImpl) then,
+  ) = __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String phone,
-      String role,
-      String? firstName,
-      String? lastName,
-      String? email,
-      String? businessName,
-      String? businessAddress,
-      String kycStatus,
-      String? profileImage});
+  $Res call({
+    String id,
+    String phone,
+    String role,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? businessName,
+    String? businessAddress,
+    String kycStatus,
+    String? profileImage,
+  });
 }
 
 /// @nodoc
@@ -154,7 +161,7 @@ class __$$UserImplCopyWithImpl<$Res>
     extends _$UserCopyWithImpl<$Res, _$UserImpl>
     implements _$$UserImplCopyWith<$Res> {
   __$$UserImplCopyWithImpl(_$UserImpl _value, $Res Function(_$UserImpl) _then)
-      : super(_value, _then);
+    : super(_value, _then);
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -172,65 +179,68 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? kycStatus = null,
     Object? profileImage = freezed,
   }) {
-    return _then(_$UserImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      phone: null == phone
-          ? _value.phone
-          : phone // ignore: cast_nullable_to_non_nullable
-              as String,
-      role: null == role
-          ? _value.role
-          : role // ignore: cast_nullable_to_non_nullable
-              as String,
-      firstName: freezed == firstName
-          ? _value.firstName
-          : firstName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      lastName: freezed == lastName
-          ? _value.lastName
-          : lastName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      email: freezed == email
-          ? _value.email
-          : email // ignore: cast_nullable_to_non_nullable
-              as String?,
-      businessName: freezed == businessName
-          ? _value.businessName
-          : businessName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      businessAddress: freezed == businessAddress
-          ? _value.businessAddress
-          : businessAddress // ignore: cast_nullable_to_non_nullable
-              as String?,
-      kycStatus: null == kycStatus
-          ? _value.kycStatus
-          : kycStatus // ignore: cast_nullable_to_non_nullable
-              as String,
-      profileImage: freezed == profileImage
-          ? _value.profileImage
-          : profileImage // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$UserImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        phone: null == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String,
+        role: null == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String,
+        firstName: freezed == firstName
+            ? _value.firstName
+            : firstName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        lastName: freezed == lastName
+            ? _value.lastName
+            : lastName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        email: freezed == email
+            ? _value.email
+            : email // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        businessName: freezed == businessName
+            ? _value.businessName
+            : businessName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        businessAddress: freezed == businessAddress
+            ? _value.businessAddress
+            : businessAddress // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        kycStatus: null == kycStatus
+            ? _value.kycStatus
+            : kycStatus // ignore: cast_nullable_to_non_nullable
+                  as String,
+        profileImage: freezed == profileImage
+            ? _value.profileImage
+            : profileImage // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$UserImpl implements _User {
-  const _$UserImpl(
-      {required this.id,
-      required this.phone,
-      required this.role,
-      this.firstName,
-      this.lastName,
-      this.email,
-      this.businessName,
-      this.businessAddress,
-      this.kycStatus = 'pending',
-      this.profileImage});
+  const _$UserImpl({
+    required this.id,
+    required this.phone,
+    required this.role,
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.businessName,
+    this.businessAddress,
+    this.kycStatus = 'pending',
+    this.profileImage,
+  });
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
@@ -287,8 +297,19 @@ class _$UserImpl implements _User {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, phone, role, firstName,
-      lastName, email, businessName, businessAddress, kycStatus, profileImage);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    phone,
+    role,
+    firstName,
+    lastName,
+    email,
+    businessName,
+    businessAddress,
+    kycStatus,
+    profileImage,
+  );
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -300,24 +321,23 @@ class _$UserImpl implements _User {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserImplToJson(
-      this,
-    );
+    return _$$UserImplToJson(this);
   }
 }
 
 abstract class _User implements User {
-  const factory _User(
-      {required final String id,
-      required final String phone,
-      required final String role,
-      final String? firstName,
-      final String? lastName,
-      final String? email,
-      final String? businessName,
-      final String? businessAddress,
-      final String kycStatus,
-      final String? profileImage}) = _$UserImpl;
+  const factory _User({
+    required final String id,
+    required final String phone,
+    required final String role,
+    final String? firstName,
+    final String? lastName,
+    final String? email,
+    final String? businessName,
+    final String? businessAddress,
+    final String kycStatus,
+    final String? profileImage,
+  }) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 

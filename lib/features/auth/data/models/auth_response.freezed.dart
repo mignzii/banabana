@@ -12,7 +12,8 @@ part of 'auth_response.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) {
   return _AuthResponse.fromJson(json);
@@ -37,8 +38,9 @@ mixin _$AuthResponse {
 /// @nodoc
 abstract class $AuthResponseCopyWith<$Res> {
   factory $AuthResponseCopyWith(
-          AuthResponse value, $Res Function(AuthResponse) then) =
-      _$AuthResponseCopyWithImpl<$Res, AuthResponse>;
+    AuthResponse value,
+    $Res Function(AuthResponse) then,
+  ) = _$AuthResponseCopyWithImpl<$Res, AuthResponse>;
   @useResult
   $Res call({String accessToken, String refreshToken, User user});
 
@@ -64,20 +66,23 @@ class _$AuthResponseCopyWithImpl<$Res, $Val extends AuthResponse>
     Object? refreshToken = null,
     Object? user = null,
   }) {
-    return _then(_value.copyWith(
-      accessToken: null == accessToken
-          ? _value.accessToken
-          : accessToken // ignore: cast_nullable_to_non_nullable
-              as String,
-      refreshToken: null == refreshToken
-          ? _value.refreshToken
-          : refreshToken // ignore: cast_nullable_to_non_nullable
-              as String,
-      user: null == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as User,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            accessToken: null == accessToken
+                ? _value.accessToken
+                : accessToken // ignore: cast_nullable_to_non_nullable
+                      as String,
+            refreshToken: null == refreshToken
+                ? _value.refreshToken
+                : refreshToken // ignore: cast_nullable_to_non_nullable
+                      as String,
+            user: null == user
+                ? _value.user
+                : user // ignore: cast_nullable_to_non_nullable
+                      as User,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of AuthResponse
@@ -95,8 +100,9 @@ class _$AuthResponseCopyWithImpl<$Res, $Val extends AuthResponse>
 abstract class _$$AuthResponseImplCopyWith<$Res>
     implements $AuthResponseCopyWith<$Res> {
   factory _$$AuthResponseImplCopyWith(
-          _$AuthResponseImpl value, $Res Function(_$AuthResponseImpl) then) =
-      __$$AuthResponseImplCopyWithImpl<$Res>;
+    _$AuthResponseImpl value,
+    $Res Function(_$AuthResponseImpl) then,
+  ) = __$$AuthResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String accessToken, String refreshToken, User user});
@@ -110,8 +116,9 @@ class __$$AuthResponseImplCopyWithImpl<$Res>
     extends _$AuthResponseCopyWithImpl<$Res, _$AuthResponseImpl>
     implements _$$AuthResponseImplCopyWith<$Res> {
   __$$AuthResponseImplCopyWithImpl(
-      _$AuthResponseImpl _value, $Res Function(_$AuthResponseImpl) _then)
-      : super(_value, _then);
+    _$AuthResponseImpl _value,
+    $Res Function(_$AuthResponseImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of AuthResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -122,30 +129,33 @@ class __$$AuthResponseImplCopyWithImpl<$Res>
     Object? refreshToken = null,
     Object? user = null,
   }) {
-    return _then(_$AuthResponseImpl(
-      accessToken: null == accessToken
-          ? _value.accessToken
-          : accessToken // ignore: cast_nullable_to_non_nullable
-              as String,
-      refreshToken: null == refreshToken
-          ? _value.refreshToken
-          : refreshToken // ignore: cast_nullable_to_non_nullable
-              as String,
-      user: null == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as User,
-    ));
+    return _then(
+      _$AuthResponseImpl(
+        accessToken: null == accessToken
+            ? _value.accessToken
+            : accessToken // ignore: cast_nullable_to_non_nullable
+                  as String,
+        refreshToken: null == refreshToken
+            ? _value.refreshToken
+            : refreshToken // ignore: cast_nullable_to_non_nullable
+                  as String,
+        user: null == user
+            ? _value.user
+            : user // ignore: cast_nullable_to_non_nullable
+                  as User,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$AuthResponseImpl implements _AuthResponse {
-  const _$AuthResponseImpl(
-      {required this.accessToken,
-      required this.refreshToken,
-      required this.user});
+  const _$AuthResponseImpl({
+    required this.accessToken,
+    required this.refreshToken,
+    required this.user,
+  });
 
   factory _$AuthResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$AuthResponseImplFromJson(json);
@@ -188,17 +198,16 @@ class _$AuthResponseImpl implements _AuthResponse {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AuthResponseImplToJson(
-      this,
-    );
+    return _$$AuthResponseImplToJson(this);
   }
 }
 
 abstract class _AuthResponse implements AuthResponse {
-  const factory _AuthResponse(
-      {required final String accessToken,
-      required final String refreshToken,
-      required final User user}) = _$AuthResponseImpl;
+  const factory _AuthResponse({
+    required final String accessToken,
+    required final String refreshToken,
+    required final User user,
+  }) = _$AuthResponseImpl;
 
   factory _AuthResponse.fromJson(Map<String, dynamic> json) =
       _$AuthResponseImpl.fromJson;
