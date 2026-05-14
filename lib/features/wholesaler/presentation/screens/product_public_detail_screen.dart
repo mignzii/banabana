@@ -295,8 +295,9 @@ class _ProductPublicDetailScreenState
       height: 280,
       child: Stack(
         children: [
-          // PageView — full width, no border-radius
-          PageView.builder(
+          // PageView — ExcludeSemantics prevents nested-Viewport semantics assertion
+          ExcludeSemantics(
+            child: PageView.builder(
             itemCount: product.images.length,
             onPageChanged: (i) => setState(() => _pageIndex = i),
             itemBuilder: (_, i) => CachedNetworkImage(
@@ -317,6 +318,7 @@ class _ProductPublicDetailScreenState
                 ),
               ),
             ),
+          ),
           ),
 
           // Gradient overlay (bottom)
