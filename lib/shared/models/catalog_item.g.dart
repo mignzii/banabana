@@ -7,18 +7,18 @@ part of 'catalog_item.dart';
 // **************************************************************************
 
 _$CatalogProducerImpl _$$CatalogProducerImplFromJson(
-        Map<String, dynamic> json) =>
-    _$CatalogProducerImpl(
-      businessName: json['businessName'] as String,
-      zone: json['zone'] as String,
-    );
+  Map<String, dynamic> json,
+) => _$CatalogProducerImpl(
+  businessName: json['businessName'] as String,
+  zone: json['zone'] as String,
+);
 
 Map<String, dynamic> _$$CatalogProducerImplToJson(
-        _$CatalogProducerImpl instance) =>
-    <String, dynamic>{
-      'businessName': instance.businessName,
-      'zone': instance.zone,
-    };
+  _$CatalogProducerImpl instance,
+) => <String, dynamic>{
+  'businessName': instance.businessName,
+  'zone': instance.zone,
+};
 
 _$CatalogItemImpl _$$CatalogItemImplFromJson(Map<String, dynamic> json) =>
     _$CatalogItemImpl(
@@ -29,8 +29,9 @@ _$CatalogItemImpl _$$CatalogItemImplFromJson(Map<String, dynamic> json) =>
       basePrice: _parseDouble(json['basePrice']),
       isActive: json['isActive'] as bool,
       createdAt: DateTime.parse(json['createdAt'] as String),
-      producer:
-          CatalogProducer.fromJson(json['producer'] as Map<String, dynamic>),
+      producer: CatalogProducer.fromJson(
+        json['producer'] as Map<String, dynamic>,
+      ),
       minPrice: _parseDouble(json['minPrice']),
       maxPrice: _parseDouble(json['maxPrice']),
       totalStock: _parseInt(json['totalStock']),
@@ -54,22 +55,22 @@ Map<String, dynamic> _$$CatalogItemImplToJson(_$CatalogItemImpl instance) =>
     };
 
 _$CatalogPaginationImpl _$$CatalogPaginationImplFromJson(
-        Map<String, dynamic> json) =>
-    _$CatalogPaginationImpl(
-      page: _parseInt(json['page']),
-      limit: _parseInt(json['limit']),
-      total: _parseInt(json['total']),
-      pages: _parseInt(json['pages']),
-    );
+  Map<String, dynamic> json,
+) => _$CatalogPaginationImpl(
+  page: _parseInt(json['page']),
+  limit: _parseInt(json['limit']),
+  total: _parseInt(json['total']),
+  pages: _parseInt(json['pages']),
+);
 
 Map<String, dynamic> _$$CatalogPaginationImplToJson(
-        _$CatalogPaginationImpl instance) =>
-    <String, dynamic>{
-      'page': instance.page,
-      'limit': instance.limit,
-      'total': instance.total,
-      'pages': instance.pages,
-    };
+  _$CatalogPaginationImpl instance,
+) => <String, dynamic>{
+  'page': instance.page,
+  'limit': instance.limit,
+  'total': instance.total,
+  'pages': instance.pages,
+};
 
 _$CatalogResultImpl _$$CatalogResultImplFromJson(Map<String, dynamic> json) =>
     _$CatalogResultImpl(
@@ -77,11 +78,9 @@ _$CatalogResultImpl _$$CatalogResultImplFromJson(Map<String, dynamic> json) =>
           .map((e) => CatalogItem.fromJson(e as Map<String, dynamic>))
           .toList(),
       pagination: CatalogPagination.fromJson(
-          json['pagination'] as Map<String, dynamic>),
+        json['pagination'] as Map<String, dynamic>,
+      ),
     );
 
 Map<String, dynamic> _$$CatalogResultImplToJson(_$CatalogResultImpl instance) =>
-    <String, dynamic>{
-      'data': instance.data,
-      'pagination': instance.pagination,
-    };
+    <String, dynamic>{'data': instance.data, 'pagination': instance.pagination};

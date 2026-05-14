@@ -13,7 +13,7 @@ _$CategoryImpl _$$CategoryImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String?,
       icon: json['icon'] as String?,
       slug: json['slug'] as String?,
-      order: (json['order'] as num?)?.toInt() ?? 0,
+      order: (json['order'] as num?)?.toInt(),
       isActive: json['isActive'] as bool,
     );
 

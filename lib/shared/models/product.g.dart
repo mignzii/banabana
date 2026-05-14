@@ -39,21 +39,35 @@ _$ProductVariantImpl _$$ProductVariantImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$ProductVariantImplToJson(
-        _$ProductVariantImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'productId': instance.productId,
-      'label': instance.label,
-      'weight': instance.weight,
-      'pack': instance.pack,
-      'price': instance.price,
-      'stock': instance.stock,
-      'wholesaleUnit': instance.wholesaleUnit,
-      'minOrderQuantity': instance.minOrderQuantity,
-      'unitsPerPackage': instance.unitsPerPackage,
-      'minStock': instance.minStock,
-      'maxStock': instance.maxStock,
-    };
+  _$ProductVariantImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'productId': instance.productId,
+  'label': instance.label,
+  'weight': instance.weight,
+  'pack': instance.pack,
+  'price': instance.price,
+  'stock': instance.stock,
+  'wholesaleUnit': instance.wholesaleUnit,
+  'minOrderQuantity': instance.minOrderQuantity,
+  'unitsPerPackage': instance.unitsPerPackage,
+  'minStock': instance.minStock,
+  'maxStock': instance.maxStock,
+};
+
+_$ProductProducerImpl _$$ProductProducerImplFromJson(
+  Map<String, dynamic> json,
+) => _$ProductProducerImpl(
+  businessName: json['businessName'] as String,
+  zone: json['zone'] as String,
+);
+
+Map<String, dynamic> _$$ProductProducerImplToJson(
+  _$ProductProducerImpl instance,
+) => <String, dynamic>{
+  'businessName': instance.businessName,
+  'zone': instance.zone,
+};
 
 _$ProductImpl _$$ProductImplFromJson(Map<String, dynamic> json) =>
     _$ProductImpl(
@@ -66,14 +80,19 @@ _$ProductImpl _$$ProductImplFromJson(Map<String, dynamic> json) =>
       isActive: json['isActive'] as bool,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
-      images: (json['images'] as List<dynamic>?)
+      images:
+          (json['images'] as List<dynamic>?)
               ?.map((e) => ProductImage.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      variants: (json['variants'] as List<dynamic>?)
+      variants:
+          (json['variants'] as List<dynamic>?)
               ?.map((e) => ProductVariant.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      producer: json['producer'] == null
+          ? null
+          : ProductProducer.fromJson(json['producer'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$ProductImplToJson(_$ProductImpl instance) =>
@@ -89,4 +108,5 @@ Map<String, dynamic> _$$ProductImplToJson(_$ProductImpl instance) =>
       'updatedAt': instance.updatedAt.toIso8601String(),
       'images': instance.images,
       'variants': instance.variants,
+      'producer': instance.producer,
     };

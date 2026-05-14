@@ -50,6 +50,17 @@ class ProductVariant with _$ProductVariant {
 }
 
 @freezed
+class ProductProducer with _$ProductProducer {
+  const factory ProductProducer({
+    required String businessName,
+    required String zone,
+  }) = _ProductProducer;
+
+  factory ProductProducer.fromJson(Map<String, dynamic> json) =>
+      _$ProductProducerFromJson(json);
+}
+
+@freezed
 class Product with _$Product {
   const factory Product({
     required String id,
@@ -63,6 +74,7 @@ class Product with _$Product {
     required DateTime updatedAt,
     @Default([]) List<ProductImage> images,
     @Default([]) List<ProductVariant> variants,
+    ProductProducer? producer,
   }) = _Product;
 
   factory Product.fromJson(Map<String, dynamic> json) =>

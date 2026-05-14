@@ -35,19 +35,20 @@ Map<String, dynamic> _$$OrderItemImplToJson(_$OrderItemImpl instance) =>
     };
 
 _$OrderImpl _$$OrderImplFromJson(Map<String, dynamic> json) => _$OrderImpl(
-      id: json['id'] as String,
-      wholesalerId: json['wholesalerId'] as String,
-      status: $enumDecode(_$OrderStatusEnumMap, json['status']),
-      totalAmount: _parseDouble(json['totalAmount']),
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      items: (json['items'] as List<dynamic>?)
-              ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
-      wholesalerName: json['wholesalerName'] as String?,
-      notes: json['notes'] as String?,
-      deliveryAddress: json['deliveryAddress'] as String?,
-    );
+  id: json['id'] as String,
+  wholesalerId: json['wholesalerId'] as String,
+  status: $enumDecode(_$OrderStatusEnumMap, json['status']),
+  totalAmount: _parseDouble(json['totalAmount']),
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  items:
+      (json['items'] as List<dynamic>?)
+          ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  wholesalerName: json['wholesalerName'] as String?,
+  notes: json['notes'] as String?,
+  deliveryAddress: json['deliveryAddress'] as String?,
+);
 
 Map<String, dynamic> _$$OrderImplToJson(_$OrderImpl instance) =>
     <String, dynamic>{

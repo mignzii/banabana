@@ -238,6 +238,12 @@ class _ProductPublicDetailScreenState
                   children: [
                     // Title + category chip row
                     _buildTitleSection(product, isDark),
+
+                    // Producer info row
+                    if (product.producer != null) ...[
+                      const SizedBox(height: AppSpacing.s12),
+                      _buildProducerInfo(product.producer!, isDark),
+                    ],
                     const SizedBox(height: AppSpacing.s16),
 
                     // Description
@@ -259,6 +265,12 @@ class _ProductPublicDetailScreenState
                     // Variants
                     _buildVariantsSection(product, isDark),
                     const SizedBox(height: AppSpacing.s24),
+
+                    // Wholesale info card
+                    if (_hasWholesaleInfo(_selectedVariant)) ...[
+                      const SizedBox(height: AppSpacing.s16),
+                      _buildWholesaleInfoCard(isDark),
+                    ],
 
                     // Divider
                     Divider(
@@ -520,6 +532,7 @@ class _ProductPublicDetailScreenState
               isDark: isDark,
               onTap: () => setState(() {
                 _selectedVariant = v;
+                _quantity = v.minOrderQuantity ?? 1;
               }),
             );
           }).toList(),
@@ -531,10 +544,15 @@ class _ProductPublicDetailScreenState
   // ── Quantity Stepper ──────────────────────────────────────────────────────
 
   Widget _buildQuantityStepper(bool isDark) {
+    final minQty = _selectedVariant?.minOrderQuantity ?? 1;
+    final wholesaleUnit = _selectedVariant?.wholesaleUnit;
+    final quantityLabel = wholesaleUnit != null
+        ? 'Quantité (${_wholesaleUnitLabel(wholesaleUnit)})'
+        : 'Quantité';
     return Row(
       children: [
         Text(
-          'Quantité',
+          quantityLabel,
           style: AppTextStyles.sectionTitle.copyWith(
             fontSize: 16,
             color: isDark ? AppColors.white : AppColors.gray900,
@@ -555,9 +573,9 @@ class _ProductPublicDetailScreenState
               // Decrease button
               _StepperButton(
                 icon: Symbols.remove_circle,
-                enabled: _quantity > 1,
+                enabled: _quantity > minQty,
                 onTap: () {
-                  if (_quantity > 1) setState(() => _quantity--);
+                  if (_quantity > minQty) setState(() => _quantity--);
                 },
               ),
               // Count
@@ -582,6 +600,133 @@ class _ProductPublicDetailScreenState
           ),
         ),
       ],
+    );
+  }
+
+  // ── Wholesale helpers ─────────────────────────────────────────────────────
+
+  bool _hasWholesaleInfo(ProductVariant? v) {
+    if (v == null) return false;
+    return v.wholesaleUnit != null ||
+        v.minOrderQuantity != null ||
+        v.unitsPerPackage != null;
+  }
+
+  String _wholesaleUnitLabel(String? unit) {
+    return switch (unit) {
+      'sac' => 'sac(s)',
+      'kg' => 'kg',
+      'tonne' => 'tonne(s)',
+      'carton' => 'carton(s)',
+      'caisse' => 'caisse(s)',
+      'palette' => 'palette(s)',
+      'piece' => 'pièce(s)',
+      'litre' => 'litre(s)',
+      _ => unit ?? 'unité(s)',
+    };
+  }
+
+  Widget _buildProducerInfo(ProductProducer producer, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s12, vertical: AppSpacing.s10),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface2 : AppColors.gray50,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        border: Border.all(
+            color: isDark ? AppColors.darkBorder2 : AppColors.gray200),
+      ),
+      child: Row(
+        children: [
+          Icon(Symbols.store, size: 18,
+              color: isDark ? AppColors.gray400 : AppColors.gray500),
+          const SizedBox(width: AppSpacing.s8),
+          Expanded(
+            child: Text(
+              producer.businessName,
+              style: AppTextStyles.label.copyWith(
+                color: isDark ? AppColors.gray300 : AppColors.gray700,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.s8),
+          Icon(Symbols.location_on, size: 14,
+              color: isDark ? AppColors.gray500 : AppColors.gray400),
+          const SizedBox(width: AppSpacing.s4),
+          Text(
+            producer.zone,
+            style: AppTextStyles.caption.copyWith(
+              color: isDark ? AppColors.gray500 : AppColors.gray500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWholesaleInfoCard(bool isDark) {
+    final v = _selectedVariant!;
+    final unitLabel = _wholesaleUnitLabel(v.wholesaleUnit);
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.s14),
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.primary.withValues(alpha: 0.08)
+            : AppColors.primary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        border: Border.all(
+            color: AppColors.primary.withValues(alpha: isDark ? 0.25 : 0.15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Symbols.info, size: 16, color: AppColors.primary),
+              const SizedBox(width: AppSpacing.s6),
+              Text(
+                'Conditions grossiste',
+                style: AppTextStyles.label.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.s10),
+          _WholesaleRow(
+            label: 'Unité de vente',
+            value: unitLabel,
+            isDark: isDark,
+          ),
+          if (v.minOrderQuantity != null) ...[
+            const SizedBox(height: AppSpacing.s6),
+            _WholesaleRow(
+              label: 'Commande minimum',
+              value: '${v.minOrderQuantity} $unitLabel',
+              isDark: isDark,
+              highlight: true,
+            ),
+          ],
+          if (v.unitsPerPackage != null) ...[
+            const SizedBox(height: AppSpacing.s6),
+            _WholesaleRow(
+              label: 'Unités / conditionnement',
+              value: '${v.unitsPerPackage} unités',
+              isDark: isDark,
+            ),
+          ],
+          if (v.stock > 0) ...[
+            const SizedBox(height: AppSpacing.s6),
+            _WholesaleRow(
+              label: 'Stock disponible',
+              value: '${v.stock} $unitLabel',
+              isDark: isDark,
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -822,6 +967,44 @@ class _StepperButton extends StatelessWidget {
               : AppColors.gray300,
         ),
       ),
+    );
+  }
+}
+
+class _WholesaleRow extends StatelessWidget {
+  const _WholesaleRow({
+    required this.label,
+    required this.value,
+    required this.isDark,
+    this.highlight = false,
+  });
+
+  final String label;
+  final String value;
+  final bool isDark;
+  final bool highlight;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.caption.copyWith(
+            color: isDark ? AppColors.gray400 : AppColors.gray500,
+          ),
+        ),
+        Text(
+          value,
+          style: AppTextStyles.label.copyWith(
+            color: highlight
+                ? AppColors.primary
+                : (isDark ? AppColors.gray200 : AppColors.gray800),
+            fontWeight: highlight ? FontWeight.w700 : FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 }

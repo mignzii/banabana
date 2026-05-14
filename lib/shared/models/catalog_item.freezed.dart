@@ -12,7 +12,8 @@ part of 'catalog_item.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 CatalogProducer _$CatalogProducerFromJson(Map<String, dynamic> json) {
   return _CatalogProducer.fromJson(json);
@@ -36,8 +37,9 @@ mixin _$CatalogProducer {
 /// @nodoc
 abstract class $CatalogProducerCopyWith<$Res> {
   factory $CatalogProducerCopyWith(
-          CatalogProducer value, $Res Function(CatalogProducer) then) =
-      _$CatalogProducerCopyWithImpl<$Res, CatalogProducer>;
+    CatalogProducer value,
+    $Res Function(CatalogProducer) then,
+  ) = _$CatalogProducerCopyWithImpl<$Res, CatalogProducer>;
   @useResult
   $Res call({String businessName, String zone});
 }
@@ -56,29 +58,30 @@ class _$CatalogProducerCopyWithImpl<$Res, $Val extends CatalogProducer>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? businessName = null,
-    Object? zone = null,
-  }) {
-    return _then(_value.copyWith(
-      businessName: null == businessName
-          ? _value.businessName
-          : businessName // ignore: cast_nullable_to_non_nullable
-              as String,
-      zone: null == zone
-          ? _value.zone
-          : zone // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
+  $Res call({Object? businessName = null, Object? zone = null}) {
+    return _then(
+      _value.copyWith(
+            businessName: null == businessName
+                ? _value.businessName
+                : businessName // ignore: cast_nullable_to_non_nullable
+                      as String,
+            zone: null == zone
+                ? _value.zone
+                : zone // ignore: cast_nullable_to_non_nullable
+                      as String,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$CatalogProducerImplCopyWith<$Res>
     implements $CatalogProducerCopyWith<$Res> {
-  factory _$$CatalogProducerImplCopyWith(_$CatalogProducerImpl value,
-          $Res Function(_$CatalogProducerImpl) then) =
-      __$$CatalogProducerImplCopyWithImpl<$Res>;
+  factory _$$CatalogProducerImplCopyWith(
+    _$CatalogProducerImpl value,
+    $Res Function(_$CatalogProducerImpl) then,
+  ) = __$$CatalogProducerImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String businessName, String zone});
@@ -89,27 +92,27 @@ class __$$CatalogProducerImplCopyWithImpl<$Res>
     extends _$CatalogProducerCopyWithImpl<$Res, _$CatalogProducerImpl>
     implements _$$CatalogProducerImplCopyWith<$Res> {
   __$$CatalogProducerImplCopyWithImpl(
-      _$CatalogProducerImpl _value, $Res Function(_$CatalogProducerImpl) _then)
-      : super(_value, _then);
+    _$CatalogProducerImpl _value,
+    $Res Function(_$CatalogProducerImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of CatalogProducer
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? businessName = null,
-    Object? zone = null,
-  }) {
-    return _then(_$CatalogProducerImpl(
-      businessName: null == businessName
-          ? _value.businessName
-          : businessName // ignore: cast_nullable_to_non_nullable
-              as String,
-      zone: null == zone
-          ? _value.zone
-          : zone // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
+  $Res call({Object? businessName = null, Object? zone = null}) {
+    return _then(
+      _$CatalogProducerImpl(
+        businessName: null == businessName
+            ? _value.businessName
+            : businessName // ignore: cast_nullable_to_non_nullable
+                  as String,
+        zone: null == zone
+            ? _value.zone
+            : zone // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
   }
 }
 
@@ -152,20 +155,21 @@ class _$CatalogProducerImpl implements _CatalogProducer {
   @pragma('vm:prefer-inline')
   _$$CatalogProducerImplCopyWith<_$CatalogProducerImpl> get copyWith =>
       __$$CatalogProducerImplCopyWithImpl<_$CatalogProducerImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CatalogProducerImplToJson(
-      this,
-    );
+    return _$$CatalogProducerImplToJson(this);
   }
 }
 
 abstract class _CatalogProducer implements CatalogProducer {
-  const factory _CatalogProducer(
-      {required final String businessName,
-      required final String zone}) = _$CatalogProducerImpl;
+  const factory _CatalogProducer({
+    required final String businessName,
+    required final String zone,
+  }) = _$CatalogProducerImpl;
 
   factory _CatalogProducer.fromJson(Map<String, dynamic> json) =
       _$CatalogProducerImpl.fromJson;
@@ -219,22 +223,24 @@ mixin _$CatalogItem {
 /// @nodoc
 abstract class $CatalogItemCopyWith<$Res> {
   factory $CatalogItemCopyWith(
-          CatalogItem value, $Res Function(CatalogItem) then) =
-      _$CatalogItemCopyWithImpl<$Res, CatalogItem>;
+    CatalogItem value,
+    $Res Function(CatalogItem) then,
+  ) = _$CatalogItemCopyWithImpl<$Res, CatalogItem>;
   @useResult
-  $Res call(
-      {String id,
-      String title,
-      String category,
-      String? description,
-      @JsonKey(fromJson: _parseDouble) double basePrice,
-      bool isActive,
-      DateTime createdAt,
-      CatalogProducer producer,
-      @JsonKey(fromJson: _parseDouble) double minPrice,
-      @JsonKey(fromJson: _parseDouble) double maxPrice,
-      @JsonKey(fromJson: _parseInt) int totalStock,
-      String? mainImage});
+  $Res call({
+    String id,
+    String title,
+    String category,
+    String? description,
+    @JsonKey(fromJson: _parseDouble) double basePrice,
+    bool isActive,
+    DateTime createdAt,
+    CatalogProducer producer,
+    @JsonKey(fromJson: _parseDouble) double minPrice,
+    @JsonKey(fromJson: _parseDouble) double maxPrice,
+    @JsonKey(fromJson: _parseInt) int totalStock,
+    String? mainImage,
+  });
 
   $CatalogProducerCopyWith<$Res> get producer;
 }
@@ -267,56 +273,59 @@ class _$CatalogItemCopyWithImpl<$Res, $Val extends CatalogItem>
     Object? totalStock = null,
     Object? mainImage = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      category: null == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String?,
-      basePrice: null == basePrice
-          ? _value.basePrice
-          : basePrice // ignore: cast_nullable_to_non_nullable
-              as double,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      producer: null == producer
-          ? _value.producer
-          : producer // ignore: cast_nullable_to_non_nullable
-              as CatalogProducer,
-      minPrice: null == minPrice
-          ? _value.minPrice
-          : minPrice // ignore: cast_nullable_to_non_nullable
-              as double,
-      maxPrice: null == maxPrice
-          ? _value.maxPrice
-          : maxPrice // ignore: cast_nullable_to_non_nullable
-              as double,
-      totalStock: null == totalStock
-          ? _value.totalStock
-          : totalStock // ignore: cast_nullable_to_non_nullable
-              as int,
-      mainImage: freezed == mainImage
-          ? _value.mainImage
-          : mainImage // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            title: null == title
+                ? _value.title
+                : title // ignore: cast_nullable_to_non_nullable
+                      as String,
+            category: null == category
+                ? _value.category
+                : category // ignore: cast_nullable_to_non_nullable
+                      as String,
+            description: freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            basePrice: null == basePrice
+                ? _value.basePrice
+                : basePrice // ignore: cast_nullable_to_non_nullable
+                      as double,
+            isActive: null == isActive
+                ? _value.isActive
+                : isActive // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            producer: null == producer
+                ? _value.producer
+                : producer // ignore: cast_nullable_to_non_nullable
+                      as CatalogProducer,
+            minPrice: null == minPrice
+                ? _value.minPrice
+                : minPrice // ignore: cast_nullable_to_non_nullable
+                      as double,
+            maxPrice: null == maxPrice
+                ? _value.maxPrice
+                : maxPrice // ignore: cast_nullable_to_non_nullable
+                      as double,
+            totalStock: null == totalStock
+                ? _value.totalStock
+                : totalStock // ignore: cast_nullable_to_non_nullable
+                      as int,
+            mainImage: freezed == mainImage
+                ? _value.mainImage
+                : mainImage // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of CatalogItem
@@ -334,23 +343,25 @@ class _$CatalogItemCopyWithImpl<$Res, $Val extends CatalogItem>
 abstract class _$$CatalogItemImplCopyWith<$Res>
     implements $CatalogItemCopyWith<$Res> {
   factory _$$CatalogItemImplCopyWith(
-          _$CatalogItemImpl value, $Res Function(_$CatalogItemImpl) then) =
-      __$$CatalogItemImplCopyWithImpl<$Res>;
+    _$CatalogItemImpl value,
+    $Res Function(_$CatalogItemImpl) then,
+  ) = __$$CatalogItemImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String title,
-      String category,
-      String? description,
-      @JsonKey(fromJson: _parseDouble) double basePrice,
-      bool isActive,
-      DateTime createdAt,
-      CatalogProducer producer,
-      @JsonKey(fromJson: _parseDouble) double minPrice,
-      @JsonKey(fromJson: _parseDouble) double maxPrice,
-      @JsonKey(fromJson: _parseInt) int totalStock,
-      String? mainImage});
+  $Res call({
+    String id,
+    String title,
+    String category,
+    String? description,
+    @JsonKey(fromJson: _parseDouble) double basePrice,
+    bool isActive,
+    DateTime createdAt,
+    CatalogProducer producer,
+    @JsonKey(fromJson: _parseDouble) double minPrice,
+    @JsonKey(fromJson: _parseDouble) double maxPrice,
+    @JsonKey(fromJson: _parseInt) int totalStock,
+    String? mainImage,
+  });
 
   @override
   $CatalogProducerCopyWith<$Res> get producer;
@@ -361,8 +372,9 @@ class __$$CatalogItemImplCopyWithImpl<$Res>
     extends _$CatalogItemCopyWithImpl<$Res, _$CatalogItemImpl>
     implements _$$CatalogItemImplCopyWith<$Res> {
   __$$CatalogItemImplCopyWithImpl(
-      _$CatalogItemImpl _value, $Res Function(_$CatalogItemImpl) _then)
-      : super(_value, _then);
+    _$CatalogItemImpl _value,
+    $Res Function(_$CatalogItemImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of CatalogItem
   /// with the given fields replaced by the non-null parameter values.
@@ -382,75 +394,78 @@ class __$$CatalogItemImplCopyWithImpl<$Res>
     Object? totalStock = null,
     Object? mainImage = freezed,
   }) {
-    return _then(_$CatalogItemImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      category: null == category
-          ? _value.category
-          : category // ignore: cast_nullable_to_non_nullable
-              as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String?,
-      basePrice: null == basePrice
-          ? _value.basePrice
-          : basePrice // ignore: cast_nullable_to_non_nullable
-              as double,
-      isActive: null == isActive
-          ? _value.isActive
-          : isActive // ignore: cast_nullable_to_non_nullable
-              as bool,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      producer: null == producer
-          ? _value.producer
-          : producer // ignore: cast_nullable_to_non_nullable
-              as CatalogProducer,
-      minPrice: null == minPrice
-          ? _value.minPrice
-          : minPrice // ignore: cast_nullable_to_non_nullable
-              as double,
-      maxPrice: null == maxPrice
-          ? _value.maxPrice
-          : maxPrice // ignore: cast_nullable_to_non_nullable
-              as double,
-      totalStock: null == totalStock
-          ? _value.totalStock
-          : totalStock // ignore: cast_nullable_to_non_nullable
-              as int,
-      mainImage: freezed == mainImage
-          ? _value.mainImage
-          : mainImage // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$CatalogItemImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        title: null == title
+            ? _value.title
+            : title // ignore: cast_nullable_to_non_nullable
+                  as String,
+        category: null == category
+            ? _value.category
+            : category // ignore: cast_nullable_to_non_nullable
+                  as String,
+        description: freezed == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        basePrice: null == basePrice
+            ? _value.basePrice
+            : basePrice // ignore: cast_nullable_to_non_nullable
+                  as double,
+        isActive: null == isActive
+            ? _value.isActive
+            : isActive // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        producer: null == producer
+            ? _value.producer
+            : producer // ignore: cast_nullable_to_non_nullable
+                  as CatalogProducer,
+        minPrice: null == minPrice
+            ? _value.minPrice
+            : minPrice // ignore: cast_nullable_to_non_nullable
+                  as double,
+        maxPrice: null == maxPrice
+            ? _value.maxPrice
+            : maxPrice // ignore: cast_nullable_to_non_nullable
+                  as double,
+        totalStock: null == totalStock
+            ? _value.totalStock
+            : totalStock // ignore: cast_nullable_to_non_nullable
+                  as int,
+        mainImage: freezed == mainImage
+            ? _value.mainImage
+            : mainImage // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$CatalogItemImpl implements _CatalogItem {
-  const _$CatalogItemImpl(
-      {required this.id,
-      required this.title,
-      required this.category,
-      this.description,
-      @JsonKey(fromJson: _parseDouble) required this.basePrice,
-      required this.isActive,
-      required this.createdAt,
-      required this.producer,
-      @JsonKey(fromJson: _parseDouble) required this.minPrice,
-      @JsonKey(fromJson: _parseDouble) required this.maxPrice,
-      @JsonKey(fromJson: _parseInt) required this.totalStock,
-      this.mainImage});
+  const _$CatalogItemImpl({
+    required this.id,
+    required this.title,
+    required this.category,
+    this.description,
+    @JsonKey(fromJson: _parseDouble) required this.basePrice,
+    required this.isActive,
+    required this.createdAt,
+    required this.producer,
+    @JsonKey(fromJson: _parseDouble) required this.minPrice,
+    @JsonKey(fromJson: _parseDouble) required this.maxPrice,
+    @JsonKey(fromJson: _parseInt) required this.totalStock,
+    this.mainImage,
+  });
 
   factory _$CatalogItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$CatalogItemImplFromJson(json);
@@ -521,19 +536,20 @@ class _$CatalogItemImpl implements _CatalogItem {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      title,
-      category,
-      description,
-      basePrice,
-      isActive,
-      createdAt,
-      producer,
-      minPrice,
-      maxPrice,
-      totalStock,
-      mainImage);
+    runtimeType,
+    id,
+    title,
+    category,
+    description,
+    basePrice,
+    isActive,
+    createdAt,
+    producer,
+    minPrice,
+    maxPrice,
+    totalStock,
+    mainImage,
+  );
 
   /// Create a copy of CatalogItem
   /// with the given fields replaced by the non-null parameter values.
@@ -545,26 +561,25 @@ class _$CatalogItemImpl implements _CatalogItem {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CatalogItemImplToJson(
-      this,
-    );
+    return _$$CatalogItemImplToJson(this);
   }
 }
 
 abstract class _CatalogItem implements CatalogItem {
-  const factory _CatalogItem(
-      {required final String id,
-      required final String title,
-      required final String category,
-      final String? description,
-      @JsonKey(fromJson: _parseDouble) required final double basePrice,
-      required final bool isActive,
-      required final DateTime createdAt,
-      required final CatalogProducer producer,
-      @JsonKey(fromJson: _parseDouble) required final double minPrice,
-      @JsonKey(fromJson: _parseDouble) required final double maxPrice,
-      @JsonKey(fromJson: _parseInt) required final int totalStock,
-      final String? mainImage}) = _$CatalogItemImpl;
+  const factory _CatalogItem({
+    required final String id,
+    required final String title,
+    required final String category,
+    final String? description,
+    @JsonKey(fromJson: _parseDouble) required final double basePrice,
+    required final bool isActive,
+    required final DateTime createdAt,
+    required final CatalogProducer producer,
+    @JsonKey(fromJson: _parseDouble) required final double minPrice,
+    @JsonKey(fromJson: _parseDouble) required final double maxPrice,
+    @JsonKey(fromJson: _parseInt) required final int totalStock,
+    final String? mainImage,
+  }) = _$CatalogItemImpl;
 
   factory _CatalogItem.fromJson(Map<String, dynamic> json) =
       _$CatalogItemImpl.fromJson;
@@ -634,14 +649,16 @@ mixin _$CatalogPagination {
 /// @nodoc
 abstract class $CatalogPaginationCopyWith<$Res> {
   factory $CatalogPaginationCopyWith(
-          CatalogPagination value, $Res Function(CatalogPagination) then) =
-      _$CatalogPaginationCopyWithImpl<$Res, CatalogPagination>;
+    CatalogPagination value,
+    $Res Function(CatalogPagination) then,
+  ) = _$CatalogPaginationCopyWithImpl<$Res, CatalogPagination>;
   @useResult
-  $Res call(
-      {@JsonKey(fromJson: _parseInt) int page,
-      @JsonKey(fromJson: _parseInt) int limit,
-      @JsonKey(fromJson: _parseInt) int total,
-      @JsonKey(fromJson: _parseInt) int pages});
+  $Res call({
+    @JsonKey(fromJson: _parseInt) int page,
+    @JsonKey(fromJson: _parseInt) int limit,
+    @JsonKey(fromJson: _parseInt) int total,
+    @JsonKey(fromJson: _parseInt) int pages,
+  });
 }
 
 /// @nodoc
@@ -664,49 +681,55 @@ class _$CatalogPaginationCopyWithImpl<$Res, $Val extends CatalogPagination>
     Object? total = null,
     Object? pages = null,
   }) {
-    return _then(_value.copyWith(
-      page: null == page
-          ? _value.page
-          : page // ignore: cast_nullable_to_non_nullable
-              as int,
-      limit: null == limit
-          ? _value.limit
-          : limit // ignore: cast_nullable_to_non_nullable
-              as int,
-      total: null == total
-          ? _value.total
-          : total // ignore: cast_nullable_to_non_nullable
-              as int,
-      pages: null == pages
-          ? _value.pages
-          : pages // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            page: null == page
+                ? _value.page
+                : page // ignore: cast_nullable_to_non_nullable
+                      as int,
+            limit: null == limit
+                ? _value.limit
+                : limit // ignore: cast_nullable_to_non_nullable
+                      as int,
+            total: null == total
+                ? _value.total
+                : total // ignore: cast_nullable_to_non_nullable
+                      as int,
+            pages: null == pages
+                ? _value.pages
+                : pages // ignore: cast_nullable_to_non_nullable
+                      as int,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$CatalogPaginationImplCopyWith<$Res>
     implements $CatalogPaginationCopyWith<$Res> {
-  factory _$$CatalogPaginationImplCopyWith(_$CatalogPaginationImpl value,
-          $Res Function(_$CatalogPaginationImpl) then) =
-      __$$CatalogPaginationImplCopyWithImpl<$Res>;
+  factory _$$CatalogPaginationImplCopyWith(
+    _$CatalogPaginationImpl value,
+    $Res Function(_$CatalogPaginationImpl) then,
+  ) = __$$CatalogPaginationImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {@JsonKey(fromJson: _parseInt) int page,
-      @JsonKey(fromJson: _parseInt) int limit,
-      @JsonKey(fromJson: _parseInt) int total,
-      @JsonKey(fromJson: _parseInt) int pages});
+  $Res call({
+    @JsonKey(fromJson: _parseInt) int page,
+    @JsonKey(fromJson: _parseInt) int limit,
+    @JsonKey(fromJson: _parseInt) int total,
+    @JsonKey(fromJson: _parseInt) int pages,
+  });
 }
 
 /// @nodoc
 class __$$CatalogPaginationImplCopyWithImpl<$Res>
     extends _$CatalogPaginationCopyWithImpl<$Res, _$CatalogPaginationImpl>
     implements _$$CatalogPaginationImplCopyWith<$Res> {
-  __$$CatalogPaginationImplCopyWithImpl(_$CatalogPaginationImpl _value,
-      $Res Function(_$CatalogPaginationImpl) _then)
-      : super(_value, _then);
+  __$$CatalogPaginationImplCopyWithImpl(
+    _$CatalogPaginationImpl _value,
+    $Res Function(_$CatalogPaginationImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of CatalogPagination
   /// with the given fields replaced by the non-null parameter values.
@@ -718,35 +741,38 @@ class __$$CatalogPaginationImplCopyWithImpl<$Res>
     Object? total = null,
     Object? pages = null,
   }) {
-    return _then(_$CatalogPaginationImpl(
-      page: null == page
-          ? _value.page
-          : page // ignore: cast_nullable_to_non_nullable
-              as int,
-      limit: null == limit
-          ? _value.limit
-          : limit // ignore: cast_nullable_to_non_nullable
-              as int,
-      total: null == total
-          ? _value.total
-          : total // ignore: cast_nullable_to_non_nullable
-              as int,
-      pages: null == pages
-          ? _value.pages
-          : pages // ignore: cast_nullable_to_non_nullable
-              as int,
-    ));
+    return _then(
+      _$CatalogPaginationImpl(
+        page: null == page
+            ? _value.page
+            : page // ignore: cast_nullable_to_non_nullable
+                  as int,
+        limit: null == limit
+            ? _value.limit
+            : limit // ignore: cast_nullable_to_non_nullable
+                  as int,
+        total: null == total
+            ? _value.total
+            : total // ignore: cast_nullable_to_non_nullable
+                  as int,
+        pages: null == pages
+            ? _value.pages
+            : pages // ignore: cast_nullable_to_non_nullable
+                  as int,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$CatalogPaginationImpl implements _CatalogPagination {
-  const _$CatalogPaginationImpl(
-      {@JsonKey(fromJson: _parseInt) required this.page,
-      @JsonKey(fromJson: _parseInt) required this.limit,
-      @JsonKey(fromJson: _parseInt) required this.total,
-      @JsonKey(fromJson: _parseInt) required this.pages});
+  const _$CatalogPaginationImpl({
+    @JsonKey(fromJson: _parseInt) required this.page,
+    @JsonKey(fromJson: _parseInt) required this.limit,
+    @JsonKey(fromJson: _parseInt) required this.total,
+    @JsonKey(fromJson: _parseInt) required this.pages,
+  });
 
   factory _$CatalogPaginationImpl.fromJson(Map<String, dynamic> json) =>
       _$$CatalogPaginationImplFromJson(json);
@@ -791,23 +817,23 @@ class _$CatalogPaginationImpl implements _CatalogPagination {
   @pragma('vm:prefer-inline')
   _$$CatalogPaginationImplCopyWith<_$CatalogPaginationImpl> get copyWith =>
       __$$CatalogPaginationImplCopyWithImpl<_$CatalogPaginationImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CatalogPaginationImplToJson(
-      this,
-    );
+    return _$$CatalogPaginationImplToJson(this);
   }
 }
 
 abstract class _CatalogPagination implements CatalogPagination {
-  const factory _CatalogPagination(
-          {@JsonKey(fromJson: _parseInt) required final int page,
-          @JsonKey(fromJson: _parseInt) required final int limit,
-          @JsonKey(fromJson: _parseInt) required final int total,
-          @JsonKey(fromJson: _parseInt) required final int pages}) =
-      _$CatalogPaginationImpl;
+  const factory _CatalogPagination({
+    @JsonKey(fromJson: _parseInt) required final int page,
+    @JsonKey(fromJson: _parseInt) required final int limit,
+    @JsonKey(fromJson: _parseInt) required final int total,
+    @JsonKey(fromJson: _parseInt) required final int pages,
+  }) = _$CatalogPaginationImpl;
 
   factory _CatalogPagination.fromJson(Map<String, dynamic> json) =
       _$CatalogPaginationImpl.fromJson;
@@ -855,8 +881,9 @@ mixin _$CatalogResult {
 /// @nodoc
 abstract class $CatalogResultCopyWith<$Res> {
   factory $CatalogResultCopyWith(
-          CatalogResult value, $Res Function(CatalogResult) then) =
-      _$CatalogResultCopyWithImpl<$Res, CatalogResult>;
+    CatalogResult value,
+    $Res Function(CatalogResult) then,
+  ) = _$CatalogResultCopyWithImpl<$Res, CatalogResult>;
   @useResult
   $Res call({List<CatalogItem> data, CatalogPagination pagination});
 
@@ -877,20 +904,20 @@ class _$CatalogResultCopyWithImpl<$Res, $Val extends CatalogResult>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? data = null,
-    Object? pagination = null,
-  }) {
-    return _then(_value.copyWith(
-      data: null == data
-          ? _value.data
-          : data // ignore: cast_nullable_to_non_nullable
-              as List<CatalogItem>,
-      pagination: null == pagination
-          ? _value.pagination
-          : pagination // ignore: cast_nullable_to_non_nullable
-              as CatalogPagination,
-    ) as $Val);
+  $Res call({Object? data = null, Object? pagination = null}) {
+    return _then(
+      _value.copyWith(
+            data: null == data
+                ? _value.data
+                : data // ignore: cast_nullable_to_non_nullable
+                      as List<CatalogItem>,
+            pagination: null == pagination
+                ? _value.pagination
+                : pagination // ignore: cast_nullable_to_non_nullable
+                      as CatalogPagination,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of CatalogResult
@@ -908,8 +935,9 @@ class _$CatalogResultCopyWithImpl<$Res, $Val extends CatalogResult>
 abstract class _$$CatalogResultImplCopyWith<$Res>
     implements $CatalogResultCopyWith<$Res> {
   factory _$$CatalogResultImplCopyWith(
-          _$CatalogResultImpl value, $Res Function(_$CatalogResultImpl) then) =
-      __$$CatalogResultImplCopyWithImpl<$Res>;
+    _$CatalogResultImpl value,
+    $Res Function(_$CatalogResultImpl) then,
+  ) = __$$CatalogResultImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({List<CatalogItem> data, CatalogPagination pagination});
@@ -923,36 +951,37 @@ class __$$CatalogResultImplCopyWithImpl<$Res>
     extends _$CatalogResultCopyWithImpl<$Res, _$CatalogResultImpl>
     implements _$$CatalogResultImplCopyWith<$Res> {
   __$$CatalogResultImplCopyWithImpl(
-      _$CatalogResultImpl _value, $Res Function(_$CatalogResultImpl) _then)
-      : super(_value, _then);
+    _$CatalogResultImpl _value,
+    $Res Function(_$CatalogResultImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of CatalogResult
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? data = null,
-    Object? pagination = null,
-  }) {
-    return _then(_$CatalogResultImpl(
-      data: null == data
-          ? _value._data
-          : data // ignore: cast_nullable_to_non_nullable
-              as List<CatalogItem>,
-      pagination: null == pagination
-          ? _value.pagination
-          : pagination // ignore: cast_nullable_to_non_nullable
-              as CatalogPagination,
-    ));
+  $Res call({Object? data = null, Object? pagination = null}) {
+    return _then(
+      _$CatalogResultImpl(
+        data: null == data
+            ? _value._data
+            : data // ignore: cast_nullable_to_non_nullable
+                  as List<CatalogItem>,
+        pagination: null == pagination
+            ? _value.pagination
+            : pagination // ignore: cast_nullable_to_non_nullable
+                  as CatalogPagination,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$CatalogResultImpl implements _CatalogResult {
-  const _$CatalogResultImpl(
-      {required final List<CatalogItem> data, required this.pagination})
-      : _data = data;
+  const _$CatalogResultImpl({
+    required final List<CatalogItem> data,
+    required this.pagination,
+  }) : _data = data;
 
   factory _$CatalogResultImpl.fromJson(Map<String, dynamic> json) =>
       _$$CatalogResultImplFromJson(json);
@@ -986,7 +1015,10 @@ class _$CatalogResultImpl implements _CatalogResult {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_data), pagination);
+    runtimeType,
+    const DeepCollectionEquality().hash(_data),
+    pagination,
+  );
 
   /// Create a copy of CatalogResult
   /// with the given fields replaced by the non-null parameter values.
@@ -998,16 +1030,15 @@ class _$CatalogResultImpl implements _CatalogResult {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CatalogResultImplToJson(
-      this,
-    );
+    return _$$CatalogResultImplToJson(this);
   }
 }
 
 abstract class _CatalogResult implements CatalogResult {
-  const factory _CatalogResult(
-      {required final List<CatalogItem> data,
-      required final CatalogPagination pagination}) = _$CatalogResultImpl;
+  const factory _CatalogResult({
+    required final List<CatalogItem> data,
+    required final CatalogPagination pagination,
+  }) = _$CatalogResultImpl;
 
   factory _CatalogResult.fromJson(Map<String, dynamic> json) =
       _$CatalogResultImpl.fromJson;

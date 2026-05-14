@@ -12,7 +12,8 @@ part of 'inventory.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 Inventory _$InventoryFromJson(Map<String, dynamic> json) {
   return _Inventory.fromJson(json);
@@ -49,18 +50,19 @@ abstract class $InventoryCopyWith<$Res> {
   factory $InventoryCopyWith(Inventory value, $Res Function(Inventory) then) =
       _$InventoryCopyWithImpl<$Res, Inventory>;
   @useResult
-  $Res call(
-      {String id,
-      String variantId,
-      String userId,
-      String? location,
-      String? warehouse,
-      String? zone,
-      String? shelf,
-      @JsonKey(fromJson: _parseDoubleNullable) double? costPrice,
-      @JsonKey(fromJson: _parseDoubleNullable) double? totalValue,
-      DateTime? lastCountDate,
-      String? notes});
+  $Res call({
+    String id,
+    String variantId,
+    String userId,
+    String? location,
+    String? warehouse,
+    String? zone,
+    String? shelf,
+    @JsonKey(fromJson: _parseDoubleNullable) double? costPrice,
+    @JsonKey(fromJson: _parseDoubleNullable) double? totalValue,
+    DateTime? lastCountDate,
+    String? notes,
+  });
 }
 
 /// @nodoc
@@ -90,52 +92,55 @@ class _$InventoryCopyWithImpl<$Res, $Val extends Inventory>
     Object? lastCountDate = freezed,
     Object? notes = freezed,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      variantId: null == variantId
-          ? _value.variantId
-          : variantId // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      location: freezed == location
-          ? _value.location
-          : location // ignore: cast_nullable_to_non_nullable
-              as String?,
-      warehouse: freezed == warehouse
-          ? _value.warehouse
-          : warehouse // ignore: cast_nullable_to_non_nullable
-              as String?,
-      zone: freezed == zone
-          ? _value.zone
-          : zone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      shelf: freezed == shelf
-          ? _value.shelf
-          : shelf // ignore: cast_nullable_to_non_nullable
-              as String?,
-      costPrice: freezed == costPrice
-          ? _value.costPrice
-          : costPrice // ignore: cast_nullable_to_non_nullable
-              as double?,
-      totalValue: freezed == totalValue
-          ? _value.totalValue
-          : totalValue // ignore: cast_nullable_to_non_nullable
-              as double?,
-      lastCountDate: freezed == lastCountDate
-          ? _value.lastCountDate
-          : lastCountDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            variantId: null == variantId
+                ? _value.variantId
+                : variantId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            userId: null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            location: freezed == location
+                ? _value.location
+                : location // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            warehouse: freezed == warehouse
+                ? _value.warehouse
+                : warehouse // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            zone: freezed == zone
+                ? _value.zone
+                : zone // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            shelf: freezed == shelf
+                ? _value.shelf
+                : shelf // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            costPrice: freezed == costPrice
+                ? _value.costPrice
+                : costPrice // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            totalValue: freezed == totalValue
+                ? _value.totalValue
+                : totalValue // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            lastCountDate: freezed == lastCountDate
+                ? _value.lastCountDate
+                : lastCountDate // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            notes: freezed == notes
+                ? _value.notes
+                : notes // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -143,22 +148,24 @@ class _$InventoryCopyWithImpl<$Res, $Val extends Inventory>
 abstract class _$$InventoryImplCopyWith<$Res>
     implements $InventoryCopyWith<$Res> {
   factory _$$InventoryImplCopyWith(
-          _$InventoryImpl value, $Res Function(_$InventoryImpl) then) =
-      __$$InventoryImplCopyWithImpl<$Res>;
+    _$InventoryImpl value,
+    $Res Function(_$InventoryImpl) then,
+  ) = __$$InventoryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String variantId,
-      String userId,
-      String? location,
-      String? warehouse,
-      String? zone,
-      String? shelf,
-      @JsonKey(fromJson: _parseDoubleNullable) double? costPrice,
-      @JsonKey(fromJson: _parseDoubleNullable) double? totalValue,
-      DateTime? lastCountDate,
-      String? notes});
+  $Res call({
+    String id,
+    String variantId,
+    String userId,
+    String? location,
+    String? warehouse,
+    String? zone,
+    String? shelf,
+    @JsonKey(fromJson: _parseDoubleNullable) double? costPrice,
+    @JsonKey(fromJson: _parseDoubleNullable) double? totalValue,
+    DateTime? lastCountDate,
+    String? notes,
+  });
 }
 
 /// @nodoc
@@ -166,8 +173,9 @@ class __$$InventoryImplCopyWithImpl<$Res>
     extends _$InventoryCopyWithImpl<$Res, _$InventoryImpl>
     implements _$$InventoryImplCopyWith<$Res> {
   __$$InventoryImplCopyWithImpl(
-      _$InventoryImpl _value, $Res Function(_$InventoryImpl) _then)
-      : super(_value, _then);
+    _$InventoryImpl _value,
+    $Res Function(_$InventoryImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of Inventory
   /// with the given fields replaced by the non-null parameter values.
@@ -186,70 +194,73 @@ class __$$InventoryImplCopyWithImpl<$Res>
     Object? lastCountDate = freezed,
     Object? notes = freezed,
   }) {
-    return _then(_$InventoryImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      variantId: null == variantId
-          ? _value.variantId
-          : variantId // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String,
-      location: freezed == location
-          ? _value.location
-          : location // ignore: cast_nullable_to_non_nullable
-              as String?,
-      warehouse: freezed == warehouse
-          ? _value.warehouse
-          : warehouse // ignore: cast_nullable_to_non_nullable
-              as String?,
-      zone: freezed == zone
-          ? _value.zone
-          : zone // ignore: cast_nullable_to_non_nullable
-              as String?,
-      shelf: freezed == shelf
-          ? _value.shelf
-          : shelf // ignore: cast_nullable_to_non_nullable
-              as String?,
-      costPrice: freezed == costPrice
-          ? _value.costPrice
-          : costPrice // ignore: cast_nullable_to_non_nullable
-              as double?,
-      totalValue: freezed == totalValue
-          ? _value.totalValue
-          : totalValue // ignore: cast_nullable_to_non_nullable
-              as double?,
-      lastCountDate: freezed == lastCountDate
-          ? _value.lastCountDate
-          : lastCountDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$InventoryImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        variantId: null == variantId
+            ? _value.variantId
+            : variantId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        location: freezed == location
+            ? _value.location
+            : location // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        warehouse: freezed == warehouse
+            ? _value.warehouse
+            : warehouse // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        zone: freezed == zone
+            ? _value.zone
+            : zone // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        shelf: freezed == shelf
+            ? _value.shelf
+            : shelf // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        costPrice: freezed == costPrice
+            ? _value.costPrice
+            : costPrice // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        totalValue: freezed == totalValue
+            ? _value.totalValue
+            : totalValue // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        lastCountDate: freezed == lastCountDate
+            ? _value.lastCountDate
+            : lastCountDate // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        notes: freezed == notes
+            ? _value.notes
+            : notes // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$InventoryImpl implements _Inventory {
-  const _$InventoryImpl(
-      {required this.id,
-      required this.variantId,
-      required this.userId,
-      this.location,
-      this.warehouse,
-      this.zone,
-      this.shelf,
-      @JsonKey(fromJson: _parseDoubleNullable) this.costPrice,
-      @JsonKey(fromJson: _parseDoubleNullable) this.totalValue,
-      this.lastCountDate,
-      this.notes});
+  const _$InventoryImpl({
+    required this.id,
+    required this.variantId,
+    required this.userId,
+    this.location,
+    this.warehouse,
+    this.zone,
+    this.shelf,
+    @JsonKey(fromJson: _parseDoubleNullable) this.costPrice,
+    @JsonKey(fromJson: _parseDoubleNullable) this.totalValue,
+    this.lastCountDate,
+    this.notes,
+  });
 
   factory _$InventoryImpl.fromJson(Map<String, dynamic> json) =>
       _$$InventoryImplFromJson(json);
@@ -310,8 +321,20 @@ class _$InventoryImpl implements _Inventory {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, variantId, userId, location,
-      warehouse, zone, shelf, costPrice, totalValue, lastCountDate, notes);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    variantId,
+    userId,
+    location,
+    warehouse,
+    zone,
+    shelf,
+    costPrice,
+    totalValue,
+    lastCountDate,
+    notes,
+  );
 
   /// Create a copy of Inventory
   /// with the given fields replaced by the non-null parameter values.
@@ -323,25 +346,24 @@ class _$InventoryImpl implements _Inventory {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$InventoryImplToJson(
-      this,
-    );
+    return _$$InventoryImplToJson(this);
   }
 }
 
 abstract class _Inventory implements Inventory {
-  const factory _Inventory(
-      {required final String id,
-      required final String variantId,
-      required final String userId,
-      final String? location,
-      final String? warehouse,
-      final String? zone,
-      final String? shelf,
-      @JsonKey(fromJson: _parseDoubleNullable) final double? costPrice,
-      @JsonKey(fromJson: _parseDoubleNullable) final double? totalValue,
-      final DateTime? lastCountDate,
-      final String? notes}) = _$InventoryImpl;
+  const factory _Inventory({
+    required final String id,
+    required final String variantId,
+    required final String userId,
+    final String? location,
+    final String? warehouse,
+    final String? zone,
+    final String? shelf,
+    @JsonKey(fromJson: _parseDoubleNullable) final double? costPrice,
+    @JsonKey(fromJson: _parseDoubleNullable) final double? totalValue,
+    final DateTime? lastCountDate,
+    final String? notes,
+  }) = _$InventoryImpl;
 
   factory _Inventory.fromJson(Map<String, dynamic> json) =
       _$InventoryImpl.fromJson;
@@ -413,21 +435,23 @@ mixin _$StockMovement {
 /// @nodoc
 abstract class $StockMovementCopyWith<$Res> {
   factory $StockMovementCopyWith(
-          StockMovement value, $Res Function(StockMovement) then) =
-      _$StockMovementCopyWithImpl<$Res, StockMovement>;
+    StockMovement value,
+    $Res Function(StockMovement) then,
+  ) = _$StockMovementCopyWithImpl<$Res, StockMovement>;
   @useResult
-  $Res call(
-      {String id,
-      String variantId,
-      MovementType type,
-      @JsonKey(fromJson: _parseInt) int quantity,
-      @JsonKey(fromJson: _parseInt) int previousStock,
-      @JsonKey(fromJson: _parseInt) int newStock,
-      String? reason,
-      String? notes,
-      String? userId,
-      String? orderId,
-      DateTime createdAt});
+  $Res call({
+    String id,
+    String variantId,
+    MovementType type,
+    @JsonKey(fromJson: _parseInt) int quantity,
+    @JsonKey(fromJson: _parseInt) int previousStock,
+    @JsonKey(fromJson: _parseInt) int newStock,
+    String? reason,
+    String? notes,
+    String? userId,
+    String? orderId,
+    DateTime createdAt,
+  });
 }
 
 /// @nodoc
@@ -457,52 +481,55 @@ class _$StockMovementCopyWithImpl<$Res, $Val extends StockMovement>
     Object? orderId = freezed,
     Object? createdAt = null,
   }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      variantId: null == variantId
-          ? _value.variantId
-          : variantId // ignore: cast_nullable_to_non_nullable
-              as String,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as MovementType,
-      quantity: null == quantity
-          ? _value.quantity
-          : quantity // ignore: cast_nullable_to_non_nullable
-              as int,
-      previousStock: null == previousStock
-          ? _value.previousStock
-          : previousStock // ignore: cast_nullable_to_non_nullable
-              as int,
-      newStock: null == newStock
-          ? _value.newStock
-          : newStock // ignore: cast_nullable_to_non_nullable
-              as int,
-      reason: freezed == reason
-          ? _value.reason
-          : reason // ignore: cast_nullable_to_non_nullable
-              as String?,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
-      userId: freezed == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      orderId: freezed == orderId
-          ? _value.orderId
-          : orderId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            variantId: null == variantId
+                ? _value.variantId
+                : variantId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            type: null == type
+                ? _value.type
+                : type // ignore: cast_nullable_to_non_nullable
+                      as MovementType,
+            quantity: null == quantity
+                ? _value.quantity
+                : quantity // ignore: cast_nullable_to_non_nullable
+                      as int,
+            previousStock: null == previousStock
+                ? _value.previousStock
+                : previousStock // ignore: cast_nullable_to_non_nullable
+                      as int,
+            newStock: null == newStock
+                ? _value.newStock
+                : newStock // ignore: cast_nullable_to_non_nullable
+                      as int,
+            reason: freezed == reason
+                ? _value.reason
+                : reason // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            notes: freezed == notes
+                ? _value.notes
+                : notes // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            userId: freezed == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            orderId: freezed == orderId
+                ? _value.orderId
+                : orderId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -510,22 +537,24 @@ class _$StockMovementCopyWithImpl<$Res, $Val extends StockMovement>
 abstract class _$$StockMovementImplCopyWith<$Res>
     implements $StockMovementCopyWith<$Res> {
   factory _$$StockMovementImplCopyWith(
-          _$StockMovementImpl value, $Res Function(_$StockMovementImpl) then) =
-      __$$StockMovementImplCopyWithImpl<$Res>;
+    _$StockMovementImpl value,
+    $Res Function(_$StockMovementImpl) then,
+  ) = __$$StockMovementImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String id,
-      String variantId,
-      MovementType type,
-      @JsonKey(fromJson: _parseInt) int quantity,
-      @JsonKey(fromJson: _parseInt) int previousStock,
-      @JsonKey(fromJson: _parseInt) int newStock,
-      String? reason,
-      String? notes,
-      String? userId,
-      String? orderId,
-      DateTime createdAt});
+  $Res call({
+    String id,
+    String variantId,
+    MovementType type,
+    @JsonKey(fromJson: _parseInt) int quantity,
+    @JsonKey(fromJson: _parseInt) int previousStock,
+    @JsonKey(fromJson: _parseInt) int newStock,
+    String? reason,
+    String? notes,
+    String? userId,
+    String? orderId,
+    DateTime createdAt,
+  });
 }
 
 /// @nodoc
@@ -533,8 +562,9 @@ class __$$StockMovementImplCopyWithImpl<$Res>
     extends _$StockMovementCopyWithImpl<$Res, _$StockMovementImpl>
     implements _$$StockMovementImplCopyWith<$Res> {
   __$$StockMovementImplCopyWithImpl(
-      _$StockMovementImpl _value, $Res Function(_$StockMovementImpl) _then)
-      : super(_value, _then);
+    _$StockMovementImpl _value,
+    $Res Function(_$StockMovementImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of StockMovement
   /// with the given fields replaced by the non-null parameter values.
@@ -553,70 +583,73 @@ class __$$StockMovementImplCopyWithImpl<$Res>
     Object? orderId = freezed,
     Object? createdAt = null,
   }) {
-    return _then(_$StockMovementImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      variantId: null == variantId
-          ? _value.variantId
-          : variantId // ignore: cast_nullable_to_non_nullable
-              as String,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as MovementType,
-      quantity: null == quantity
-          ? _value.quantity
-          : quantity // ignore: cast_nullable_to_non_nullable
-              as int,
-      previousStock: null == previousStock
-          ? _value.previousStock
-          : previousStock // ignore: cast_nullable_to_non_nullable
-              as int,
-      newStock: null == newStock
-          ? _value.newStock
-          : newStock // ignore: cast_nullable_to_non_nullable
-              as int,
-      reason: freezed == reason
-          ? _value.reason
-          : reason // ignore: cast_nullable_to_non_nullable
-              as String?,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
-      userId: freezed == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      orderId: freezed == orderId
-          ? _value.orderId
-          : orderId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-    ));
+    return _then(
+      _$StockMovementImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        variantId: null == variantId
+            ? _value.variantId
+            : variantId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        type: null == type
+            ? _value.type
+            : type // ignore: cast_nullable_to_non_nullable
+                  as MovementType,
+        quantity: null == quantity
+            ? _value.quantity
+            : quantity // ignore: cast_nullable_to_non_nullable
+                  as int,
+        previousStock: null == previousStock
+            ? _value.previousStock
+            : previousStock // ignore: cast_nullable_to_non_nullable
+                  as int,
+        newStock: null == newStock
+            ? _value.newStock
+            : newStock // ignore: cast_nullable_to_non_nullable
+                  as int,
+        reason: freezed == reason
+            ? _value.reason
+            : reason // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        notes: freezed == notes
+            ? _value.notes
+            : notes // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        userId: freezed == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        orderId: freezed == orderId
+            ? _value.orderId
+            : orderId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+      ),
+    );
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$StockMovementImpl implements _StockMovement {
-  const _$StockMovementImpl(
-      {required this.id,
-      required this.variantId,
-      required this.type,
-      @JsonKey(fromJson: _parseInt) required this.quantity,
-      @JsonKey(fromJson: _parseInt) required this.previousStock,
-      @JsonKey(fromJson: _parseInt) required this.newStock,
-      this.reason,
-      this.notes,
-      this.userId,
-      this.orderId,
-      required this.createdAt});
+  const _$StockMovementImpl({
+    required this.id,
+    required this.variantId,
+    required this.type,
+    @JsonKey(fromJson: _parseInt) required this.quantity,
+    @JsonKey(fromJson: _parseInt) required this.previousStock,
+    @JsonKey(fromJson: _parseInt) required this.newStock,
+    this.reason,
+    this.notes,
+    this.userId,
+    this.orderId,
+    required this.createdAt,
+  });
 
   factory _$StockMovementImpl.fromJson(Map<String, dynamic> json) =>
       _$$StockMovementImplFromJson(json);
@@ -677,8 +710,20 @@ class _$StockMovementImpl implements _StockMovement {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, variantId, type, quantity,
-      previousStock, newStock, reason, notes, userId, orderId, createdAt);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    variantId,
+    type,
+    quantity,
+    previousStock,
+    newStock,
+    reason,
+    notes,
+    userId,
+    orderId,
+    createdAt,
+  );
 
   /// Create a copy of StockMovement
   /// with the given fields replaced by the non-null parameter values.
@@ -690,25 +735,24 @@ class _$StockMovementImpl implements _StockMovement {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$StockMovementImplToJson(
-      this,
-    );
+    return _$$StockMovementImplToJson(this);
   }
 }
 
 abstract class _StockMovement implements StockMovement {
-  const factory _StockMovement(
-      {required final String id,
-      required final String variantId,
-      required final MovementType type,
-      @JsonKey(fromJson: _parseInt) required final int quantity,
-      @JsonKey(fromJson: _parseInt) required final int previousStock,
-      @JsonKey(fromJson: _parseInt) required final int newStock,
-      final String? reason,
-      final String? notes,
-      final String? userId,
-      final String? orderId,
-      required final DateTime createdAt}) = _$StockMovementImpl;
+  const factory _StockMovement({
+    required final String id,
+    required final String variantId,
+    required final MovementType type,
+    @JsonKey(fromJson: _parseInt) required final int quantity,
+    @JsonKey(fromJson: _parseInt) required final int previousStock,
+    @JsonKey(fromJson: _parseInt) required final int newStock,
+    final String? reason,
+    final String? notes,
+    final String? userId,
+    final String? orderId,
+    required final DateTime createdAt,
+  }) = _$StockMovementImpl;
 
   factory _StockMovement.fromJson(Map<String, dynamic> json) =
       _$StockMovementImpl.fromJson;
