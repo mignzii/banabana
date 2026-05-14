@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_input_decoration.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
+import 'package:banabana_b2b/features/auth/data/auth_repository.dart';
+import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key, required this.phone});
@@ -20,6 +22,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailCtrl     = TextEditingController();
   final _focusLast     = FocusNode();
   final _focusEmail    = FocusNode();
+  bool _loading = false;
 
   @override
   void dispose() {
@@ -31,9 +34,27 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    context.go('/auth/set-pin', extra: {'phone': widget.phone});
+    setState(() => _loading = true);
+    try {
+      await ref.read(authRepositoryProvider).updateProfile(
+        firstName: _firstNameCtrl.text.trim(),
+        lastName: _lastNameCtrl.text.trim(),
+        email: _emailCtrl.text.trim().isEmpty ? null : _emailCtrl.text.trim(),
+      );
+      if (mounted) {
+        context.go('/auth/set-pin', extra: {'phone': widget.phone});
+      }
+    } catch (e) {
+      if (mounted) {
+        context.showSnack('Erreur : $e', type: SnackType.error);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
   }
 
   @override
@@ -117,8 +138,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 32),
                 FilledButton(
-                  onPressed: _submit,
-                  child: const Text('Continuer'),
+                  onPressed: _loading ? null : _submit,
+                  child: _loading
+                      ? const SizedBox(height: 20, width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : const Text('Continuer'),
                 ),
               ],
             ),
