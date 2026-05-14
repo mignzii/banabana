@@ -108,7 +108,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return _fadePage(PinLoginScreen(phone: phone));
         },
       ),
-      GoRoute(path: '/auth/kyc', pageBuilder: (_, __) => _fadePage(const KycScreen())),
 
       // Producer shell
       ShellRoute(
@@ -275,6 +274,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'shop-order-detail',
         pageBuilder: (_, state) =>
             _fadePage(WholesalerOrderDetailScreen(orderId: state.pathParameters['id']!)),
+      ),
+
+      // KYC — route protégée (accessible uniquement si authentifié)
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/kyc',
+        name: 'kyc',
+        pageBuilder: (_, __) => _fadePage(const KycScreen()),
       ),
 
       // Vendor (no shell yet)
