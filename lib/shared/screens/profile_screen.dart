@@ -8,6 +8,7 @@ import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/auth/providers/theme_provider.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
+import 'package:banabana_b2b/core/storage/storage_service.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -20,12 +21,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _emailCtrl = TextEditingController();
   bool _isEditing = false;
   bool _saving = false;
+  bool _submittedLocally = false;
 
   @override
   void initState() {
     super.initState();
     final user = ref.read(authProvider).user;
     _emailCtrl.text = user?.email ?? '';
+    _loadKycFlag();
   }
 
   @override
@@ -57,6 +60,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     setState(() => _isEditing = false);
   }
 
+  Future<void> _loadKycFlag() async {
+    final submitted = await ref.read(storageServiceProvider).getKycSubmittedLocally();
+    if (mounted) setState(() => _submittedLocally = submitted);
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider).user;
@@ -81,12 +89,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final kycColor = switch (user?.kycStatus) {
       'approved' => AppColors.success,
       'rejected' => AppColors.error,
-      _ => AppColors.warning,
+      _ => _submittedLocally ? AppColors.info : AppColors.warning,
     };
     final kycLabel = switch (user?.kycStatus) {
       'approved' => 'Approuvé',
       'rejected' => 'Rejeté',
-      _ => 'En attente',
+      _ => _submittedLocally ? 'En cours de vérification' : 'En attente',
     };
 
     final bg = isDark ? AppColors.darkBg : AppColors.gray50;
@@ -348,15 +356,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 border: Border.all(color: kycColor.withValues(alpha: 0.3)),
               ),
               child: ListTile(
-                leading: Icon(Symbols.upload_file, color: kycColor),
+                leading: Icon(
+                  _submittedLocally && user?.kycStatus == 'pending'
+                      ? Symbols.schedule
+                      : Symbols.upload_file,
+                  color: kycColor,
+                ),
                 title: Text(
-                  user?.kycStatus == 'rejected'
-                      ? 'Documents refusés — soumettre à nouveau'
-                      : 'Vérification d\'identité en attente',
+                  switch ((user?.kycStatus, _submittedLocally)) {
+                    ('rejected', _) => 'Documents refusés — soumettre à nouveau',
+                    (_, true)       => 'Documents en cours de vérification',
+                    _               => 'Vérification d\'identité en attente',
+                  },
                   style: AppTextStyles.label.copyWith(color: kycColor),
                 ),
-                trailing: Icon(Symbols.arrow_forward_ios, size: 14, color: kycColor),
-                onTap: () => context.push('/auth/kyc'),
+                trailing: _submittedLocally && user?.kycStatus == 'pending'
+                    ? null
+                    : Icon(Symbols.arrow_forward_ios, size: 14, color: kycColor),
+                onTap: _submittedLocally && user?.kycStatus == 'pending'
+                    ? null
+                    : () => context.push('/kyc'),
               ),
             ),
           ],
