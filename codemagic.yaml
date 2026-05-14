@@ -1,0 +1,70 @@
+workflows:
+  ios-release:
+    name: iOS Release — TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+        - pattern: master
+          include: true
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.banabana.pro
+      vars:
+        FLUTTER_VERSION: "3.32.0"
+        XCODE_WORKSPACE: ios/Runner.xcworkspace
+        XCODE_SCHEME: Runner
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.gradle/caches
+        - ios/Pods
+
+    scripts:
+      - name: Set Flutter version
+        script: |
+          flutter version $FLUTTER_VERSION || true
+
+      - name: Get dependencies
+        script: flutter pub get
+
+      - name: Run code generation
+        script: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Set up code signing
+        script: xcode-project use-profiles
+
+      - name: Build iOS (release)
+        script: |
+          flutter build ipa \
+            --release \
+            --export-options-plist=/Users/builder/export_options.plist
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false
+      email:
+        recipients:
+          - dev@payme.ws
+        notify:
+          success: true
+          failure: true
