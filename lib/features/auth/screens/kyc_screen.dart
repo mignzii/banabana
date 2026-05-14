@@ -227,8 +227,9 @@ class _DocUploadTile extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.s12),
               Expanded(child: Text(label, style: AppTextStyles.body)),
-              GestureDetector(
+              InkWell(
                 onTap: onReplace ?? onTap,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.s10,
