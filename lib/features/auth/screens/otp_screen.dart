@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,6 +96,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       final storage = ref.read(storageServiceProvider);
       await storage.setAccessToken(auth.accessToken);
       await storage.setRefreshToken(auth.refreshToken);
+      await storage.setUserJson(jsonEncode(auth.user.toJson()));
       if (auth.user.kycStatus == 'none') {
         if (mounted) {
           context.go('/auth/register', extra: {'phone': widget.phone});
