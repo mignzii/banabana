@@ -7,6 +7,7 @@ const _kRefreshToken = 'refresh_token';
 const _kUser         = 'user_json';
 const _kLastPhone    = 'last_phone';
 const _kBiometric    = 'biometric_enabled';
+const _kKycSubmitted = 'kyc_submitted_locally';
 
 class StorageService {
   final _secure = const FlutterSecureStorage(
@@ -32,6 +33,7 @@ class StorageService {
     await prefs.remove(_kUser);
     await prefs.remove(_kLastPhone);
     await prefs.remove(_kBiometric);
+    await prefs.remove(_kKycSubmitted);
   }
 
   Future<void> setUserJson(String json) async {
@@ -62,6 +64,16 @@ class StorageService {
   Future<bool> isBiometricEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_kBiometric) ?? false;
+  }
+
+  Future<bool> getKycSubmittedLocally() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_kKycSubmitted) ?? false;
+  }
+
+  Future<void> setKycSubmittedLocally(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kKycSubmitted, value);
   }
 }
 
