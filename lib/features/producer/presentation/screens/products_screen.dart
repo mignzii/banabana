@@ -13,7 +13,8 @@ import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 enum _Filter { all, active, inactive }
 
 class ProductsScreen extends ConsumerStatefulWidget {
-  const ProductsScreen({super.key});
+  const ProductsScreen({super.key, this.routePrefix = '/producer/products'});
+  final String routePrefix;
 
   @override
   ConsumerState<ProductsScreen> createState() => _ProductsScreenState();
@@ -134,7 +135,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen>
           ),
           IconButton(
             icon: const Icon(Symbols.add_circle, color: AppColors.primary),
-            onPressed: () => context.push('/producer/products/new'),
+            onPressed: () => context.push('${widget.routePrefix}/new'),
           ),
           const SizedBox(width: AppSpacing.s4),
         ],
@@ -198,7 +199,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen>
                               textPrimary: textPrimary,
                               textSecondary: textSecondary,
                               isFiltered: _query.isNotEmpty || _filter != _Filter.all,
-                              onAdd: () => context.push('/producer/products/new'),
+                              onAdd: () => context.push('${widget.routePrefix}/new'),
                               onReset: () {
                                 setState(() {
                                   _filter = _Filter.all;
@@ -227,9 +228,9 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen>
                                   key: ValueKey(p.id),
                                   product: p,
                                   onTap: () =>
-                                      context.push('/producer/products/${p.id}'),
+                                      context.push('${widget.routePrefix}/${p.id}'),
                                   onEdit: () => context
-                                      .push('/producer/products/${p.id}/edit'),
+                                      .push('${widget.routePrefix}/${p.id}/edit'),
                                 );
                               },
                             ),
@@ -242,7 +243,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen>
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/producer/products/new'),
+        onPressed: () => context.push('${widget.routePrefix}/new'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         elevation: 3,

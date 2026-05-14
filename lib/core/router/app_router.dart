@@ -235,6 +235,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             pageBuilder: (_, __) => _fadePage(const CatalogScreen()),
           ),
           GoRoute(
+            path: '/shop/inventory',
+            name: 'shop-inventory',
+            pageBuilder: (_, __) => _fadePage(
+              const ProductsScreen(routePrefix: '/shop/inventory'),
+            ),
+          ),
+          GoRoute(
             path: '/shop/orders',
             name: 'shop-orders',
             pageBuilder: (_, __) => _fadePage(const WholesalerOrdersScreen()),
@@ -279,6 +286,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'shop-order-detail',
         pageBuilder: (_, state) =>
             _fadePage(WholesalerOrderDetailScreen(orderId: state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/inventory/new',
+        name: 'shop-inventory-new',
+        pageBuilder: (_, __) => _fadePage(const ProductFormScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/inventory/:id',
+        name: 'shop-inventory-detail',
+        pageBuilder: (_, state) => _fadePage(
+          ProductDetailScreen(
+            productId: state.pathParameters['id']!,
+            routePrefix: '/shop/inventory',
+          ),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/inventory/:id/edit',
+        name: 'shop-inventory-edit',
+        pageBuilder: (_, state) => _fadePage(
+          ProductFormScreen(productId: state.pathParameters['id']),
+        ),
       ),
 
       // KYC — route protégée (accessible uniquement si authentifié)

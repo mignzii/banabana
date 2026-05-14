@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/shared/widgets/app_bottom_nav.dart';
 
 class WholesalerShell extends ConsumerWidget {
@@ -18,11 +17,11 @@ class WholesalerShell extends ConsumerWidget {
   int get _currentIndex {
     if (location.startsWith('/shop/home')) return 0;
     if (location.startsWith('/shop/catalog') ||
-        location.startsWith('/shop/product')) { return 1; }
-    if (location.startsWith('/shop/cart')) return 2;
+        location.startsWith('/shop/product')) return 1;
+    if (location.startsWith('/shop/inventory')) return 2;
     if (location.startsWith('/shop/orders')) return 3;
     if (location.startsWith('/shop/profile') ||
-        location.startsWith('/shop/dashboard')) { return 4; }
+        location.startsWith('/shop/dashboard')) return 4;
     return 0;
   }
 
@@ -30,7 +29,7 @@ class WholesalerShell extends ConsumerWidget {
     switch (index) {
       case 0: context.go('/shop/home');
       case 1: context.go('/shop/catalog');
-      case 2: context.go('/shop/cart');
+      case 2: context.go('/shop/inventory');
       case 3: context.go('/shop/orders');
       case 4: context.go('/shop/profile');
     }
@@ -38,16 +37,10 @@ class WholesalerShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cartCount = ref.watch(cartItemCountProvider);
-
     final items = [
       const AppNavItem(icon: Symbols.home, label: 'Accueil'),
       const AppNavItem(icon: Symbols.store, label: 'Catalogue'),
-      AppNavItem(
-        icon: Symbols.shopping_cart,
-        label: 'Panier',
-        badgeCount: cartCount,
-      ),
+      const AppNavItem(icon: Symbols.inventory_2, label: 'Inventaire'),
       const AppNavItem(icon: Symbols.receipt_long, label: 'Commandes'),
       const AppNavItem(icon: Symbols.person, label: 'Profil'),
     ];

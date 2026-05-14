@@ -14,8 +14,13 @@ import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
 class ProductDetailScreen extends ConsumerWidget {
+  const ProductDetailScreen({
+    super.key,
+    required this.productId,
+    this.routePrefix = '/producer/products',
+  });
   final String productId;
-  const ProductDetailScreen({super.key, required this.productId});
+  final String routePrefix;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,7 +45,7 @@ class ProductDetailScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: Icon(Symbols.edit, color: AppColors.primary, size: 20),
-            onPressed: () => context.push('/producer/products/$productId/edit'),
+            onPressed: () => context.push('$routePrefix/$productId/edit'),
             tooltip: 'Modifier',
           ),
           productAsync.maybeWhen(
@@ -61,7 +66,7 @@ class ProductDetailScreen extends ConsumerWidget {
           message: e.toString(),
           onRetry: () => ref.invalidate(productDetailProvider(productId)),
         ),
-        data: (product) => _ProductDetail(product: product, isDark: isDark),
+        data: (product) => _ProductDetail(product: product, isDark: isDark, routePrefix: routePrefix),
       ),
     );
   }
@@ -70,9 +75,10 @@ class ProductDetailScreen extends ConsumerWidget {
 // ─── Vue principale ───────────────────────────────────────────────────────────
 
 class _ProductDetail extends ConsumerStatefulWidget {
-  const _ProductDetail({required this.product, required this.isDark});
+  const _ProductDetail({required this.product, required this.isDark, required this.routePrefix});
   final Product product;
   final bool isDark;
+  final String routePrefix;
 
   @override
   ConsumerState<_ProductDetail> createState() => _ProductDetailState();
@@ -434,6 +440,7 @@ class _ProductDetailState extends ConsumerState<_ProductDetail> {
                 border: border,
                 surface: surface,
                 textPrimary: textPrimary,
+                routePrefix: widget.routePrefix,
               ),
 
               const SizedBox(height: AppSpacing.s32),
@@ -738,6 +745,7 @@ class _ActionsBar extends ConsumerStatefulWidget {
     required this.border,
     required this.surface,
     required this.textPrimary,
+    required this.routePrefix,
   });
 
   final Product product;
@@ -745,6 +753,7 @@ class _ActionsBar extends ConsumerStatefulWidget {
   final Color border;
   final Color surface;
   final Color textPrimary;
+  final String routePrefix;
 
   @override
   ConsumerState<_ActionsBar> createState() => _ActionsBarState();
@@ -803,7 +812,7 @@ class _ActionsBarState extends ConsumerState<_ActionsBar> {
             Expanded(
               child: FilledButton.icon(
                 onPressed: () =>
-                    context.push('/producer/products/${widget.product.id}/edit'),
+                    context.push('${widget.routePrefix}/${widget.product.id}/edit'),
                 icon: const Icon(Symbols.edit, size: 16),
                 label: const Text('Modifier'),
                 style: FilledButton.styleFrom(
