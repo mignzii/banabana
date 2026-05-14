@@ -154,8 +154,14 @@ class _BannerCard extends StatelessWidget {
             ),
             // Contenu
             Padding(
-              padding: const EdgeInsets.all(AppSpacing.s20),
-              child: Column(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s20,
+                vertical: AppSpacing.s14,
+              ),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -213,6 +219,7 @@ class _BannerCard extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
               ),
             ),
           ],
