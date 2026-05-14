@@ -8,6 +8,7 @@ import 'package:banabana_b2b/features/auth/screens/register_screen.dart';
 import 'package:banabana_b2b/features/auth/screens/set_pin_screen.dart';
 import 'package:banabana_b2b/features/auth/screens/pin_login_screen.dart';
 import 'package:banabana_b2b/features/auth/screens/kyc_screen.dart';
+import 'package:banabana_b2b/features/auth/screens/quick_register_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/analytics_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/categories_screen.dart';
 import 'package:banabana_b2b/features/producer/presentation/screens/inventory_screen.dart';
@@ -107,6 +108,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final phone = (state.extra as Map<String, String>)['phone']!;
           return _fadePage(PinLoginScreen(phone: phone));
         },
+      ),
+      GoRoute(
+        path: '/auth/quick-register',
+        pageBuilder: (_, __) => _fadePage(const QuickRegisterScreen()),
       ),
 
       // Producer shell

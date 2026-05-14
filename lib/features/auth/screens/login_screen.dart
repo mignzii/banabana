@@ -163,6 +163,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   style: AppTextStyles.caption.copyWith(color: AppColors.gray400),
                   textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: () => context.push('/auth/quick-register'),
+                  icon: const Icon(Symbols.person_add, size: 18),
+                  label: const Text('S\'inscrire sans SMS (test)'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.gray500,
+                    side: const BorderSide(color: AppColors.gray200),
+                    textStyle: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ),
               ],
             ),
           ),
