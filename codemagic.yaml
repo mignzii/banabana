@@ -14,9 +14,6 @@ workflows:
           include: true
 
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.banabana.pro
       vars:
         FLUTTER_VERSION: "3.32.0"
         XCODE_WORKSPACE: ios/Runner.xcworkspace
