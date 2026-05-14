@@ -9,6 +9,7 @@ import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/shared/models/catalog_item.dart';
+import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
 class CatalogItemCard extends ConsumerStatefulWidget {
@@ -62,6 +63,7 @@ class _CatalogItemCardState extends ConsumerState<CatalogItemCard>
       variantLabel: widget.item.category,
       unitPrice: widget.item.minPrice,
     );
+    if (mounted) context.showSnack('Ajouté au panier', type: SnackType.success);
   }
 
   @override

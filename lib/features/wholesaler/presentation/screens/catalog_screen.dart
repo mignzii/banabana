@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
+import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/catalog_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/widgets/catalog_item_card.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/widgets/filter_sheet.dart';
@@ -35,6 +36,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cartCount = ref.watch(cartItemCountProvider);
     final resultAsync = ref.watch(catalogResultProvider);
     final params = ref.watch(catalogSearchParamsProvider);
     final hasFilters = params.category != null ||
@@ -57,6 +59,41 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
             icon: const Icon(Symbols.search, size: 22),
             color: isDark ? AppColors.gray100 : AppColors.gray900,
             onPressed: () => context.push('/shop/search'),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Symbols.shopping_cart, size: 22),
+                  color: isDark ? AppColors.gray100 : AppColors.gray900,
+                  onPressed: () => context.push('/shop/cart'),
+                ),
+                if (cartCount > 0)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      width: 16,
+                      height: 16,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        cartCount > 9 ? '9+' : '$cartCount',
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ],
       ),
