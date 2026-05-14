@@ -80,13 +80,16 @@ class _ProductPublicDetailScreenState
           ),
         ],
       ),
+      bottomNavigationBar: productAsync.valueOrNull != null
+          ? _buildBottomBar(productAsync.valueOrNull!, isDark)
+          : null,
       body: productAsync.when(
         loading: () => _buildSkeleton(isDark),
         error: (e, _) => _buildError(e, isDark),
         data: (product) {
           _selectedVariant ??=
               product.variants.isNotEmpty ? product.variants.first : null;
-          return _buildContent(product, isDark);
+          return _buildScrollContent(product, isDark);
         },
       ),
     );
@@ -224,57 +227,50 @@ class _ProductPublicDetailScreenState
 
   // ── Main Content ──────────────────────────────────────────────────────────
 
-  Widget _buildContent(Product product, bool isDark) {
-    return Column(
-      children: [
-        Expanded(
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(child: _buildImageCarousel(product, isDark)),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.s20, vertical: AppSpacing.s20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTitleSection(product, isDark),
-                      if (product.producer != null) ...[
-                        const SizedBox(height: AppSpacing.s12),
-                        _buildProducerInfo(product.producer!, isDark),
-                      ],
-                      const SizedBox(height: AppSpacing.s16),
-                      if (product.description != null &&
-                          product.description!.isNotEmpty) ...[
-                        _buildDescription(product.description!, isDark),
-                        const SizedBox(height: AppSpacing.s20),
-                      ],
-                      Divider(
-                        color: isDark ? AppColors.darkBorder2 : AppColors.gray200,
-                        thickness: 1,
-                      ),
-                      const SizedBox(height: AppSpacing.s20),
-                      _buildVariantsSection(product, isDark),
-                      const SizedBox(height: AppSpacing.s24),
-                      if (_hasWholesaleInfo(_selectedVariant)) ...[
-                        const SizedBox(height: AppSpacing.s16),
-                        _buildWholesaleInfoCard(isDark),
-                      ],
-                      Divider(
-                        color: isDark ? AppColors.darkBorder2 : AppColors.gray200,
-                        thickness: 1,
-                      ),
-                      const SizedBox(height: AppSpacing.s20),
-                      _buildQuantityStepper(isDark),
-                      const SizedBox(height: AppSpacing.s96),
-                    ],
-                  ),
+  Widget _buildScrollContent(Product product, bool isDark) {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: _buildImageCarousel(product, isDark)),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s20, vertical: AppSpacing.s20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTitleSection(product, isDark),
+                if (product.producer != null) ...[
+                  const SizedBox(height: AppSpacing.s12),
+                  _buildProducerInfo(product.producer!, isDark),
+                ],
+                const SizedBox(height: AppSpacing.s16),
+                if (product.description != null &&
+                    product.description!.isNotEmpty) ...[
+                  _buildDescription(product.description!, isDark),
+                  const SizedBox(height: AppSpacing.s20),
+                ],
+                Divider(
+                  color: isDark ? AppColors.darkBorder2 : AppColors.gray200,
+                  thickness: 1,
                 ),
-              ),
-            ],
+                const SizedBox(height: AppSpacing.s20),
+                _buildVariantsSection(product, isDark),
+                const SizedBox(height: AppSpacing.s24),
+                if (_hasWholesaleInfo(_selectedVariant)) ...[
+                  const SizedBox(height: AppSpacing.s16),
+                  _buildWholesaleInfoCard(isDark),
+                ],
+                Divider(
+                  color: isDark ? AppColors.darkBorder2 : AppColors.gray200,
+                  thickness: 1,
+                ),
+                const SizedBox(height: AppSpacing.s20),
+                _buildQuantityStepper(isDark),
+                const SizedBox(height: AppSpacing.s32),
+              ],
+            ),
           ),
         ),
-        _buildBottomBar(product, isDark),
       ],
     );
   }
