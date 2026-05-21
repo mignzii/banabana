@@ -6,6 +6,7 @@ import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/producer/providers/inventory_providers.dart';
+import 'package:banabana_b2b/features/producer/providers/product_providers.dart';
 import 'package:banabana_b2b/shared/models/inventory.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 
@@ -71,6 +72,8 @@ class _InventoryMovementSheetState
                 : _reasonCtrl.text.trim(),
           );
       if (mounted) {
+        ref.invalidate(productsNotifierProvider);
+        ref.invalidate(stockMovementsProvider);
         context.showSnack('Mouvement enregistré', type: SnackType.success);
         Navigator.pop(context);
       }

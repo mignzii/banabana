@@ -1,0 +1,39 @@
+# TEST : Dashboard Grossiste — stats, CTA, commandes récentes
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Tableau de bord"
+- assertVisible: "BanaBana Shop"
+- assertVisible: "Bienvenue"
+
+# ── Cartes statistiques ───────────────────────────────────────────────────────
+- assertVisible: "Commandes"
+- assertVisible: "Dépenses FCFA"
+- assertVisible: "En cours"
+- assertVisible: "Livrées"
+
+# ── Bouton explorer le catalogue ──────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Explorer le catalogue"
+    direction: DOWN
+- tapOn: "Explorer le catalogue"
+- assertVisible: "Catalogue"
+- tapOn: "Retour"
+
+# ── Section commandes récentes ────────────────────────────────────────────────
+- tapOn: "Tableau de bord"
+- scrollUntilVisible:
+    element:
+      text: "Commandes récentes"
+    direction: DOWN
+- assertVisible: "Commandes récentes"
+- assertVisible: "Voir tout"
+- tapOn: "Voir tout"
+- assertVisible: "Mes commandes"
+- tapOn: "Retour"

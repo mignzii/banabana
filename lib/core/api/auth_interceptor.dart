@@ -7,6 +7,8 @@ class AuthInterceptor extends Interceptor {
   final StorageService storage;
   Dio? _dio;
 
+  static const _retryKey = '_auth_retry_attempted';
+
   void setDio(Dio dio) => _dio = dio;
 
   @override
@@ -26,7 +28,8 @@ class AuthInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    if (err.response?.statusCode == 401 && _dio != null) {
+    final alreadyRetried = err.requestOptions.extra[_retryKey] == true;
+    if (err.response?.statusCode == 401 && _dio != null && !alreadyRetried) {
       final refreshToken = await storage.getRefreshToken();
       if (refreshToken == null) {
         handler.next(err);
@@ -37,6 +40,8 @@ class AuthInterceptor extends Interceptor {
         final refreshDio = Dio(BaseOptions(
           baseUrl: _dio!.options.baseUrl,
           headers: {'Content-Type': 'application/json'},
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
         ));
         final response = await refreshDio.post(
           '/auth/refresh',
@@ -44,8 +49,16 @@ class AuthInterceptor extends Interceptor {
         );
         final newToken = response.data['accessToken'] as String;
         await storage.setAccessToken(newToken);
-        final retryOptions = err.requestOptions;
-        retryOptions.headers['Authorization'] = 'Bearer $newToken';
+        final retryOptions = err.requestOptions.copyWith(
+          headers: {
+            ...err.requestOptions.headers,
+            'Authorization': 'Bearer $newToken',
+          },
+          extra: {
+            ...err.requestOptions.extra,
+            _retryKey: true,
+          },
+        );
         final retryResponse = await _dio!.fetch(retryOptions);
         handler.resolve(retryResponse);
       } on DioException catch (e) {

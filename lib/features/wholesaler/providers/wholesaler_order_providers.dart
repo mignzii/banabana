@@ -19,10 +19,24 @@ class WholesalerOrdersNotifier extends StateNotifier<AsyncValue<List<Order>>> {
     state = await AsyncValue.guard(() => _repo.getMyOrders());
   }
 
-  Future<Order> placeOrder(List<Map<String, dynamic>> items) async {
-    final order = await _repo.createOrder(items);
+  Future<List<Order>> placeOrder(
+    List<Map<String, dynamic>> items, {
+    String? deliveryAddress,
+    String? deliveryName,
+    String? deliveryPhone,
+    String? notes,
+    String? paymentMethod,
+  }) async {
+    final orders = await _repo.createOrder(
+      items,
+      deliveryAddress: deliveryAddress,
+      deliveryName: deliveryName,
+      deliveryPhone: deliveryPhone,
+      notes: notes,
+      paymentMethod: paymentMethod,
+    );
     await load();
-    return order;
+    return orders;
   }
 
   Future<void> cancel(String id) async {

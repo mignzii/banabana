@@ -60,6 +60,7 @@ _$ProductProducerImpl _$$ProductProducerImplFromJson(
 ) => _$ProductProducerImpl(
   businessName: json['businessName'] as String,
   zone: json['zone'] as String,
+  userId: json['userId'] as String?,
 );
 
 Map<String, dynamic> _$$ProductProducerImplToJson(
@@ -67,6 +68,7 @@ Map<String, dynamic> _$$ProductProducerImplToJson(
 ) => <String, dynamic>{
   'businessName': instance.businessName,
   'zone': instance.zone,
+  'userId': instance.userId,
 };
 
 _$ProductImpl _$$ProductImplFromJson(Map<String, dynamic> json) =>

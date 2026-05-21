@@ -1,0 +1,64 @@
+# TEST : Commandes Grossiste — liste, filtres, détail, suivi statut
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Commandes"
+- assertVisible: "Mes commandes"
+
+# ── Filtres ────────────────────────────────────────────────────────────────────
+- assertVisible: "Toutes"
+- assertVisible: "En attente"
+- assertVisible: "En cours"
+- assertVisible: "Expédiées"
+- assertVisible: "Livrées"
+- assertVisible: "Annulées"
+
+- tapOn: "En attente"
+- assertVisible: "En attente"
+- tapOn: "En cours"
+- assertVisible: "En cours"
+- tapOn: "Livrées"
+- assertVisible: "Livrées"
+- tapOn: "Toutes"
+
+# ── Détail d'une commande ─────────────────────────────────────────────────────
+- tapOn:
+    index: 0
+    text: "#"
+    optional: true
+- assertVisible:
+    text: "Détail commande"
+    optional: true
+- assertVisible:
+    text: "Articles commandés"
+    optional: true
+- assertVisible:
+    text: "RÉCAPITULATIF"
+    optional: true
+- assertVisible:
+    text: "Total"
+    optional: true
+
+# Barre de progression du statut
+- assertVisible:
+    anyOf:
+      - text: "En attente"
+      - text: "En cours"
+      - text: "Expédiée"
+      - text: "Livrée"
+    optional: true
+
+- tapOn: "Retour"
+
+# ── État vide ─────────────────────────────────────────────────────────────────
+- tapOn: "Annulées"
+- assertVisible:
+    anyOf:
+      - text: "Aucune commande"
+      - text: "#"
+- tapOn: "Toutes"

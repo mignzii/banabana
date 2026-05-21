@@ -1,0 +1,58 @@
+# TEST : Inscription Grossiste sans SMS (mode test)
+# Résultat attendu : compte créé, PIN défini, redirection vers l'accueil grossiste
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+  FIRST_NAME: "Ama"
+  LAST_NAME: "Mensah"
+---
+- launchApp:
+    clearState: true
+
+- assertVisible: "Connectez-vous pour continuer"
+- tapOn: "S'inscrire sans SMS (test)"
+
+- assertVisible: "Créer votre compte"
+- tapOn: "Prénom"
+- inputText: "${FIRST_NAME}"
+- tapOn: "Nom"
+- inputText: "${LAST_NAME}"
+- tapOn: "Numéro de téléphone"
+- eraseText: 4
+- inputText: "${WHOLESALER_PHONE}"
+- tapOn: "Grossiste"
+
+- tapOn: "Créer le compte"
+
+- assertVisible: "Créez votre PIN"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+
+- assertVisible: "Confirmez votre PIN"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+
+# ── Connexion avec le nouveau PIN ─────────────────────────────────────────────
+- assertVisible: "Entrez votre PIN"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+
+- assertVisible: "BanaBana"

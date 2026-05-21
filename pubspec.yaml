@@ -2,13 +2,15 @@ name: banabana_b2b
 description: "BanaBana B2B — plateforme commerce agricole"
 publish_to: 'none'
 
-version: 1.0.0+4
+version: 1.0.1+5
 
 environment:
   sdk: ^3.11.5
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   # State management & routing

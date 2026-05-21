@@ -1,0 +1,109 @@
+# TEST : Panier Grossiste — gestion des articles, quantités, vider, passer commande
+# Prérequis : au moins un produit actif avec variante dans le catalogue
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+# Ajouter un produit au panier depuis le catalogue
+- tapOn: "Catalogue"
+- tapOn:
+    index: 0
+    belowText: "Catalogue"
+- scrollUntilVisible:
+    element:
+      text: "Ajouter au panier"
+    direction: DOWN
+- tapOn: "Ajouter au panier"
+- assertVisible: "Ajouté au panier ✓"
+
+# Ajouter un second article
+- tapOn: "Retour"
+- tapOn:
+    index: 0
+    belowText: "Catalogue"
+- scrollUntilVisible:
+    element:
+      text: "Ajouter au panier"
+    direction: DOWN
+- tapOn: "Ajouter au panier"
+- tapOn: "Retour"
+
+# ── Accès au panier ────────────────────────────────────────────────────────────
+- tapOn:
+    id: "cart_icon"
+- assertVisible: "Mon panier"
+- assertVisible: "Total"
+- assertVisible: "Passer la commande →"
+- assertVisible: "Vider"
+
+# ── Augmenter la quantité ─────────────────────────────────────────────────────
+- tapOn:
+    index: 0
+    text: "+"
+- assertVisible: "Total"
+
+# ── Diminuer la quantité ──────────────────────────────────────────────────────
+- tapOn:
+    index: 0
+    text: "-"
+
+# ── Supprimer un article ──────────────────────────────────────────────────────
+- tapOn:
+    index: 0
+    id: "delete_item"
+    optional: true
+- tapOn:
+    index: 0
+    text: "✕"
+    optional: true
+
+# ── Vider le panier ───────────────────────────────────────────────────────────
+# S'il reste des articles, vider
+- tapOn: "Vider"
+    optional: true
+- assertVisible:
+    text: "Votre panier est vide"
+    optional: true
+- assertVisible:
+    text: "Explorer le catalogue"
+    optional: true
+
+# Re-ajouter un produit pour tester le checkout
+- tapOn: "Explorer le catalogue"
+    optional: true
+- tapOn: "Catalogue"
+    optional: true
+- tapOn:
+    index: 0
+    belowText: "Catalogue"
+    optional: true
+- scrollUntilVisible:
+    element:
+      text: "Ajouter au panier"
+    direction: DOWN
+    optional: true
+- tapOn: "Ajouter au panier"
+    optional: true
+
+# ── Accéder au checkout ───────────────────────────────────────────────────────
+- tapOn:
+    id: "cart_icon"
+    optional: true
+- assertVisible: "Mon panier"
+    optional: true
+- scrollUntilVisible:
+    element:
+      text: "Passer la commande →"
+    direction: DOWN
+    optional: true
+- tapOn: "Passer la commande →"
+    optional: true
+- assertVisible:
+    text: "Finaliser la commande"
+    optional: true
+- tapOn: "Retour"
+    optional: true

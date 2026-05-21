@@ -1,0 +1,99 @@
+# TEST : Profil Producteur — affichage, édition email, mode sombre, déconnexion
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  NEW_EMAIL: "producteur.test@banabana.pro"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Profil"
+- assertVisible: "Profil"
+
+# ── Informations affichées ────────────────────────────────────────────────────
+- assertVisible: "Informations"
+- assertVisible: "Téléphone"
+- assertVisible: "${PRODUCER_PHONE}"
+- assertVisible: "Email"
+- assertVisible: "Statut KYC"
+- assertVisible: "Préférences"
+- assertVisible: "Mode sombre"
+- assertVisible: "Déconnexion"
+
+# ── Édition de l'email ────────────────────────────────────────────────────────
+- tapOn: "Enregistrer"
+    optional: true
+- tapOn:
+    text: "✏️"
+    optional: true
+# Activation du mode édition via bouton AppBar
+- tapOn:
+    id: "edit_profile_button"
+    optional: true
+
+# Email champ (mode édition)
+- tapOn: "Email"
+    optional: true
+- clearText
+    optional: true
+- inputText: "${NEW_EMAIL}"
+    optional: true
+- tapOn: "Enregistrer"
+    optional: true
+- assertVisible:
+    text: "Profil mis à jour"
+    optional: true
+
+# ── Email invalide ────────────────────────────────────────────────────────────
+- tapOn:
+    id: "edit_profile_button"
+    optional: true
+- tapOn: "Email"
+    optional: true
+- clearText
+    optional: true
+- inputText: "email-invalide"
+    optional: true
+- tapOn: "Enregistrer"
+    optional: true
+- assertVisible:
+    text: "Email invalide"
+    optional: true
+- tapOn: "Annuler"
+    optional: true
+
+# ── KYC — accès au formulaire si non approuvé ────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Statut KYC"
+    direction: DOWN
+- assertVisible:
+    anyOf:
+      - text: "En attente"
+      - text: "Approuvé"
+      - text: "En cours de vérification"
+      - text: "Soumettre les documents"
+
+# ── Basculer Mode sombre ──────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Mode sombre"
+    direction: DOWN
+- tapOn: "Mode sombre"
+# Pas d'assertion visuelle fiable sur le thème, juste qu'on ne plante pas
+
+# ── Déconnexion : annuler ─────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- assertVisible: "Êtes-vous sûr de vouloir vous déconnecter ?"
+- tapOn: "Annuler"
+- assertVisible: "Profil"
+
+# ── Déconnexion : confirmer ────────────────────────────────────────────────────
+- tapOn: "Déconnexion"
+- tapOn: "Déconnexion"
+- assertVisible: "Connectez-vous pour continuer"

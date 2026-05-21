@@ -465,7 +465,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               if (context.mounted) context.go('/auth/login');
             },
             child: Text(
-              'Déconnexion',
+              'Se déconnecter',
               style: AppTextStyles.body.copyWith(color: AppColors.error),
             ),
           ),

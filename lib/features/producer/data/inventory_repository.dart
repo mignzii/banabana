@@ -27,9 +27,16 @@ class InventoryRepository {
     String? reason,
     String? notes,
   }) async {
+    final typeStr = switch (type) {
+      MovementType.stockIn => 'in',
+      MovementType.stockOut => 'out',
+      MovementType.adjustment => 'adjustment',
+      MovementType.damage => 'damage',
+      MovementType.stockReturn => 'return',
+    };
     await _dio.post('/inventory/movements', data: {
       'variantId': variantId,
-      'type': type.name,
+      'type': typeStr,
       'quantity': quantity,
       if (reason != null) 'reason': reason,
       if (notes != null) 'notes': notes,

@@ -1,0 +1,56 @@
+# TEST : Accueil Producteur — navigation et affichage
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+# ── Vérification de l'écran d'accueil ────────────────────────────────────────
+- assertVisible: "Actions rapides"
+- assertVisible: "Actions rapides"
+- assertVisible: "Ajouter produit"
+- assertVisible: "Commandes"
+- assertVisible: "Inventaire"
+- assertVisible: "Analytiques"
+- assertVisible: "Mes produits"
+- assertVisible: "Voir tout"
+
+# ── Navigation rapide : Ajouter produit ──────────────────────────────────────
+- tapOn: "Ajouter produit"
+- assertVisible: "Nouveau produit"
+- tapOn: "Retour"
+
+# ── Navigation rapide : Commandes ────────────────────────────────────────────
+- assertVisible: "Actions rapides"
+- tapOn: "Commandes"
+- assertVisible: "Commandes Reçues"
+- tapOn: "Accueil"
+
+# ── Navigation rapide : Inventaire ───────────────────────────────────────────
+- assertVisible: "Actions rapides"
+- tapOn: "Inventaire"
+- assertVisible: "Gestion de Stock"
+- tapOn: "Retour"
+
+# ── Navigation rapide : Analytiques ──────────────────────────────────────────
+- assertVisible: "Actions rapides"
+- tapOn: "Analytiques"
+- assertVisible: "Analytiques"
+- tapOn: "Retour"
+
+# ── Lien "Voir tout" vers les produits ───────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Voir tout"
+    direction: DOWN
+- tapOn: "Voir tout"
+- assertVisible: "Ajouter un produit"
+- tapOn: "Accueil"
+
+# ── Tabs de navigation bas ────────────────────────────────────────────────────
+- tapOn: "Produits"
+- assertVisible: "Ajouter un produit"
+- tapOn: "Accueil"
+- assertVisible: "Actions rapides"

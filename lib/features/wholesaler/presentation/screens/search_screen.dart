@@ -58,6 +58,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         elevation: 0,
         titleSpacing: 0,
         leading: IconButton(
+          tooltip: 'Retour',
           icon: const Icon(Symbols.arrow_back),
           color: isDark ? AppColors.gray100 : AppColors.gray900,
           onPressed: () => context.pop(),
@@ -118,7 +119,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   crossAxisCount: 2,
                   crossAxisSpacing: AppSpacing.s12,
                   mainAxisSpacing: AppSpacing.s12,
-                  childAspectRatio: 0.78,
+                  childAspectRatio: 0.62,
                 ),
                 itemCount: 6,
                 itemBuilder: (_, __) => const ProductCardShimmer(),
@@ -192,7 +193,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           crossAxisCount: 2,
                           crossAxisSpacing: AppSpacing.s12,
                           mainAxisSpacing: AppSpacing.s12,
-                          childAspectRatio: 0.78,
+                          childAspectRatio: 0.62,
                         ),
                         itemCount: result.data.length,
                         itemBuilder: (_, i) => CatalogItemCard(

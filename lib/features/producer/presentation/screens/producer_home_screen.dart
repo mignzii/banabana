@@ -34,7 +34,7 @@ class ProducerHomeScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Bonjour, $firstName 👋',
+              'Bonjour, $firstName',
               style: AppTextStyles.sectionTitle.copyWith(
                 color: isDark ? AppColors.white : AppColors.gray900,
               ),
@@ -48,6 +48,14 @@ class ProducerHomeScreen extends ConsumerWidget {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'Tableau de bord',
+            icon: Icon(
+              Symbols.dashboard,
+              color: isDark ? AppColors.gray300 : AppColors.gray600,
+            ),
+            onPressed: () => context.push('/producer/dashboard'),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.s8),
             child: CircleAvatar(

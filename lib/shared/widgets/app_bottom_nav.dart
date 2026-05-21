@@ -84,7 +84,11 @@ class _NavItem extends StatelessWidget {
     const activeColor = AppColors.primary;
     final inactiveColor = isDark ? AppColors.gray600 : AppColors.gray400;
 
-    return GestureDetector(
+    return Semantics(
+      label: item.label,
+      button: true,
+      selected: isActive,
+      child: GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
@@ -159,6 +163,7 @@ class _NavItem extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

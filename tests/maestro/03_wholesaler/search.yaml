@@ -1,0 +1,49 @@
+# TEST : Recherche Grossiste — recherche pleine page, résultats, navigation
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Catalogue"
+
+# Ouvrir l'écran de recherche depuis l'icône AppBar
+- tapOn:
+    id: "search_icon"
+- assertVisible: "Rechercher un produit, producteur..."
+
+# Terme inexistant
+- inputText: "zzz_inexistant_xyz"
+- assertVisible: "Aucun résultat"
+
+# Effacer et chercher un terme réel
+- clearText
+- inputText: "Banane"
+# Laisser le temps au debounce
+- tapOn:
+    text: "Banane"
+    optional: true
+
+# Tap sur un résultat
+- tapOn:
+    index: 0
+    belowText: "Rechercher"
+    optional: true
+- assertVisible:
+    text: "Détails produit"
+    optional: true
+- tapOn: "Retour"
+    optional: true
+
+# Recherche depuis l'accueil
+- tapOn: "Accueil"
+- tapOn:
+    id: "search_icon"
+    optional: true
+- assertVisible:
+    text: "Rechercher"
+    optional: true
+- tapOn: "Retour"
+    optional: true

@@ -214,8 +214,8 @@ class _QuickRoleChip extends StatelessWidget {
     final isSelected = value == selected;
     return Expanded(
       child: Semantics(
-        label: '$label, ${isSelected ? "sélectionné" : "non sélectionné"}',
         button: true,
+        selected: isSelected,
         child: GestureDetector(
           onTap: () => onTap(value),
           child: AnimatedContainer(

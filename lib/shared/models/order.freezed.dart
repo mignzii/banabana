@@ -394,9 +394,14 @@ mixin _$Order {
   double get totalAmount => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   List<OrderItem> get items => throw _privateConstructorUsedError;
+  String? get producerName => throw _privateConstructorUsedError;
   String? get wholesalerName => throw _privateConstructorUsedError;
+  String? get wholesalerPhone => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   String? get deliveryAddress => throw _privateConstructorUsedError;
+  String? get deliveryName => throw _privateConstructorUsedError;
+  String? get deliveryPhone => throw _privateConstructorUsedError;
+  String? get paymentMethod => throw _privateConstructorUsedError;
 
   /// Serializes this Order to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -419,9 +424,14 @@ abstract class $OrderCopyWith<$Res> {
     @JsonKey(fromJson: _parseDouble) double totalAmount,
     DateTime createdAt,
     List<OrderItem> items,
+    String? producerName,
     String? wholesalerName,
+    String? wholesalerPhone,
     String? notes,
     String? deliveryAddress,
+    String? deliveryName,
+    String? deliveryPhone,
+    String? paymentMethod,
   });
 }
 
@@ -446,9 +456,14 @@ class _$OrderCopyWithImpl<$Res, $Val extends Order>
     Object? totalAmount = null,
     Object? createdAt = null,
     Object? items = null,
+    Object? producerName = freezed,
     Object? wholesalerName = freezed,
+    Object? wholesalerPhone = freezed,
     Object? notes = freezed,
     Object? deliveryAddress = freezed,
+    Object? deliveryName = freezed,
+    Object? deliveryPhone = freezed,
+    Object? paymentMethod = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -476,9 +491,17 @@ class _$OrderCopyWithImpl<$Res, $Val extends Order>
                 ? _value.items
                 : items // ignore: cast_nullable_to_non_nullable
                       as List<OrderItem>,
+            producerName: freezed == producerName
+                ? _value.producerName
+                : producerName // ignore: cast_nullable_to_non_nullable
+                      as String?,
             wholesalerName: freezed == wholesalerName
                 ? _value.wholesalerName
                 : wholesalerName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            wholesalerPhone: freezed == wholesalerPhone
+                ? _value.wholesalerPhone
+                : wholesalerPhone // ignore: cast_nullable_to_non_nullable
                       as String?,
             notes: freezed == notes
                 ? _value.notes
@@ -487,6 +510,18 @@ class _$OrderCopyWithImpl<$Res, $Val extends Order>
             deliveryAddress: freezed == deliveryAddress
                 ? _value.deliveryAddress
                 : deliveryAddress // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            deliveryName: freezed == deliveryName
+                ? _value.deliveryName
+                : deliveryName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            deliveryPhone: freezed == deliveryPhone
+                ? _value.deliveryPhone
+                : deliveryPhone // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            paymentMethod: freezed == paymentMethod
+                ? _value.paymentMethod
+                : paymentMethod // ignore: cast_nullable_to_non_nullable
                       as String?,
           )
           as $Val,
@@ -509,9 +544,14 @@ abstract class _$$OrderImplCopyWith<$Res> implements $OrderCopyWith<$Res> {
     @JsonKey(fromJson: _parseDouble) double totalAmount,
     DateTime createdAt,
     List<OrderItem> items,
+    String? producerName,
     String? wholesalerName,
+    String? wholesalerPhone,
     String? notes,
     String? deliveryAddress,
+    String? deliveryName,
+    String? deliveryPhone,
+    String? paymentMethod,
   });
 }
 
@@ -535,9 +575,14 @@ class __$$OrderImplCopyWithImpl<$Res>
     Object? totalAmount = null,
     Object? createdAt = null,
     Object? items = null,
+    Object? producerName = freezed,
     Object? wholesalerName = freezed,
+    Object? wholesalerPhone = freezed,
     Object? notes = freezed,
     Object? deliveryAddress = freezed,
+    Object? deliveryName = freezed,
+    Object? deliveryPhone = freezed,
+    Object? paymentMethod = freezed,
   }) {
     return _then(
       _$OrderImpl(
@@ -565,9 +610,17 @@ class __$$OrderImplCopyWithImpl<$Res>
             ? _value._items
             : items // ignore: cast_nullable_to_non_nullable
                   as List<OrderItem>,
+        producerName: freezed == producerName
+            ? _value.producerName
+            : producerName // ignore: cast_nullable_to_non_nullable
+                  as String?,
         wholesalerName: freezed == wholesalerName
             ? _value.wholesalerName
             : wholesalerName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        wholesalerPhone: freezed == wholesalerPhone
+            ? _value.wholesalerPhone
+            : wholesalerPhone // ignore: cast_nullable_to_non_nullable
                   as String?,
         notes: freezed == notes
             ? _value.notes
@@ -576,6 +629,18 @@ class __$$OrderImplCopyWithImpl<$Res>
         deliveryAddress: freezed == deliveryAddress
             ? _value.deliveryAddress
             : deliveryAddress // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        deliveryName: freezed == deliveryName
+            ? _value.deliveryName
+            : deliveryName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        deliveryPhone: freezed == deliveryPhone
+            ? _value.deliveryPhone
+            : deliveryPhone // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        paymentMethod: freezed == paymentMethod
+            ? _value.paymentMethod
+            : paymentMethod // ignore: cast_nullable_to_non_nullable
                   as String?,
       ),
     );
@@ -592,9 +657,14 @@ class _$OrderImpl implements _Order {
     @JsonKey(fromJson: _parseDouble) required this.totalAmount,
     required this.createdAt,
     final List<OrderItem> items = const [],
+    this.producerName,
     this.wholesalerName,
+    this.wholesalerPhone,
     this.notes,
     this.deliveryAddress,
+    this.deliveryName,
+    this.deliveryPhone,
+    this.paymentMethod,
   }) : _items = items;
 
   factory _$OrderImpl.fromJson(Map<String, dynamic> json) =>
@@ -621,15 +691,25 @@ class _$OrderImpl implements _Order {
   }
 
   @override
+  final String? producerName;
+  @override
   final String? wholesalerName;
+  @override
+  final String? wholesalerPhone;
   @override
   final String? notes;
   @override
   final String? deliveryAddress;
+  @override
+  final String? deliveryName;
+  @override
+  final String? deliveryPhone;
+  @override
+  final String? paymentMethod;
 
   @override
   String toString() {
-    return 'Order(id: $id, wholesalerId: $wholesalerId, status: $status, totalAmount: $totalAmount, createdAt: $createdAt, items: $items, wholesalerName: $wholesalerName, notes: $notes, deliveryAddress: $deliveryAddress)';
+    return 'Order(id: $id, wholesalerId: $wholesalerId, status: $status, totalAmount: $totalAmount, createdAt: $createdAt, items: $items, producerName: $producerName, wholesalerName: $wholesalerName, wholesalerPhone: $wholesalerPhone, notes: $notes, deliveryAddress: $deliveryAddress, deliveryName: $deliveryName, deliveryPhone: $deliveryPhone, paymentMethod: $paymentMethod)';
   }
 
   @override
@@ -646,11 +726,21 @@ class _$OrderImpl implements _Order {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.producerName, producerName) ||
+                other.producerName == producerName) &&
             (identical(other.wholesalerName, wholesalerName) ||
                 other.wholesalerName == wholesalerName) &&
+            (identical(other.wholesalerPhone, wholesalerPhone) ||
+                other.wholesalerPhone == wholesalerPhone) &&
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.deliveryAddress, deliveryAddress) ||
-                other.deliveryAddress == deliveryAddress));
+                other.deliveryAddress == deliveryAddress) &&
+            (identical(other.deliveryName, deliveryName) ||
+                other.deliveryName == deliveryName) &&
+            (identical(other.deliveryPhone, deliveryPhone) ||
+                other.deliveryPhone == deliveryPhone) &&
+            (identical(other.paymentMethod, paymentMethod) ||
+                other.paymentMethod == paymentMethod));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -663,9 +753,14 @@ class _$OrderImpl implements _Order {
     totalAmount,
     createdAt,
     const DeepCollectionEquality().hash(_items),
+    producerName,
     wholesalerName,
+    wholesalerPhone,
     notes,
     deliveryAddress,
+    deliveryName,
+    deliveryPhone,
+    paymentMethod,
   );
 
   /// Create a copy of Order
@@ -690,9 +785,14 @@ abstract class _Order implements Order {
     @JsonKey(fromJson: _parseDouble) required final double totalAmount,
     required final DateTime createdAt,
     final List<OrderItem> items,
+    final String? producerName,
     final String? wholesalerName,
+    final String? wholesalerPhone,
     final String? notes,
     final String? deliveryAddress,
+    final String? deliveryName,
+    final String? deliveryPhone,
+    final String? paymentMethod,
   }) = _$OrderImpl;
 
   factory _Order.fromJson(Map<String, dynamic> json) = _$OrderImpl.fromJson;
@@ -711,11 +811,21 @@ abstract class _Order implements Order {
   @override
   List<OrderItem> get items;
   @override
+  String? get producerName;
+  @override
   String? get wholesalerName;
+  @override
+  String? get wholesalerPhone;
   @override
   String? get notes;
   @override
   String? get deliveryAddress;
+  @override
+  String? get deliveryName;
+  @override
+  String? get deliveryPhone;
+  @override
+  String? get paymentMethod;
 
   /// Create a copy of Order
   /// with the given fields replaced by the non-null parameter values.

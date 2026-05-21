@@ -1,0 +1,40 @@
+# TEST : Liste produits — recherche et filtres par statut
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Mes produits"
+- assertVisible: "Mes produits"
+
+# ── Filtre "Actifs" ───────────────────────────────────────────────────────────
+- tapOn: "Actifs"
+- assertVisible: "Actifs"
+# Seuls les produits actifs sont affichés (vérification badge)
+- assertNotVisible: "Inactif"
+
+# ── Filtre "Inactifs" ─────────────────────────────────────────────────────────
+- tapOn: "Inactifs"
+- assertVisible: "Inactifs"
+- assertNotVisible: "Actif"
+
+# ── Filtre "Tous" ─────────────────────────────────────────────────────────────
+- tapOn: "Tous"
+- assertVisible: "Tous"
+
+# ── Recherche ─────────────────────────────────────────────────────────────────
+- tapOn:
+    id: "search_icon"
+    optional: true
+- tapOn:
+    text: "Rechercher un produit…"
+    optional: true
+- inputText: "zzz_inexistant"
+- assertVisible: "Aucun résultat"
+
+- clearText
+- inputText: ""
+- assertNotVisible: "Aucun résultat"

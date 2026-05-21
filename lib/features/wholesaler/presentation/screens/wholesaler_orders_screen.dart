@@ -317,6 +317,26 @@ class _OrderCard extends StatelessWidget {
                   OrderStatusBadge(status: order.status),
                 ],
               ),
+              if (order.producerName != null) ...[
+                const SizedBox(height: AppSpacing.s6),
+                Row(
+                  children: [
+                    Icon(
+                      Symbols.storefront,
+                      size: 14,
+                      color: isDark ? AppColors.gray400 : AppColors.gray500,
+                    ),
+                    const SizedBox(width: AppSpacing.s6),
+                    Text(
+                      order.producerName!,
+                      style: AppTextStyles.caption.copyWith(
+                        color: isDark ? AppColors.gray300 : AppColors.gray700,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: AppSpacing.s8),
               Row(
                 children: [

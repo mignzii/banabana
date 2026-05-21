@@ -1,0 +1,143 @@
+# TEST : CRUD Produit — Créer, Lire, Modifier, Supprimer
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  PRODUCT_TITLE: "Bananes Plantain Test"
+  PRODUCT_PRICE: "5000"
+  VARIANT_LABEL: "Régime 12kg"
+  VARIANT_PRICE: "4500"
+  VARIANT_STOCK: "50"
+  PRODUCT_TITLE_EDITED: "Bananes Plantain Modifié"
+  PRODUCT_PRICE_EDITED: "5500"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+# ── Accès à la liste des produits ────────────────────────────────────────────
+- tapOn: "Produits"
+- assertVisible: "Ajouter un produit"
+
+# ── CRÉER : Navigation vers formulaire ───────────────────────────────────────
+- tapOn: "Nouveau produit"
+- assertVisible: "Nouveau produit"
+- assertVisible: "Nom du produit *"
+- assertVisible: "Description"
+
+# Vérification validation : champs vides
+- tapOn: "Créer le produit"
+- assertVisible: "Champ requis"
+
+# Remplissage du formulaire
+- tapOn: "Nom du produit *"
+- inputText: "${PRODUCT_TITLE}"
+
+- tapOn: "Choisir une catégorie"
+- assertVisible: "Choisir une catégorie"
+- tapOn: "Fruits"
+- assertVisible: "Fruits"
+
+- scrollUntilVisible:
+    element:
+      text: "Description"
+    direction: DOWN
+- tapOn: "Description"
+- inputText: "Bananes de qualité premium, origine Abidjan"
+
+- scrollUntilVisible:
+    element:
+      text: "Prix de base (FCFA) *"
+    direction: DOWN
+- tapOn: "Prix de base (FCFA) *"
+- inputText: "${PRODUCT_PRICE}"
+
+# Ajout d'une variante
+- scrollUntilVisible:
+    element:
+      text: "Ajouter une variante"
+    direction: DOWN
+- tapOn: "Ajouter une variante"
+- assertVisible: "Définissez un conditionnement"
+- tapOn: "Régime"
+- tapOn: "Label * (ex: 5kg, Carton de 12…)"
+- inputText: "${VARIANT_LABEL}"
+- tapOn: "Prix (FCFA) *"
+- inputText: "${VARIANT_PRICE}"
+- tapOn: "Stock *"
+- inputText: "${VARIANT_STOCK}"
+- tapOn: "Ajouter cette variante"
+- assertVisible: "${VARIANT_LABEL}"
+
+# Soumettre la création
+- scrollUntilVisible:
+    element:
+      text: "Créer le produit"
+    direction: DOWN
+- tapOn: "Créer le produit"
+
+# ── LIRE : Vérification de la page détail ────────────────────────────────────
+- assertVisible: "Détail produit"
+- assertVisible: "${PRODUCT_TITLE}"
+- assertVisible: "Inactif"
+- assertVisible: "${VARIANT_LABEL}"
+- assertVisible: "Activer"
+
+# ── ACTIVER le produit ────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Activer"
+    direction: DOWN
+- tapOn: "Activer"
+- assertVisible: "Produit activé"
+
+# ── DÉSACTIVER le produit ─────────────────────────────────────────────────────
+- tapOn: "Désactiver"
+- assertVisible: "Produit désactivé"
+- assertVisible: "Inactif"
+
+# ── MODIFIER le produit ───────────────────────────────────────────────────────
+- tapOn: "Modifier"
+- assertVisible: "Modifier le produit"
+
+# Modifier le titre
+- tapOn: "Nom du produit *"
+- eraseText: 50
+- inputText: "${PRODUCT_TITLE_EDITED}"
+
+# Modifier le prix
+- scrollUntilVisible:
+    element:
+      text: "Prix de base (FCFA) *"
+    direction: DOWN
+- tapOn: "Prix de base (FCFA) *"
+- eraseText: 50
+- inputText: "${PRODUCT_PRICE_EDITED}"
+
+- scrollUntilVisible:
+    element:
+      text: "Mettre à jour"
+    direction: DOWN
+- tapOn: "Mettre à jour"
+
+- assertVisible: "Produit mis à jour"
+- assertVisible: "${PRODUCT_TITLE_EDITED}"
+
+# ── SUPPRIMER le produit ──────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Supprimer"
+    direction: DOWN
+- tapOn: "Supprimer"
+- assertVisible: "Cette action est irréversible"
+- tapOn: "Annuler"
+- assertVisible: "${PRODUCT_TITLE_EDITED}"
+
+# Confirmer la suppression
+- scrollUntilVisible:
+    element:
+      text: "Supprimer"
+    direction: DOWN
+- tapOn: "Supprimer"
+- assertVisible: "Cette action est irréversible"
+- tapOn: "Supprimer"
+- assertVisible: "Produit supprimé"

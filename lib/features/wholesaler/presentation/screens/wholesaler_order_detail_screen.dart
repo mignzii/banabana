@@ -162,6 +162,58 @@ class _WholesalerOrderDetailScreenState
               color: isDark ? AppColors.gray400 : AppColors.gray500,
             ),
           ),
+          if (order.producerName != null) ...[
+            const SizedBox(height: AppSpacing.s8),
+            Row(
+              children: [
+                Icon(
+                  Symbols.storefront,
+                  size: 15,
+                  color: isDark ? AppColors.gray400 : AppColors.gray500,
+                ),
+                const SizedBox(width: AppSpacing.s8),
+                Text(
+                  order.producerName!,
+                  style: AppTextStyles.label.copyWith(
+                    color: isDark ? AppColors.gray200 : AppColors.gray800,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (order.deliveryName != null || order.deliveryPhone != null) ...[
+            const SizedBox(height: AppSpacing.s12),
+            Row(
+              children: [
+                Icon(Symbols.person, size: 16,
+                    color: isDark ? AppColors.gray400 : AppColors.gray500),
+                const SizedBox(width: AppSpacing.s8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Destinataire',
+                          style: AppTextStyles.caption.copyWith(
+                            color: isDark ? AppColors.gray400 : AppColors.gray500,
+                          )),
+                      if (order.deliveryName != null)
+                        Text(order.deliveryName!,
+                            style: AppTextStyles.label.copyWith(
+                              color: isDark ? AppColors.gray100 : AppColors.gray900,
+                              fontWeight: FontWeight.w600,
+                            )),
+                      if (order.deliveryPhone != null)
+                        Text(order.deliveryPhone!,
+                            style: AppTextStyles.caption.copyWith(
+                              color: isDark ? AppColors.gray300 : AppColors.gray700,
+                            )),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
           if (order.deliveryAddress != null &&
               order.deliveryAddress!.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.s12),
@@ -195,6 +247,36 @@ class _WholesalerOrderDetailScreenState
                       ),
                     ],
                   ),
+                ),
+              ],
+            ),
+          ],
+          if (order.paymentMethod != null) ...[
+            const SizedBox(height: AppSpacing.s12),
+            Row(
+              children: [
+                Icon(Symbols.payments, size: 16,
+                    color: isDark ? AppColors.gray400 : AppColors.gray500),
+                const SizedBox(width: AppSpacing.s8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Mode de paiement',
+                        style: AppTextStyles.caption.copyWith(
+                          color: isDark ? AppColors.gray400 : AppColors.gray500,
+                        )),
+                    Text(
+                      switch (order.paymentMethod) {
+                        'mobile' => 'Mobile Money',
+                        'cash'   => 'Paiement à la livraison',
+                        'card'   => 'Carte bancaire',
+                        _        => order.paymentMethod!,
+                      },
+                      style: AppTextStyles.label.copyWith(
+                        color: isDark ? AppColors.gray100 : AppColors.gray900,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

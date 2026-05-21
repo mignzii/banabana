@@ -68,6 +68,7 @@ class ProductCardShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.white,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
@@ -81,33 +82,38 @@ class ProductCardShimmer extends StatelessWidget {
                 ),
               ],
       ),
-      child: const Column(
-        children: [
-          // Image placeholder 1:1
-          AspectRatio(
-            aspectRatio: 1,
-            child: ClipRRect(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(AppSpacing.radiusLarge),
-              ),
-              child: ShimmerBox(
-                height: double.infinity,
-                borderRadius: 0,
+      child: ClipRect(
+        child: Column(
+          children: const [
+            // Image placeholder 1:1
+            AspectRatio(
+              aspectRatio: 1,
+              child: ClipRRect(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(AppSpacing.radiusLarge),
+                ),
+                child: ShimmerBox(
+                  height: double.infinity,
+                  borderRadius: 0,
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(AppSpacing.s12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ShimmerBox(height: 12, borderRadius: AppSpacing.s4),
-                SizedBox(height: AppSpacing.s8),
-                ShimmerBox(width: 80, height: 10, borderRadius: AppSpacing.s4),
-              ],
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.s12, AppSpacing.s8,
+                AppSpacing.s12, AppSpacing.s8,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ShimmerBox(height: 14, borderRadius: AppSpacing.s4),
+                  SizedBox(height: AppSpacing.s4),
+                  ShimmerBox(width: 80, height: 12, borderRadius: AppSpacing.s4),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

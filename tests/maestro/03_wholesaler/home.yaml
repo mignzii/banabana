@@ -1,0 +1,78 @@
+# TEST : Accueil Grossiste — bannières, catégories, produits vedette, navigation
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+# ── Header & panier ───────────────────────────────────────────────────────────
+- assertVisible: "BanaBana"
+- tapOn:
+    id: "cart_icon"
+    optional: true
+- assertVisible:
+    text: "Mon panier"
+    optional: true
+- tapOn: "Retour"
+    optional: true
+
+# ── Bannières hero (swipe) ────────────────────────────────────────────────────
+- assertVisible: "Achetez en gros, économisez plus"
+- assertVisible: "Explorer →"
+- swipe:
+    start: { x: 300, y: 250 }
+    end: { x: 50, y: 250 }
+- assertVisible: "Commandes groupées disponibles"
+- swipe:
+    start: { x: 300, y: 250 }
+    end: { x: 50, y: 250 }
+- assertVisible: "Produits frais du jour"
+
+# CTA bannière
+- tapOn: "Découvrir →"
+- assertVisible:
+    anyOf:
+      - text: "Catalogue"
+      - text: "Produits vedette"
+
+# ── Section catégories ────────────────────────────────────────────────────────
+- assertVisible: "Catégories"
+- scrollUntilVisible:
+    element:
+      text: "Catégories"
+    direction: DOWN
+# Tap sur une catégorie si visible
+- tapOn:
+    index: 0
+    belowText: "Catégories"
+    optional: true
+- tapOn: "Retour"
+    optional: true
+
+# ── Section produits vedette ──────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Produits vedette"
+    direction: DOWN
+- assertVisible: "Produits vedette"
+- assertVisible: "Voir tout"
+- tapOn: "Voir tout"
+- assertVisible: "Catalogue"
+- tapOn: "Retour"
+
+# ── Navigation par tabs ───────────────────────────────────────────────────────
+- tapOn: "Tableau de bord"
+- assertVisible: "BanaBana Shop"
+- tapOn: "Accueil"
+- assertVisible: "BanaBana"
+- tapOn: "Catalogue"
+- assertVisible: "Catalogue"
+- tapOn: "Accueil"
+- tapOn: "Commandes"
+- assertVisible: "Mes commandes"
+- tapOn: "Accueil"
+- tapOn: "Profil"
+- assertVisible: "Profil"
+- tapOn: "Accueil"

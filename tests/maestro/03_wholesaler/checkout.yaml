@@ -1,0 +1,137 @@
+# TEST : Checkout Grossiste — validation formulaire, modes de paiement, confirmation
+# Prérequis : au moins un produit actif avec variante dans le catalogue
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+  DELIVERY_NAME: "Ama Mensah"
+  DELIVERY_PHONE: "+2250700000020"
+  DELIVERY_ADDRESS: "Rue des Jardins, Cocody"
+  DELIVERY_CITY: "Abidjan"
+  DELIVERY_NOTES: "Appeler avant livraison"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+# Ajouter un produit au panier
+- tapOn: "Catalogue"
+- tapOn:
+    index: 0
+    belowText: "Catalogue"
+- scrollUntilVisible:
+    element:
+      text: "Ajouter au panier"
+    direction: DOWN
+- tapOn: "Ajouter au panier"
+
+# Aller au checkout
+- tapOn:
+    id: "cart_icon"
+- tapOn: "Passer la commande →"
+- assertVisible: "Finaliser la commande"
+
+# ── Récapitulatif ─────────────────────────────────────────────────────────────
+- assertVisible: "Récapitulatif"
+- assertVisible: "Total"
+- assertVisible: "FCFA"
+
+# ── Validation : champs vides ─────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Confirmer"
+    direction: DOWN
+- tapOn:
+    text: "Confirmer"
+- assertVisible: "requis"
+
+# ── Remplir le formulaire de livraison ────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Adresse de livraison"
+    direction: UP
+- assertVisible: "Adresse de livraison"
+
+- tapOn: "Nom complet *"
+- inputText: "${DELIVERY_NAME}"
+
+- tapOn: "Téléphone *"
+- inputText: "${DELIVERY_PHONE}"
+
+- tapOn: "Adresse *"
+- inputText: "${DELIVERY_ADDRESS}"
+
+- tapOn: "Ville *"
+- inputText: "${DELIVERY_CITY}"
+
+- tapOn: "Notes (optionnel)"
+- inputText: "${DELIVERY_NOTES}"
+
+# ── Sélection du mode de paiement ────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Mode de paiement"
+    direction: DOWN
+- assertVisible: "Mobile Money"
+- assertVisible: "Paiement à la livraison"
+- assertVisible: "Carte bancaire"
+
+# Sélectionner Mobile Money
+- tapOn: "Mobile Money"
+
+# ── Confirmer — Mobile Money ──────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Confirmer"
+    direction: DOWN
+- tapOn:
+    text: "Confirmer"
+- assertVisible:
+    anyOf:
+      - text: "Commande passée"
+      - text: "Détail commande"
+      - text: "#"
+
+# ── Vérifier la page de confirmation ─────────────────────────────────────────
+- assertVisible: "Détail commande"
+- assertVisible: "RÉCAPITULATIF"
+- tapOn: "Retour"
+
+# ── Re-tester avec "Paiement à la livraison" ─────────────────────────────────
+- tapOn: "Catalogue"
+- tapOn:
+    index: 0
+    belowText: "Catalogue"
+- scrollUntilVisible:
+    element:
+      text: "Ajouter au panier"
+    direction: DOWN
+- tapOn: "Ajouter au panier"
+- tapOn:
+    id: "cart_icon"
+- tapOn: "Passer la commande →"
+
+- tapOn: "Nom complet *"
+- inputText: "${DELIVERY_NAME}"
+- tapOn: "Téléphone *"
+- inputText: "${DELIVERY_PHONE}"
+- tapOn: "Adresse *"
+- inputText: "${DELIVERY_ADDRESS}"
+- tapOn: "Ville *"
+- inputText: "${DELIVERY_CITY}"
+
+- scrollUntilVisible:
+    element:
+      text: "Paiement à la livraison"
+    direction: DOWN
+- tapOn: "Paiement à la livraison"
+
+- scrollUntilVisible:
+    element:
+      text: "Confirmer"
+    direction: DOWN
+- tapOn:
+    text: "Confirmer"
+- assertVisible:
+    anyOf:
+      - text: "Commande passée"
+      - text: "Détail commande"

@@ -36,6 +36,14 @@ class ShopHomeScreen extends ConsumerWidget {
           ),
         ),
         actions: [
+          IconButton(
+            icon: Icon(
+              Symbols.analytics,
+              color: isDark ? AppColors.gray300 : AppColors.gray700,
+            ),
+            tooltip: 'Analytiques',
+            onPressed: () => context.push('/shop/analytics'),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.s8),
             child: Stack(
@@ -207,7 +215,7 @@ class ShopHomeScreen extends ConsumerWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: AppSpacing.s12,
                   mainAxisSpacing: AppSpacing.s12,
-                  childAspectRatio: 0.78,
+                  childAspectRatio: 0.62,
                 ),
                 itemCount: 4,
                 itemBuilder: (_, __) => const ProductCardShimmer(),
@@ -234,7 +242,7 @@ class ShopHomeScreen extends ConsumerWidget {
                     crossAxisCount: 2,
                     crossAxisSpacing: AppSpacing.s12,
                     mainAxisSpacing: AppSpacing.s12,
-                    childAspectRatio: 0.78,
+                    childAspectRatio: 0.62,
                   ),
                   itemCount: items.length,
                   itemBuilder: (_, i) => CatalogItemCard(

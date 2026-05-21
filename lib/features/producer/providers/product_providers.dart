@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:banabana_b2b/core/api/api_client.dart';
 import 'package:banabana_b2b/features/producer/data/product_repository.dart';
@@ -39,6 +41,12 @@ final productsNotifierProvider =
   return ProductsNotifier(ref.watch(productRepositoryProvider));
 });
 
-final productDetailProvider = FutureProvider.family<Product, String>((ref, id) {
+final productDetailProvider = FutureProvider.family<Product, String>((ref, id) async {
+  final listState = ref.watch(productsNotifierProvider);
+  final cached = listState.valueOrNull?.where((p) => p.id == id).firstOrNull;
+  if (cached != null) return cached;
+  // While the list is still loading, suspend — Riverpod will re-evaluate this
+  // provider once productsNotifierProvider settles, avoiding a premature API call.
+  if (listState.isLoading) return Completer<Product>().future;
   return ref.watch(productRepositoryProvider).getProduct(id);
 });

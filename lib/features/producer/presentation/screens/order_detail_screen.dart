@@ -282,11 +282,76 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                             : AppColors.gray900,
                       ),
                     ),
+                    if (order.wholesalerPhone != null)
+                      Text(
+                        order.wholesalerPhone!,
+                        style: AppTextStyles.caption.copyWith(
+                          color: isDark
+                              ? AppColors.gray400
+                              : AppColors.gray500,
+                        ),
+                      ),
                   ],
                 ),
               ),
             ],
           ),
+          if (order.deliveryName != null &&
+              order.deliveryName!.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.s12),
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.gray100,
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMedium),
+                  ),
+                  child: Icon(
+                    Symbols.person,
+                    size: 20,
+                    color: isDark ? AppColors.gray400 : AppColors.gray500,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.s12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Destinataire',
+                        style: AppTextStyles.caption.copyWith(
+                          color: isDark
+                              ? AppColors.gray400
+                              : AppColors.gray500,
+                        ),
+                      ),
+                      Text(
+                        order.deliveryName!,
+                        style: AppTextStyles.label.copyWith(
+                          color: isDark
+                              ? AppColors.gray100
+                              : AppColors.gray900,
+                        ),
+                      ),
+                      if (order.deliveryPhone != null &&
+                          order.deliveryPhone!.isNotEmpty)
+                        Text(
+                          order.deliveryPhone!,
+                          style: AppTextStyles.caption.copyWith(
+                            color: isDark
+                                ? AppColors.gray400
+                                : AppColors.gray500,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
           if (order.deliveryAddress != null &&
               order.deliveryAddress!.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.s12),
@@ -323,6 +388,57 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       ),
                       Text(
                         order.deliveryAddress!,
+                        style: AppTextStyles.label.copyWith(
+                          color: isDark
+                              ? AppColors.gray100
+                              : AppColors.gray900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (order.paymentMethod != null &&
+              order.paymentMethod!.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.s12),
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.gray100,
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMedium),
+                  ),
+                  child: Icon(
+                    Symbols.payments,
+                    size: 20,
+                    color: isDark ? AppColors.gray400 : AppColors.gray500,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.s12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Mode de paiement',
+                        style: AppTextStyles.caption.copyWith(
+                          color: isDark
+                              ? AppColors.gray400
+                              : AppColors.gray500,
+                        ),
+                      ),
+                      Text(
+                        switch (order.paymentMethod!) {
+                          'mobile' => 'Mobile Money',
+                          'cash' => 'Paiement à la livraison',
+                          'card' => 'Carte bancaire',
+                          _ => order.paymentMethod!,
+                        },
                         style: AppTextStyles.label.copyWith(
                           color: isDark
                               ? AppColors.gray100

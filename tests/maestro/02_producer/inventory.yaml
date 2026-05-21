@@ -1,0 +1,91 @@
+# TEST : Gestion de stock — tous les onglets et actions
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Inventaire"
+- assertVisible: "Gestion de Stock"
+
+# ── Barre de stats ────────────────────────────────────────────────────────────
+- assertVisible: "Articles"
+- assertVisible: "Alertes"
+- assertVisible: "Valeur (FCFA)"
+
+# ── Onglet "Tous" ─────────────────────────────────────────────────────────────
+- assertVisible: "Tous"
+- assertVisible: "Alertes"
+- assertVisible: "Mouvements"
+- assertVisible: "Stats"
+
+# Recherche dans l'inventaire
+- tapOn: "Rechercher..."
+- inputText: "zzz_inexistant"
+- clearText
+
+# Réapprovisionner un article si disponible
+- scrollUntilVisible:
+    element:
+      text: "Réapprovisionner"
+    direction: DOWN
+    optional: true
+- tapOn:
+    text: "Réapprovisionner"
+    optional: true
+- assertVisible:
+    text: "Quantité"
+    optional: true
+- tapOn:
+    text: "Quantité"
+    optional: true
+- inputText: "10"
+- tapOn:
+    text: "Confirmer"
+    optional: true
+- tapOn: "Retour"
+    optional: true
+
+# Ajuster le stock
+- scrollUntilVisible:
+    element:
+      text: "Ajuster"
+    direction: DOWN
+    optional: true
+- tapOn:
+    text: "Ajuster"
+    optional: true
+- assertVisible:
+    text: "Quantité"
+    optional: true
+- tapOn:
+    text: "Quantité"
+    optional: true
+- inputText: "5"
+- tapOn:
+    text: "Confirmer"
+    optional: true
+
+# ── Onglet "Alertes" ──────────────────────────────────────────────────────────
+- tapOn: "Alertes"
+- assertVisible:
+    anyOf:
+      - text: "Rupture de stock"
+      - text: "Stock faible"
+      - text: "Aucune alerte"
+
+# ── Onglet "Mouvements" ───────────────────────────────────────────────────────
+- tapOn: "Mouvements"
+- assertVisible:
+    anyOf:
+      - text: "Entrée"
+      - text: "Sortie"
+      - text: "Ajustement"
+      - text: "Aucun mouvement"
+
+# ── Onglet "Stats" ────────────────────────────────────────────────────────────
+- tapOn: "Stats"
+- assertVisible: "Valeur totale du stock"
+- assertVisible: "Répartition par catégorie"

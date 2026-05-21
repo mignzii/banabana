@@ -1,0 +1,94 @@
+# TEST : Détail produit public Grossiste — affichage, variantes, ajout au panier
+# Prérequis : au moins un produit actif avec variante dans le catalogue
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Catalogue"
+- assertVisible: "Catalogue"
+
+# Ouvrir le premier produit disponible
+- tapOn:
+    index: 0
+    belowText: "Catalogue"
+
+- assertVisible: "Détails produit"
+
+# ── Carousel d'images ─────────────────────────────────────────────────────────
+- swipe:
+    start: { x: 300, y: 200 }
+    end: { x: 50, y: 200 }
+    optional: true
+
+# ── Informations produit ──────────────────────────────────────────────────────
+- assertVisible: "FCFA"
+- scrollUntilVisible:
+    element:
+      text: "Voir plus"
+    direction: DOWN
+    optional: true
+- tapOn:
+    text: "Voir plus"
+    optional: true
+- assertVisible:
+    text: "Voir moins"
+    optional: true
+- tapOn:
+    text: "Voir moins"
+    optional: true
+
+# ── Sélection de variante ─────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "FCFA"
+    direction: DOWN
+# Sélectionner la première variante visible
+- tapOn:
+    index: 0
+    belowText: "FCFA"
+    optional: true
+
+# ── Ajustement de la quantité ─────────────────────────────────────────────────
+- tapOn: "+"
+    optional: true
+- tapOn: "+"
+    optional: true
+- tapOn: "-"
+    optional: true
+# Vérifier qu'on ne descend pas sous 1
+- tapOn: "-"
+    optional: true
+- tapOn: "-"
+    optional: true
+
+# ── Ajout au panier ───────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Ajouter au panier"
+    direction: DOWN
+- tapOn: "Ajouter au panier"
+- assertVisible: "Ajouté au panier ✓"
+
+# Action "Voir" depuis le snack
+- tapOn: "Voir"
+- assertVisible: "Mon panier"
+- assertVisible: "FCFA"
+- tapOn: "Retour"
+
+# ── Bouton panier dans l'AppBar ───────────────────────────────────────────────
+- tapOn:
+    id: "cart_icon"
+- assertVisible: "Mon panier"
+- tapOn: "Retour"
+
+# ── Retour au catalogue ───────────────────────────────────────────────────────
+- tapOn:
+    id: "back_button"
+    optional: true
+- tapOn: "Retour"
+    optional: true
+- assertVisible: "Catalogue"

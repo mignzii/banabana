@@ -1,0 +1,67 @@
+# TEST : Dashboard Producteur — stats, actions rapides, commandes récentes
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+# ── Accès au dashboard depuis l'accueil ──────────────────────────────────────
+- tapOn: "Tableau de bord"
+- assertVisible: "Actions rapides"
+
+# ── Actions rapides ───────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Ajouter produit"
+    direction: DOWN
+- assertVisible: "Mes produits"
+- assertVisible: "Commandes"
+- scrollUntilVisible:
+    element:
+      text: "Gestion stock"
+    direction: DOWN
+- assertVisible: "Gestion stock"
+
+# ── Navigation : Ajouter produit ─────────────────────────────────────────────
+- tapOn: "Ajouter produit"
+- assertVisible: "Nouveau produit"
+- tapOn: "Retour"
+
+# ── Navigation : Mes produits ────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Mes produits"
+    direction: DOWN
+- tapOn: "Mes produits"
+- assertVisible: "Ajouter un produit"
+- tapOn: "Retour"
+
+# ── Navigation : Commandes ───────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Commandes"
+    direction: DOWN
+- tapOn: "Commandes"
+- assertVisible: "Commandes Reçues"
+- tapOn: "Retour"
+
+# ── Navigation : Gestion stock ───────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Gestion stock"
+    direction: DOWN
+- tapOn: "Gestion stock"
+- assertVisible: "Gestion de Stock"
+- tapOn: "Retour"
+
+# ── Section commandes récentes ────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Commandes récentes"
+    direction: DOWN
+- assertVisible: "Voir tout"
+- tapOn: "Voir tout"
+- assertVisible: "Commandes Reçues"
+- tapOn: "Retour"

@@ -1,0 +1,53 @@
+# TEST : Profil Grossiste — affichage, édition, mode sombre, déconnexion
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+  NEW_EMAIL: "grossiste.test@banabana.pro"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Profil"
+- assertVisible: "Profil"
+
+# ── Informations ──────────────────────────────────────────────────────────────
+- assertVisible: "Informations"
+- assertVisible: "Téléphone"
+- assertVisible: "${WHOLESALER_PHONE}"
+- assertVisible: "Statut KYC"
+- assertVisible: "Préférences"
+- assertVisible: "Mode sombre"
+- assertVisible: "Déconnexion"
+
+# ── Mode sombre ───────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Mode sombre"
+    direction: DOWN
+- tapOn: "Mode sombre"
+- tapOn: "Mode sombre"
+
+# ── KYC ───────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Statut KYC"
+    direction: DOWN
+- assertVisible:
+    anyOf:
+      - text: "En attente"
+      - text: "Approuvé"
+      - text: "Soumettre les documents"
+
+# ── Déconnexion ───────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- assertVisible: "Êtes-vous sûr de vouloir vous déconnecter ?"
+- tapOn: "Annuler"
+- assertVisible: "Profil"
+- tapOn: "Déconnexion"
+- tapOn: "Déconnexion"
+- assertVisible: "Connectez-vous pour continuer"

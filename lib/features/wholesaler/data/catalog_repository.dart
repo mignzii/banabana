@@ -1,9 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:banabana_b2b/shared/models/catalog_item.dart';
+import 'package:banabana_b2b/shared/models/product.dart';
 
 class CatalogRepository {
   final Dio _dio;
   CatalogRepository(this._dio);
+
+  Future<Product> getProduct(String id) async {
+    final response = await _dio.get('/products/$id');
+    return Product.fromJson(response.data as Map<String, dynamic>);
+  }
 
   Future<List<String>> getCategories() async {
     final response = await _dio.get('/catalog/categories');

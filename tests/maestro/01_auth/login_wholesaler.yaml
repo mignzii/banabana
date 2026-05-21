@@ -1,0 +1,39 @@
+# TEST : Connexion Grossiste (PIN directe, sans OTP)
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+  WHOLESALER_PIN: "0000"
+---
+- launchApp:
+    clearState: true
+
+# Phone field is autofocused — erase "+221" and type phone number
+- eraseText: 20
+- inputText: "${WHOLESALER_PHONE}"
+- tapOn: "Votre profil"
+- tapOn: "Grossiste"
+- tapOn: "Connexion PIN directe (sans OTP)"
+
+- assertVisible: "Entrez votre PIN"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+- tapOn:
+    text: "0"
+
+- assertVisible: "BanaBana"
+- assertNotVisible: "Entrez votre PIN"
+
+# Déconnexion
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- assertVisible: "Êtes-vous sûr de vouloir vous déconnecter ?"
+- tapOn: "Se déconnecter"
+- assertVisible: "Connectez-vous pour continuer"

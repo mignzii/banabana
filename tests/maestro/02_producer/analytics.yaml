@@ -1,0 +1,34 @@
+# TEST : Analytiques Producteur — affichage des stats et graphiques
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Tableau de bord"
+- scrollUntilVisible:
+    element:
+      text: "Statistiques"
+    direction: DOWN
+- tapOn: "Statistiques"
+- assertVisible: "Analytiques"
+
+# ── Cartes statistiques ───────────────────────────────────────────────────────
+- assertVisible: "Revenus totaux"
+- assertVisible: "Commandes"
+- assertVisible: "En attente"
+
+# ── Graphique de revenus ──────────────────────────────────────────────────────
+- assertVisible: "Revenus (30 derniers jours)"
+
+# ── Graphique top produits (si données) ──────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      text: "Top 5 produits"
+    direction: DOWN
+    optional: true
+- assertVisible:
+    text: "Top 5 produits"
+    optional: true

@@ -7,8 +7,9 @@ import 'package:banabana_b2b/core/api/api_client.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
-import 'package:banabana_b2b/features/producer/providers/product_providers.dart';
+import 'package:banabana_b2b/features/wholesaler/providers/catalog_providers.dart';
 import 'package:banabana_b2b/features/producer/providers/category_providers.dart';
+import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/shared/models/product.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
@@ -29,6 +30,31 @@ class _ProductPublicDetailScreenState
   int _quantity = 1;
   int _pageIndex = 0;
   bool _descriptionExpanded = false;
+  final TextEditingController _qtyController = TextEditingController(text: '1');
+  final FocusNode _qtyFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _qtyFocus.addListener(() {
+      if (!_qtyFocus.hasFocus) _commitQty();
+    });
+  }
+
+  @override
+  void dispose() {
+    _qtyController.dispose();
+    _qtyFocus.dispose();
+    super.dispose();
+  }
+
+  void _commitQty() {
+    final minQty = _selectedVariant?.minOrderQuantity ?? 1;
+    final parsed = int.tryParse(_qtyController.text);
+    final clamped = (parsed == null || parsed < minQty) ? minQty : parsed;
+    setState(() => _quantity = clamped);
+    _qtyController.text = '$clamped';
+  }
 
   void _addToCart(Product product) {
     if (_selectedVariant == null) return;
@@ -51,7 +77,22 @@ class _ProductPublicDetailScreenState
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final productAsync = ref.watch(productDetailProvider(widget.productId));
+    final productAsync = ref.watch(catalogProductDetailProvider(widget.productId));
+    final currentUserId = ref.watch(authProvider).user?.id;
+
+    ref.listen(catalogProductDetailProvider(widget.productId), (_, next) {
+      if (next case AsyncData(:final value) when _selectedVariant == null && value.variants.isNotEmpty) {
+        final first = value.variants.first;
+        setState(() {
+          _selectedVariant = first;
+          _quantity = first.minOrderQuantity ?? 1;
+          _qtyController.text = '$_quantity';
+        });
+      }
+    });
+
+    final isOwnProduct = productAsync.valueOrNull?.producer?.userId != null &&
+        productAsync.valueOrNull!.producer!.userId == currentUserId;
 
     return Scaffold(
       backgroundColor:
@@ -63,34 +104,35 @@ class _ProductPublicDetailScreenState
         scrolledUnderElevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(AppSpacing.s8),
-          child: _CircleButton(
-            icon: Symbols.arrow_back,
-            isDark: isDark,
-            onTap: () => context.pop(),
+          child: Semantics(
+            label: 'Retour',
+            button: true,
+            child: _CircleButton(
+              icon: Symbols.arrow_back,
+              isDark: isDark,
+              onTap: () => context.pop(),
+            ),
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.s12),
-            child: _CircleButton(
-              icon: Symbols.shopping_cart,
-              isDark: isDark,
-              onTap: () => context.push('/shop/cart'),
+          if (!isOwnProduct)
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.s12),
+              child: _CircleButton(
+                icon: Symbols.shopping_cart,
+                isDark: isDark,
+                onTap: () => context.push('/shop/cart'),
+              ),
             ),
-          ),
         ],
       ),
       bottomNavigationBar: productAsync.valueOrNull != null
-          ? _buildBottomBar(productAsync.valueOrNull!, isDark)
+          ? _buildBottomBar(productAsync.valueOrNull!, isDark, isOwnProduct)
           : null,
       body: productAsync.when(
         loading: () => _buildSkeleton(isDark),
         error: (e, _) => _buildError(e, isDark),
-        data: (product) {
-          _selectedVariant ??=
-              product.variants.isNotEmpty ? product.variants.first : null;
-          return _buildScrollContent(product, isDark);
-        },
+        data: (product) => _buildScrollContent(product, isDark),
       ),
     );
   }
@@ -206,7 +248,7 @@ class _ProductPublicDetailScreenState
             const SizedBox(height: AppSpacing.s24),
             FilledButton.icon(
               onPressed: () =>
-                  ref.invalidate(productDetailProvider(widget.productId)),
+                  ref.invalidate(catalogProductDetailProvider(widget.productId)),
               icon: const Icon(Symbols.refresh),
               label: const Text('Réessayer'),
               style: FilledButton.styleFrom(
@@ -266,6 +308,10 @@ class _ProductPublicDetailScreenState
                 ),
                 const SizedBox(height: AppSpacing.s20),
                 _buildQuantityStepper(isDark),
+                if (_selectedVariant != null) ...[
+                  const SizedBox(height: AppSpacing.s16),
+                  _buildPriceSummaryCard(isDark),
+                ],
                 const SizedBox(height: AppSpacing.s32),
               ],
             ),
@@ -305,10 +351,10 @@ class _ProductPublicDetailScreenState
               imageUrl: resolveImageUrl(product.images[i].url),
               fit: BoxFit.cover,
               width: double.infinity,
-              placeholder: (_, __) => Container(
+              placeholder: (_, _) => Container(
                 color: isDark ? AppColors.darkSurface2 : AppColors.gray200,
               ),
-              errorWidget: (_, __, ___) => Container(
+              errorWidget: (_, _, _) => Container(
                 color: isDark ? AppColors.darkSurface2 : AppColors.gray200,
                 child: Center(
                   child: Icon(
@@ -515,6 +561,7 @@ class _ProductPublicDetailScreenState
               onTap: () => setState(() {
                 _selectedVariant = v;
                 _quantity = v.minOrderQuantity ?? 1;
+                _qtyController.text = '$_quantity';
               }),
             );
           }).toList(),
@@ -557,18 +604,31 @@ class _ProductPublicDetailScreenState
                 icon: Symbols.remove_circle,
                 enabled: _quantity > minQty,
                 onTap: () {
-                  if (_quantity > minQty) setState(() => _quantity--);
+                  if (_quantity > minQty) {
+                    setState(() => _quantity--);
+                    _qtyController.text = '$_quantity';
+                  }
                 },
               ),
-              // Count
-              SizedBox(
-                width: 44,
-                child: Text(
-                  '$_quantity',
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.sectionTitle.copyWith(
-                    fontSize: 18,
-                    color: isDark ? AppColors.white : AppColors.gray900,
+              // Editable count — tap to type any value
+              IntrinsicWidth(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 44),
+                  child: TextField(
+                    controller: _qtyController,
+                    focusNode: _qtyFocus,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.sectionTitle.copyWith(
+                      fontSize: 18,
+                      color: isDark ? AppColors.white : AppColors.gray900,
+                    ),
+                    decoration: const InputDecoration.collapsed(hintText: ''),
+                    onChanged: (v) {
+                      final n = int.tryParse(v);
+                      if (n != null && n >= minQty) setState(() => _quantity = n);
+                    },
+                    onSubmitted: (_) => _commitQty(),
                   ),
                 ),
               ),
@@ -576,7 +636,10 @@ class _ProductPublicDetailScreenState
               _StepperButton(
                 icon: Symbols.add_circle,
                 enabled: true,
-                onTap: () => setState(() => _quantity++),
+                onTap: () {
+                  setState(() => _quantity++);
+                  _qtyController.text = '$_quantity';
+                },
               ),
             ],
           ),
@@ -650,63 +713,365 @@ class _ProductPublicDetailScreenState
   Widget _buildWholesaleInfoCard(bool isDark) {
     final v = _selectedVariant!;
     final unitLabel = _wholesaleUnitLabel(v.wholesaleUnit);
+    final cardBg = isDark
+        ? AppColors.primary.withValues(alpha: 0.10)
+        : AppColors.primary.withValues(alpha: 0.06);
+    final borderColor =
+        AppColors.primary.withValues(alpha: isDark ? 0.30 : 0.20);
+
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.s14),
       decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.primary.withValues(alpha: 0.08)
-            : AppColors.primary.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-        border: Border.all(
-            color: AppColors.primary.withValues(alpha: isDark ? 0.25 : 0.15)),
+        color: cardBg,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Symbols.info, size: 16, color: AppColors.primary),
-              const SizedBox(width: AppSpacing.s6),
-              Text(
-                'Conditions grossiste',
-                style: AppTextStyles.label.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w700,
+          // Header
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s14, vertical: AppSpacing.s12),
+            child: Row(
+              children: [
+                Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
+                  ),
+                  child: const Icon(Symbols.inventory_2,
+                      size: 16, color: AppColors.white),
                 ),
-              ),
-            ],
+                const SizedBox(width: AppSpacing.s10),
+                Text(
+                  'ACHAT EN GROS',
+                  style: AppTextStyles.label.copyWith(
+                    color: isDark ? AppColors.white : AppColors.gray900,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s8, vertical: AppSpacing.s4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusSmall),
+                  ),
+                  child: Text(
+                    'B2B',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 10,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: AppSpacing.s10),
-          _WholesaleRow(
-            label: 'Unité de vente',
-            value: unitLabel,
-            isDark: isDark,
+          Divider(
+              height: 1,
+              thickness: 1,
+              color: AppColors.primary.withValues(alpha: 0.15)),
+          // Info row
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                _WholesaleInfoItem(
+                  icon: Symbols.inventory_2,
+                  label: 'Unité',
+                  value: unitLabel,
+                  isDark: isDark,
+                ),
+                if (v.minOrderQuantity != null) ...[
+                  VerticalDivider(
+                      width: 1,
+                      thickness: 1,
+                      color: AppColors.primary.withValues(alpha: 0.15)),
+                  _WholesaleInfoItem(
+                    icon: Symbols.trending_up,
+                    label: 'Min.',
+                    value: '${v.minOrderQuantity} ${v.wholesaleUnit ?? 'u'}',
+                    iconColor: AppColors.warning,
+                    isDark: isDark,
+                  ),
+                ],
+                if (v.unitsPerPackage != null) ...[
+                  VerticalDivider(
+                      width: 1,
+                      thickness: 1,
+                      color: AppColors.primary.withValues(alpha: 0.15)),
+                  _WholesaleInfoItem(
+                    icon: Symbols.layers,
+                    label: 'Cond.',
+                    value: '${v.unitsPerPackage}/u',
+                    iconColor: AppColors.success,
+                    isDark: isDark,
+                  ),
+                ],
+                if (v.stock > 0) ...[
+                  VerticalDivider(
+                      width: 1,
+                      thickness: 1,
+                      color: AppColors.primary.withValues(alpha: 0.15)),
+                  _WholesaleInfoItem(
+                    icon: Symbols.warehouse,
+                    label: 'Stock',
+                    value: '${v.stock}',
+                    iconColor: AppColors.success,
+                    isDark: isDark,
+                  ),
+                ],
+              ],
+            ),
           ),
-          if (v.minOrderQuantity != null) ...[
-            const SizedBox(height: AppSpacing.s6),
-            _WholesaleRow(
-              label: 'Commande minimum',
-              value: '${v.minOrderQuantity} $unitLabel',
-              isDark: isDark,
-              highlight: true,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceSummaryCard(bool isDark) {
+    if (_selectedVariant == null) return const SizedBox.shrink();
+    final v = _selectedVariant!;
+    final unitLabel = _wholesaleUnitLabel(v.wholesaleUnit);
+    final unitShort = v.wholesaleUnit ?? 'u';
+    final total = v.price * _quantity;
+    final totalUnits = v.unitsPerPackage != null
+        ? _quantity * v.unitsPerPackage!
+        : null;
+
+    final cardBg = isDark
+        ? AppColors.primary.withValues(alpha: 0.10)
+        : AppColors.primary.withValues(alpha: 0.06);
+    final borderColor =
+        AppColors.primary.withValues(alpha: isDark ? 0.30 : 0.20);
+    final textPrimary = isDark ? AppColors.white : AppColors.gray900;
+    final textSecondary = isDark ? AppColors.gray400 : AppColors.gray500;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+        border: Border.all(color: borderColor),
+      ),
+      child: Column(
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s14, AppSpacing.s12, AppSpacing.s14, AppSpacing.s12),
+            child: Row(
+              children: [
+                Icon(Symbols.calculate, size: 20, color: AppColors.primary),
+                const SizedBox(width: AppSpacing.s8),
+                Text(
+                  'Calcul de votre commande',
+                  style: AppTextStyles.label.copyWith(
+                    color: textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ),
-          ],
-          if (v.unitsPerPackage != null) ...[
-            const SizedBox(height: AppSpacing.s6),
-            _WholesaleRow(
-              label: 'Unités / conditionnement',
-              value: '${v.unitsPerPackage} unités',
-              isDark: isDark,
+          ),
+          Divider(
+              height: 1,
+              thickness: 1,
+              color: AppColors.primary.withValues(alpha: 0.15)),
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.s12),
+            child: Column(
+              children: [
+                // Unit price box
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s14, vertical: AppSpacing.s12),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkSurface2 : AppColors.white,
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMedium),
+                    border: Border.all(
+                        color: isDark
+                            ? AppColors.darkBorder2
+                            : AppColors.gray200),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Prix par $unitLabel',
+                              style: AppTextStyles.caption
+                                  .copyWith(color: textSecondary),
+                            ),
+                            const SizedBox(height: AppSpacing.s4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.s6,
+                                  vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary
+                                    .withValues(alpha: 0.10),
+                                borderRadius: BorderRadius.circular(
+                                    AppSpacing.radiusSmall),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Symbols.sell,
+                                      size: 11, color: AppColors.primary),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    'Tarif grossiste',
+                                    style: AppTextStyles.caption.copyWith(
+                                      color: AppColors.primary,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '${v.price.toStringAsFixed(0)} FCFA',
+                        style: AppTextStyles.price.copyWith(
+                          color: AppColors.primary,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s8),
+                // Quantity selected row
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s14, vertical: AppSpacing.s10),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withValues(alpha: 0.08),
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMedium),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Symbols.check_circle,
+                          size: 16, color: AppColors.success),
+                      const SizedBox(width: AppSpacing.s8),
+                      Text(
+                        '$_quantity $unitLabel${_quantity > 1 ? 's' : ''} sélectionné${_quantity > 1 ? 's' : ''}',
+                        style: AppTextStyles.label.copyWith(
+                          color: AppColors.success,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (totalUnits != null) ...[
+                        const SizedBox(width: AppSpacing.s8),
+                        Container(
+                            width: 1,
+                            height: 14,
+                            color: AppColors.success.withValues(alpha: 0.4)),
+                        const SizedBox(width: AppSpacing.s8),
+                        Text(
+                          '= $totalUnits unités',
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s8),
+                // Formula
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s4, vertical: AppSpacing.s4),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Calcul :',
+                        style: AppTextStyles.caption
+                            .copyWith(color: textSecondary),
+                      ),
+                      const SizedBox(width: AppSpacing.s8),
+                      Text(
+                        '$_quantity × ${v.price.toStringAsFixed(0)} FCFA',
+                        style: AppTextStyles.label.copyWith(
+                          color: textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s8),
+                // Total box
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s16, vertical: AppSpacing.s14),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMedium),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'TOTAL À PAYER',
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.white.withValues(alpha: 0.8),
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                                fontSize: 10,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '$_quantity $unitShort',
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.white.withValues(alpha: 0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        total.toStringAsFixed(0),
+                        style: AppTextStyles.price.copyWith(
+                          color: AppColors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.s6),
+                      Text(
+                        'FCFA',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.white.withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-          if (v.stock > 0) ...[
-            const SizedBox(height: AppSpacing.s6),
-            _WholesaleRow(
-              label: 'Stock disponible',
-              value: '${v.stock} $unitLabel',
-              isDark: isDark,
-            ),
-          ],
+          ),
         ],
       ),
     );
@@ -714,11 +1079,7 @@ class _ProductPublicDetailScreenState
 
   // ── Bottom Bar ────────────────────────────────────────────────────────────
 
-  Widget _buildBottomBar(Product product, bool isDark) {
-    final total = _selectedVariant != null
-        ? _selectedVariant!.price * _quantity
-        : 0.0;
-
+  Widget _buildBottomBar(Product product, bool isDark, bool isOwnProduct) {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.white,
@@ -744,53 +1105,44 @@ class _ProductPublicDetailScreenState
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Total price section
-              if (_selectedVariant != null) ...[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Total',
-                      style: AppTextStyles.caption.copyWith(
-                        color: isDark ? AppColors.gray500 : AppColors.gray500,
-                        fontWeight: FontWeight.w500,
-                      ),
+              if (isOwnProduct)
+                Expanded(child: FilledButton.icon(
+                  onPressed: () => context.push('/shop/inventory/${product.id}'),
+                  icon: const Icon(Symbols.inventory_2, size: 20),
+                  label: const Text('Réapprovisionner'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.secondary,
+                    foregroundColor: AppColors.white,
+                    textStyle: AppTextStyles.button,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.s20, vertical: AppSpacing.s16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusLarge),
                     ),
-                    const SizedBox(height: AppSpacing.s4),
-                    Text(
-                      '${total.toStringAsFixed(0)} FCFA',
-                      style: AppTextStyles.price.copyWith(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: AppSpacing.s16),
-              ],
-              const Spacer(),
-              // Add to cart button
-              FilledButton.icon(
-                onPressed: _selectedVariant != null
-                    ? () => _addToCart(product)
-                    : null,
-                icon: const Icon(Symbols.add_shopping_cart, size: 20),
-                label: const Text('Ajouter au panier'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  disabledBackgroundColor:
-                      isDark ? AppColors.darkSurface2 : AppColors.gray200,
-                  foregroundColor: AppColors.white,
-                  textStyle: AppTextStyles.button,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.s20, vertical: AppSpacing.s16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(AppSpacing.radiusLarge),
                   ),
-                ),
-              ),
+                ))
+              else
+                Expanded(child: FilledButton.icon(
+                  onPressed: _selectedVariant != null
+                      ? () => _addToCart(product)
+                      : null,
+                  icon: const Icon(Symbols.add_shopping_cart, size: 20),
+                  label: const Text('Ajouter au panier'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    disabledBackgroundColor:
+                        isDark ? AppColors.darkSurface2 : AppColors.gray200,
+                    foregroundColor: AppColors.white,
+                    textStyle: AppTextStyles.button,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.s20, vertical: AppSpacing.s16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(AppSpacing.radiusLarge),
+                    ),
+                  ),
+                )),
             ],
           ),
         ),
@@ -953,40 +1305,52 @@ class _StepperButton extends StatelessWidget {
   }
 }
 
-class _WholesaleRow extends StatelessWidget {
-  const _WholesaleRow({
+class _WholesaleInfoItem extends StatelessWidget {
+  const _WholesaleInfoItem({
+    required this.icon,
     required this.label,
     required this.value,
     required this.isDark,
-    this.highlight = false,
+    this.iconColor,
   });
 
+  final IconData icon;
   final String label;
   final String value;
   final bool isDark;
-  final bool highlight;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: AppTextStyles.caption.copyWith(
-            color: isDark ? AppColors.gray400 : AppColors.gray500,
-          ),
+    final color = iconColor ?? AppColors.primary;
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.s12, vertical: AppSpacing.s12),
+        child: Column(
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(height: AppSpacing.s4),
+            Text(
+              label,
+              style: AppTextStyles.caption.copyWith(
+                color: isDark ? AppColors.gray500 : AppColors.gray400,
+                fontSize: 10,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: AppTextStyles.label.copyWith(
+                color: isDark ? AppColors.gray200 : AppColors.gray800,
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-        Text(
-          value,
-          style: AppTextStyles.label.copyWith(
-            color: highlight
-                ? AppColors.primary
-                : (isDark ? AppColors.gray200 : AppColors.gray800),
-            fontWeight: highlight ? FontWeight.w700 : FontWeight.w600,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

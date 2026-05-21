@@ -1,0 +1,47 @@
+# TEST : Connexion Producteur (PIN directe, sans OTP)
+# Cas nominal + déconnexion
+# NOTE : rate-limit actif après 2 mauvais PIN — test mauvais PIN isolé dans un flow dédié
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  PRODUCER_PIN: "1234"
+---
+- launchApp:
+    clearState: true
+
+# Phone field is autofocused — erase "+221" and type phone number
+- eraseText: 20
+- inputText: "${PRODUCER_PHONE}"
+- tapOn: "Votre profil"
+- tapOn: "Producteur"
+- tapOn: "Connexion PIN directe (sans OTP)"
+- assertVisible: "Entrez votre PIN"
+
+# ── Connexion avec le bon PIN ─────────────────────────────────────────────────
+- tapOn:
+    text: "1"
+- tapOn:
+    text: "2"
+- tapOn:
+    text: "3"
+- tapOn:
+    text: "4"
+
+- assertVisible: "Actions rapides"
+- assertNotVisible: "Entrez votre PIN"
+
+# ── Déconnexion ───────────────────────────────────────────────────────────────
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- assertVisible: "Êtes-vous sûr de vouloir vous déconnecter ?"
+- tapOn: "Annuler"
+- assertNotVisible: "Connectez-vous pour continuer"
+
+- tapOn: "Déconnexion"
+- assertVisible: "Êtes-vous sûr de vouloir vous déconnecter ?"
+- tapOn: "Se déconnecter"
+- assertVisible: "Connectez-vous pour continuer"

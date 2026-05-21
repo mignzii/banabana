@@ -30,6 +30,8 @@ import 'package:banabana_b2b/features/wholesaler/presentation/screens/cart_scree
 import 'package:banabana_b2b/features/wholesaler/presentation/screens/search_screen.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/screens/wholesaler_orders_screen.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/screens/wholesaler_order_detail_screen.dart';
+import 'package:banabana_b2b/features/wholesaler/presentation/screens/wholesaler_analytics_screen.dart';
+import 'package:banabana_b2b/features/wholesaler/presentation/screens/wholesaler_inventory_screen.dart';
 import 'package:banabana_b2b/features/wholesaler/presentation/screens/checkout_screen.dart';
 import 'package:banabana_b2b/core/widgets/producer_shell.dart';
 import 'package:banabana_b2b/core/widgets/wholesaler_shell.dart';
@@ -64,13 +66,23 @@ String _roleHome(String? role) {
   };
 }
 
+class _RouterRefreshNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
+
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
+  // ChangeNotifier used as refreshListenable so GoRouter re-evaluates its
+  // redirect whenever auth state changes — without recreating the router.
+  final refreshNotifier = _RouterRefreshNotifier();
+  ref.listen<AuthState>(authProvider, (_, __) => refreshNotifier.notify());
+  ref.onDispose(refreshNotifier.dispose);
 
   return GoRouter(
     navigatorKey: _rootNavKey,
     initialLocation: '/auth/login',
+    refreshListenable: refreshNotifier,
     redirect: (context, state) {
+      final authState = ref.read(authProvider);
       if (authState.isLoading) return null;
 
       final isAuth = authState.isAuthenticated;
@@ -247,9 +259,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/shop/inventory',
             name: 'shop-inventory',
-            pageBuilder: (_, __) => _fadePage(
-              const ProductsScreen(routePrefix: '/shop/inventory'),
-            ),
+            pageBuilder: (_, __) => _fadePage(const WholesalerInventoryScreen()),
           ),
           GoRoute(
             path: '/shop/orders',
@@ -302,6 +312,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         parentNavigatorKey: _rootNavKey,
+        path: '/shop/analytics',
+        name: 'shop-analytics',
+        pageBuilder: (_, __) => _fadePage(const WholesalerAnalyticsScreen()),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
         path: '/shop/inventory/new',
         name: 'shop-inventory-new',
         pageBuilder: (_, __) => _fadePage(const ProductFormScreen()),
@@ -315,6 +331,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             productId: state.pathParameters['id']!,
             routePrefix: '/shop/inventory',
             showRestockAction: true,
+            showWholesalerAnalytics: true,
           ),
         ),
       ),

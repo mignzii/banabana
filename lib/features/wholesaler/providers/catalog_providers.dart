@@ -4,6 +4,7 @@ import 'package:banabana_b2b/features/producer/data/category_repository.dart';
 import 'package:banabana_b2b/features/wholesaler/data/catalog_repository.dart';
 import 'package:banabana_b2b/shared/models/catalog_item.dart';
 import 'package:banabana_b2b/shared/models/category.dart';
+import 'package:banabana_b2b/shared/models/product.dart';
 
 /// Global categories from /v1/categories for shop display and filtering.
 final shopCategoriesProvider = FutureProvider<List<Category>>((ref) async {
@@ -97,6 +98,11 @@ final catalogResultProvider = FutureProvider<CatalogResult>((ref) {
         sort: sort,
         order: order,
       );
+});
+
+final catalogProductDetailProvider =
+    FutureProvider.family<Product, String>((ref, id) {
+  return ref.watch(catalogRepositoryProvider).getProduct(id);
 });
 
 /// Dedicated search — used by the search screen only.

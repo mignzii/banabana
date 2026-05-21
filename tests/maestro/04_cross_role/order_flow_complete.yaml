@@ -1,0 +1,242 @@
+# TEST : Flow complet commande — Grossiste passe une commande → Producteur accepte → expédie → Grossiste suit le statut
+# Ce test couvre toute la relation producteur ↔ grossiste autour d'une commande
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  WHOLESALER_PHONE: "+2250700000020"
+  DELIVERY_NAME: "Ama Mensah"
+  DELIVERY_PHONE: "+2250700000020"
+  DELIVERY_ADDRESS: "Rue des Jardins, Cocody"
+  DELIVERY_CITY: "Abidjan"
+---
+- launchApp:
+    clearState: true
+
+# ════════════════════════════════════════════════════════════════════
+# ÉTAPE 1 — Producteur crée un produit actif avec variante
+# ════════════════════════════════════════════════════════════════════
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Mes produits"
+- tapOn: "Nouveau produit"
+
+- tapOn: "Nom du produit *"
+- inputText: "Igname Test Cross"
+
+- tapOn: "Choisir une catégorie"
+- tapOn: "Fruits"
+
+- scrollUntilVisible:
+    element:
+      text: "Prix de base (FCFA) *"
+    direction: DOWN
+- tapOn: "Prix de base (FCFA) *"
+- inputText: "3000"
+
+- scrollUntilVisible:
+    element:
+      text: "Ajouter une variante"
+    direction: DOWN
+- tapOn: "Ajouter une variante"
+- tapOn: "Sac"
+- tapOn: "Label * (ex: 5kg, Carton de 12…)"
+- inputText: "Sac 10kg"
+- tapOn: "Prix (FCFA) *"
+- inputText: "2800"
+- tapOn: "Stock *"
+- inputText: "100"
+- tapOn: "Ajouter cette variante"
+
+- scrollUntilVisible:
+    element:
+      text: "Créer le produit"
+    direction: DOWN
+- tapOn: "Créer le produit"
+
+- assertVisible: "Détail produit"
+- assertVisible: "Igname Test Cross"
+
+# Activer le produit pour le rendre visible dans le catalogue
+- scrollUntilVisible:
+    element:
+      text: "Activer"
+    direction: DOWN
+- tapOn: "Activer"
+- assertVisible: "Produit activé"
+- assertVisible: "Actif"
+
+# Déconnexion Producteur
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- tapOn: "Déconnexion"
+- assertVisible: "Connectez-vous pour continuer"
+
+# ════════════════════════════════════════════════════════════════════
+# ÉTAPE 2 — Grossiste trouve le produit et passe une commande
+# ════════════════════════════════════════════════════════════════════
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Catalogue"
+- tapOn:
+    text: "Rechercher un produit…"
+- inputText: "Igname Test Cross"
+
+# Sélectionner le produit dans les résultats
+- tapOn: "Igname Test Cross"
+- assertVisible: "Détails produit"
+- assertVisible: "Igname Test Cross"
+- assertVisible: "Sac 10kg"
+
+# Sélectionner la variante et ajouter au panier
+- tapOn: "Sac 10kg"
+- tapOn: "+"
+- tapOn: "+"
+# Quantité = 3
+- scrollUntilVisible:
+    element:
+      text: "Ajouter au panier"
+    direction: DOWN
+- tapOn: "Ajouter au panier"
+- assertVisible: "Ajouté au panier ✓"
+
+# Aller au checkout
+- tapOn:
+    id: "cart_icon"
+- assertVisible: "Mon panier"
+- assertVisible: "Igname Test Cross"
+- tapOn: "Passer la commande →"
+
+- assertVisible: "Finaliser la commande"
+- assertVisible: "Igname Test Cross"
+
+# Remplir la livraison
+- tapOn: "Nom complet *"
+- inputText: "${DELIVERY_NAME}"
+- tapOn: "Téléphone *"
+- inputText: "${DELIVERY_PHONE}"
+- tapOn: "Adresse *"
+- inputText: "${DELIVERY_ADDRESS}"
+- tapOn: "Ville *"
+- inputText: "${DELIVERY_CITY}"
+
+- scrollUntilVisible:
+    element:
+      text: "Paiement à la livraison"
+    direction: DOWN
+- tapOn: "Paiement à la livraison"
+
+- scrollUntilVisible:
+    element:
+      text: "Confirmer"
+    direction: DOWN
+- tapOn:
+    text: "Confirmer"
+
+# Vérifier la page de confirmation
+- assertVisible: "Détail commande"
+- assertVisible: "Igname Test Cross"
+- assertVisible: "En attente"
+- assertVisible: "RÉCAPITULATIF"
+
+# Vérifier dans la liste des commandes grossiste
+- tapOn: "Commandes"
+- assertVisible: "Mes commandes"
+- tapOn: "En attente"
+- assertVisible: "#"
+- tapOn:
+    index: 0
+    text: "#"
+- assertVisible: "Détail commande"
+- assertVisible: "Igname Test Cross"
+- tapOn: "Retour"
+
+# Déconnexion Grossiste
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- tapOn: "Déconnexion"
+- assertVisible: "Connectez-vous pour continuer"
+
+# ════════════════════════════════════════════════════════════════════
+# ÉTAPE 3 — Producteur voit la commande et l'accepte
+# ════════════════════════════════════════════════════════════════════
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Commandes"
+- assertVisible: "Commandes Reçues"
+- tapOn: "Nouvelles"
+
+# La nouvelle commande est visible
+- assertVisible: "Igname Test Cross"
+    optional: true
+- assertVisible:
+    text: "Accepter"
+    optional: true
+
+# Ouvrir le détail depuis la liste
+- tapOn:
+    index: 0
+    text: "#"
+- assertVisible: "Détail commande"
+- assertVisible: "Igname Test Cross"
+- assertVisible: "Sac 10kg"
+- assertVisible: "Rejeter"
+- assertVisible: "Accepter"
+
+# Accepter la commande
+- tapOn: "Accepter"
+- assertVisible:
+    anyOf:
+      - text: "Commande acceptée"
+      - text: "En cours"
+- assertVisible: "Expédier la commande"
+
+# Expédier la commande
+- tapOn: "Expédier la commande"
+- assertVisible:
+    anyOf:
+      - text: "Commande expédiée"
+      - text: "Expédiée"
+- assertNotVisible: "Expédier la commande"
+
+- tapOn: "Retour"
+
+# Vérifier dans l'onglet "Expédiées"
+- tapOn: "Expédiées"
+- assertVisible: "#"
+
+# Déconnexion Producteur
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- tapOn: "Déconnexion"
+- assertVisible: "Connectez-vous pour continuer"
+
+# ════════════════════════════════════════════════════════════════════
+# ÉTAPE 4 — Grossiste vérifie le statut "Expédiée"
+# ════════════════════════════════════════════════════════════════════
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Commandes"
+- tapOn: "Expédiées"
+- assertVisible: "#"
+- tapOn:
+    index: 0
+    text: "#"
+- assertVisible: "Détail commande"
+- assertVisible: "Igname Test Cross"
+- assertVisible:
+    anyOf:
+      - text: "Expédiée"
+      - text: "Expédier"
+- tapOn: "Retour"

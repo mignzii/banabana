@@ -1,0 +1,21 @@
+# Flux réutilisable — connexion Grossiste (sans OTP)
+# Usage: runFlow: flows/_login_wholesaler.yaml
+# Requires env: WHOLESALER_PHONE, WHOLESALER_PIN
+appId: com.banabana.pro
+---
+- launchApp:
+    clearState: false
+# Phone field is autofocused — erase default "+221" and type
+- eraseText: 20
+- inputText: "${WHOLESALER_PHONE}"
+- tapOn: "Votre profil"
+- tapOn:
+    text: "Grossiste"
+- tapOn:
+    text: "Connexion PIN directe (sans OTP)"
+- assertVisible: "Entrez votre PIN"
+- tapOn: "0"
+- tapOn: "0"
+- tapOn: "0"
+- tapOn: "0"
+- assertVisible: "BanaBana"

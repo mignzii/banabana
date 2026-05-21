@@ -678,6 +678,7 @@ ProductProducer _$ProductProducerFromJson(Map<String, dynamic> json) {
 mixin _$ProductProducer {
   String get businessName => throw _privateConstructorUsedError;
   String get zone => throw _privateConstructorUsedError;
+  String? get userId => throw _privateConstructorUsedError;
 
   /// Serializes this ProductProducer to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -696,7 +697,7 @@ abstract class $ProductProducerCopyWith<$Res> {
     $Res Function(ProductProducer) then,
   ) = _$ProductProducerCopyWithImpl<$Res, ProductProducer>;
   @useResult
-  $Res call({String businessName, String zone});
+  $Res call({String businessName, String zone, String? userId});
 }
 
 /// @nodoc
@@ -713,7 +714,7 @@ class _$ProductProducerCopyWithImpl<$Res, $Val extends ProductProducer>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? businessName = null, Object? zone = null}) {
+  $Res call({Object? businessName = null, Object? zone = null, Object? userId = freezed}) {
     return _then(
       _value.copyWith(
             businessName: null == businessName
@@ -724,6 +725,10 @@ class _$ProductProducerCopyWithImpl<$Res, $Val extends ProductProducer>
                 ? _value.zone
                 : zone // ignore: cast_nullable_to_non_nullable
                       as String,
+            userId: freezed == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -739,7 +744,7 @@ abstract class _$$ProductProducerImplCopyWith<$Res>
   ) = __$$ProductProducerImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String businessName, String zone});
+  $Res call({String businessName, String zone, String? userId});
 }
 
 /// @nodoc
@@ -755,7 +760,7 @@ class __$$ProductProducerImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? businessName = null, Object? zone = null}) {
+  $Res call({Object? businessName = null, Object? zone = null, Object? userId = freezed}) {
     return _then(
       _$ProductProducerImpl(
         businessName: null == businessName
@@ -766,6 +771,10 @@ class __$$ProductProducerImplCopyWithImpl<$Res>
             ? _value.zone
             : zone // ignore: cast_nullable_to_non_nullable
                   as String,
+        userId: freezed == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -774,7 +783,7 @@ class __$$ProductProducerImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ProductProducerImpl implements _ProductProducer {
-  const _$ProductProducerImpl({required this.businessName, required this.zone});
+  const _$ProductProducerImpl({required this.businessName, required this.zone, this.userId});
 
   factory _$ProductProducerImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProductProducerImplFromJson(json);
@@ -783,10 +792,12 @@ class _$ProductProducerImpl implements _ProductProducer {
   final String businessName;
   @override
   final String zone;
+  @override
+  final String? userId;
 
   @override
   String toString() {
-    return 'ProductProducer(businessName: $businessName, zone: $zone)';
+    return 'ProductProducer(businessName: $businessName, zone: $zone, userId: $userId)';
   }
 
   @override
@@ -796,12 +807,13 @@ class _$ProductProducerImpl implements _ProductProducer {
             other is _$ProductProducerImpl &&
             (identical(other.businessName, businessName) ||
                 other.businessName == businessName) &&
-            (identical(other.zone, zone) || other.zone == zone));
+            (identical(other.zone, zone) || other.zone == zone) &&
+            (identical(other.userId, userId) || other.userId == userId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, businessName, zone);
+  int get hashCode => Object.hash(runtimeType, businessName, zone, userId);
 
   /// Create a copy of ProductProducer
   /// with the given fields replaced by the non-null parameter values.
@@ -824,6 +836,7 @@ abstract class _ProductProducer implements ProductProducer {
   const factory _ProductProducer({
     required final String businessName,
     required final String zone,
+    final String? userId,
   }) = _$ProductProducerImpl;
 
   factory _ProductProducer.fromJson(Map<String, dynamic> json) =
@@ -833,6 +846,8 @@ abstract class _ProductProducer implements ProductProducer {
   String get businessName;
   @override
   String get zone;
+  @override
+  String? get userId;
 
   /// Create a copy of ProductProducer
   /// with the given fields replaced by the non-null parameter values.

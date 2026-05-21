@@ -67,7 +67,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
 
-    return Scaffold(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -92,24 +94,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: AppTextStyles.bodySecondary,
                     textAlign: TextAlign.center),
                 const SizedBox(height: 40),
-                Semantics(
-                  label: 'Numéro de téléphone',
-                  child: TextFormField(
-                    controller: _phoneCtrl,
-                    autofocus: true,
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[+\d]')),
-                    ],
-                    decoration: AppInputDecoration.standard(
-                      label: 'Numéro de téléphone',
-                      hint: '+221 77 123 45 67',
-                      prefixIcon: const Icon(Symbols.phone, color: AppColors.primary),
-                    ),
-                    validator: _validatePhone,
-                    onChanged: (_) => setState(() {}),
+                TextFormField(
+                  controller: _phoneCtrl,
+                  autofocus: true,
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[+\d]')),
+                  ],
+                  decoration: AppInputDecoration.standard(
+                    label: 'Numéro de téléphone',
+                    hint: '+221 77 123 45 67',
+                    prefixIcon: const Icon(Symbols.phone, color: AppColors.primary),
                   ),
+                  validator: _validatePhone,
+                  onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 16),
                 Text('Votre profil', style: AppTextStyles.label),
@@ -179,6 +178,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 }
@@ -221,8 +221,8 @@ class _RoleChip extends StatelessWidget {
     final isSelected = value == selected;
     return Expanded(
       child: Semantics(
-        label: '$label, ${isSelected ? "sélectionné" : "non sélectionné"}',
         button: true,
+        selected: isSelected,
         child: GestureDetector(
           onTap: () => onTap(value),
           child: AnimatedContainer(

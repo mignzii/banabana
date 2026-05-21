@@ -1,0 +1,94 @@
+# TEST : Commandes Producteur — liste, filtres, détail, accepter/refuser/expédier
+# Prérequis : une commande en attente doit exister (créée par le flow cross-role)
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Commandes"
+- assertVisible: "Commandes Reçues"
+
+# ── Vérification des filtres ──────────────────────────────────────────────────
+- assertVisible: "Tous"
+- assertVisible: "Nouvelles"
+- assertVisible: "En cours"
+- assertVisible: "Expédiées"
+- assertVisible: "Annulées"
+
+# Filtre "Nouvelles"
+- tapOn: "Nouvelles"
+- assertVisible: "Nouvelles"
+
+# Filtre "En cours"
+- tapOn: "En cours"
+- assertVisible: "En cours"
+
+# Filtre "Tous"
+- tapOn: "Tous"
+
+# ── Vérification carte de commande ────────────────────────────────────────────
+# Si des commandes existent :
+- scrollUntilVisible:
+    element:
+      text: "Grossiste"
+    direction: DOWN
+    optional: true
+
+# ── Détail commande ───────────────────────────────────────────────────────────
+- tapOn:
+    index: 0
+    text: "#"
+    optional: true
+- assertVisible: "Détail commande"
+- assertVisible: "Articles commandés"
+- assertVisible: "RÉCAPITULATIF"
+- assertVisible: "Sous-total"
+- assertVisible: "Total"
+- tapOn: "Retour"
+
+# ── Accepter une commande en attente ─────────────────────────────────────────
+- tapOn: "Nouvelles"
+- scrollUntilVisible:
+    element:
+      text: "Accepter"
+    direction: DOWN
+    optional: true
+- tapOn:
+    text: "Accepter"
+    optional: true
+- assertVisible:
+    text: "Commande acceptée"
+    optional: true
+
+# ── Refuser une commande en attente ──────────────────────────────────────────
+- tapOn: "Nouvelles"
+- scrollUntilVisible:
+    element:
+      text: "Refuser"
+    direction: DOWN
+    optional: true
+- tapOn:
+    text: "Refuser"
+    optional: true
+
+# ── Expédier une commande en cours ────────────────────────────────────────────
+- tapOn: "En cours"
+- tapOn:
+    index: 0
+    text: "#"
+    optional: true
+- scrollUntilVisible:
+    element:
+      text: "Expédier la commande"
+    direction: DOWN
+    optional: true
+- tapOn:
+    text: "Expédier la commande"
+    optional: true
+- assertVisible:
+    text: "Commande expédiée"
+    optional: true
+- tapOn: "Retour"

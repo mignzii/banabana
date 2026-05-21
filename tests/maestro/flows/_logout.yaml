@@ -1,0 +1,11 @@
+# Flux réutilisable — déconnexion depuis n'importe quel onglet
+appId: com.banabana.pro
+---
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- assertVisible: "Êtes-vous sûr de vouloir vous déconnecter ?"
+- tapOn: "Se déconnecter"
+- assertVisible: "Connectez-vous pour continuer"

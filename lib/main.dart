@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:banabana_b2b/core/router/app_router.dart';
@@ -39,6 +40,9 @@ class _BanaBanaAppState extends ConsumerState<BanaBanaApp> {
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
       debugShowCheckedModeBanner: false,
+      locale: const Locale('fr'),
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      supportedLocales: const [Locale('fr')],
     );
   }
 }

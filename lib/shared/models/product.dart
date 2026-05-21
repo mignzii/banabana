@@ -54,6 +54,7 @@ class ProductProducer with _$ProductProducer {
   const factory ProductProducer({
     required String businessName,
     required String zone,
+    String? userId,
   }) = _ProductProducer;
 
   factory ProductProducer.fromJson(Map<String, dynamic> json) =>

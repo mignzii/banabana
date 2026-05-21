@@ -24,31 +24,48 @@ const _kFallbackCategories = [
   'Légumineuses', 'Épices & Aromates', 'Produits Transformés', 'Autres',
 ];
 
-const _kPackTypes = ['Sac', 'Carton', 'Cageot', 'Régime', 'Boite', 'Filet', 'Unité'];
+const _kWholesaleUnits = ['sac', 'kg', 'carton', 'caisse', 'palette', 'piece', 'litre', 'tonne', 'botte', 'regime'];
+
+const _kWholesaleUnitLabels = {
+  'sac': 'Sac',
+  'kg': 'Kg',
+  'carton': 'Carton',
+  'caisse': 'Caisse',
+  'palette': 'Palette',
+  'piece': 'Pièce',
+  'litre': 'Litre',
+  'tonne': 'Tonne',
+  'botte': 'Botte',
+  'regime': 'Régime',
+};
 
 // ─── Modèle local pour brouillon de variante ─────────────────────────────────
 
 class _VariantDraft {
   String label;
-  String? pack;
+  String? wholesaleUnit;
   double? weight;
   double price;
   int stock;
+  int? minOrderQuantity;
 
   _VariantDraft({
     required this.label,
-    this.pack,
+    this.wholesaleUnit,
     this.weight,
     required this.price,
     required this.stock,
+    this.minOrderQuantity,
   });
 
   Map<String, dynamic> toJson() => {
         'label': label,
-        if (pack != null && pack!.isNotEmpty) 'pack': pack,
+        if (wholesaleUnit != null && wholesaleUnit!.isNotEmpty)
+          'wholesaleUnit': wholesaleUnit,
         if (weight != null) 'weight': weight,
         'price': price,
         'stock': stock,
+        if (minOrderQuantity != null) 'minOrderQuantity': minOrderQuantity,
       };
 }
 
@@ -108,6 +125,7 @@ class ProductFormScreen extends ConsumerWidget {
       backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
       elevation: 0,
       leading: IconButton(
+        tooltip: 'Retour',
         icon: const Icon(Symbols.arrow_back),
         color: textPrimary,
         onPressed: () => context.pop(),
@@ -144,7 +162,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
   String? _category;
 
   // Images
-  List<String> _newImagePaths = [];
+  final List<String> _newImagePaths = [];
   final Set<String> _deletedImageIds = {};
 
   // Variantes
@@ -155,6 +173,8 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
   late bool _isActive;
 
   bool _loading = false;
+  int _step = 0;
+  bool _isDirty = false;
 
   @override
   void initState() {
@@ -167,6 +187,11 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
     );
     _category = p?.category;
     _isActive = p?.isActive ?? true;
+    if (!widget.isEditing) {
+      _titleCtrl.addListener(() { if (mounted) setState(() => _isDirty = true); });
+      _descCtrl.addListener(() { if (mounted) setState(() => _isDirty = true); });
+      _priceCtrl.addListener(() { if (mounted) setState(() => _isDirty = true); });
+    }
   }
 
   @override
@@ -249,7 +274,11 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
           widget.isEditing ? 'Produit mis à jour' : 'Produit créé avec succès',
           type: SnackType.success,
         );
-        context.pop();
+        if (widget.isEditing) {
+          context.pop();
+        } else {
+          context.pushReplacement('/producer/products/$targetId');
+        }
       }
     } catch (e) {
       if (mounted) context.showSnack(e.toString(), type: SnackType.error);
@@ -300,7 +329,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: names.length,
-              separatorBuilder: (_, __) => Divider(height: 1, color: border),
+              separatorBuilder: (_, _) => Divider(height: 1, color: border),
               itemBuilder: (_, i) {
                 final entry = names[i];
                 final isSelected = _category == entry.name;
@@ -319,7 +348,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
                       ? const Icon(Symbols.check, color: AppColors.primary, size: 18)
                       : null,
                   onTap: () {
-                    setState(() => _category = entry.name);
+                    setState(() { _category = entry.name; _isDirty = true; });
                     Navigator.of(context).pop();
                   },
                 );
@@ -339,7 +368,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
       backgroundColor: Colors.transparent,
       builder: (_) => _AddVariantSheet(isDark: isDark),
     ).then((draft) {
-      if (draft != null) setState(() => _newVariants.add(draft));
+      if (draft != null) setState(() { _newVariants.add(draft); _isDirty = true; });
     });
   }
 
@@ -377,6 +406,586 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
     );
   }
 
+  // ─── Wizard validation ───────────────────────────────────────────────────────
+
+  bool _validateStep0() {
+    if (_titleCtrl.text.trim().isEmpty) {
+      context.showSnack('Le nom du produit est requis', type: SnackType.error);
+      return false;
+    }
+    if (_category == null) {
+      context.showSnack('Veuillez choisir une catégorie', type: SnackType.error);
+      return false;
+    }
+    return true;
+  }
+
+  bool _validateStep1() {
+    final t = _priceCtrl.text.trim();
+    if (t.isEmpty || double.tryParse(t) == null) {
+      context.showSnack('Veuillez saisir un prix valide', type: SnackType.error);
+      return false;
+    }
+    return true;
+  }
+
+  void _nextStep() {
+    if (_step == 0 && !_validateStep0()) return;
+    if (_step == 1 && !_validateStep1()) return;
+    if (_step == 2) { _submit(); return; }
+    setState(() => _step++);
+  }
+
+  void _onBackPressed() {
+    if (_step == 0) {
+      if (!_isDirty) { context.pop(); return; }
+      showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Abandonner la création ?'),
+          content: const Text('Les informations saisies seront perdues.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Continuer'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text('Abandonner', style: TextStyle(color: AppColors.error)),
+            ),
+          ],
+        ),
+      ).then((confirmed) {
+        if (confirmed == true && mounted) context.pop();
+      });
+    } else {
+      setState(() => _step--);
+    }
+  }
+
+  // ─── Progress bar ─────────────────────────────────────────────────────────────
+
+  Widget _buildProgressBar(bool isDark, Color textPrimary, Color textSecondary) {
+    const labels = ['Infos', 'Prix', 'Finaliser'];
+    final active = AppColors.primary;
+    final inactive = isDark ? AppColors.darkBorder : AppColors.gray200;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.s24, AppSpacing.s12, AppSpacing.s24, AppSpacing.s8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (int i = 0; i < 3; i++) ...[
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: i < _step
+                        ? active
+                        : (i == _step
+                            ? active.withValues(alpha: 0.12)
+                            : (isDark ? AppColors.darkSurface : AppColors.white)),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: i <= _step ? active : inactive,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Center(
+                    child: i < _step
+                        ? const Icon(Symbols.check, size: 14, color: AppColors.white)
+                        : Text(
+                            '${i + 1}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight:
+                                  i == _step ? FontWeight.w700 : FontWeight.w400,
+                              color: i == _step
+                                  ? active
+                                  : (isDark ? AppColors.gray500 : AppColors.gray400),
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s4),
+                Text(
+                  labels[i],
+                  style: AppTextStyles.caption.copyWith(
+                    fontSize: 10,
+                    color: i <= _step
+                        ? (isDark ? AppColors.gray200 : AppColors.gray700)
+                        : textSecondary,
+                    fontWeight: i == _step ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+            if (i < 2)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 13),
+                  child: Container(
+                    height: 2,
+                    color: i < _step ? active : inactive,
+                  ),
+                ),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ─── Section builders (shared between flat form and wizard) ──────────────────
+
+  Widget _photosSection(bool isDark, Color surface, Color border, Color textSecondary,
+      List<ProductImage> existingImages, int totalImages) {
+    return _FormSection(
+      isDark: isDark,
+      surface: surface,
+      border: border,
+      icon: Symbols.photo_library,
+      title: 'Photos du produit',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Ajoutez jusqu\'à 5 photos (JPEG, PNG)',
+              style: AppTextStyles.caption.copyWith(color: textSecondary)),
+          const SizedBox(height: AppSpacing.s12),
+          SizedBox(
+            height: 88,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                ...existingImages.map((img) => _ImageThumb(
+                      child: CachedNetworkImage(
+                          imageUrl: resolveImageUrl(img.url), fit: BoxFit.cover),
+                      onRemove: () =>
+                          setState(() { _deletedImageIds.add(img.id); _isDirty = true; }),
+                    )),
+                ..._newImagePaths.asMap().entries.map((e) => _ImageThumb(
+                      child: Image.file(File(e.value), fit: BoxFit.cover),
+                      onRemove: () =>
+                          setState(() { _newImagePaths.removeAt(e.key); _isDirty = true; }),
+                    )),
+                if (totalImages < 5)
+                  GestureDetector(
+                    onTap: () => ImagePickerSheet.show(
+                      context,
+                      onImagesPicked: (paths) => setState(() {
+                        final remaining = 5 - totalImages;
+                        _newImagePaths.addAll(paths.take(remaining));
+                        _isDirty = true;
+                      }),
+                    ),
+                    child: Container(
+                      width: 88,
+                      height: 88,
+                      margin: const EdgeInsets.only(right: AppSpacing.s8),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.darkSurface2 : AppColors.gray100,
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+                        border: Border.all(
+                            color: AppColors.primary.withValues(alpha: 0.4)),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Symbols.add_photo_alternate,
+                              color: AppColors.primary, size: 24),
+                          const SizedBox(height: AppSpacing.s4),
+                          Text('Ajouter',
+                              style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoSection(bool isDark, Color surface, Color border, Color textPrimary,
+      Color textSecondary) {
+    return _FormSection(
+      isDark: isDark,
+      surface: surface,
+      border: border,
+      icon: Symbols.info,
+      title: 'Informations',
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _titleCtrl,
+            style: AppTextStyles.body.copyWith(color: textPrimary),
+            decoration: _inputDeco('Nom du produit *', isDark: isDark),
+            validator: (v) => v == null || v.trim().isEmpty ? 'Champ requis' : null,
+          ),
+          const SizedBox(height: AppSpacing.s12),
+          Semantics(
+            label: _category ?? 'Choisir une catégorie',
+            button: true,
+            container: true,
+            excludeSemantics: true,
+            child: GestureDetector(
+              onTap: () => _pickCategory(context, isDark),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s16, vertical: AppSpacing.s14),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkSurface : AppColors.gray50,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+                  border: Border.all(
+                    color: _category == null
+                        ? AppColors.error.withValues(alpha: 0.5)
+                        : (isDark ? AppColors.darkBorder : AppColors.gray200),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Catégorie *',
+                              style: AppTextStyles.caption
+                                  .copyWith(color: AppColors.gray500, fontSize: 11)),
+                          const SizedBox(height: 2),
+                          Text(
+                            _category ?? 'Choisir une catégorie',
+                            style: AppTextStyles.body.copyWith(
+                              color: _category == null ? textSecondary : textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Symbols.expand_more, color: textSecondary, size: 20),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s12),
+          TextFormField(
+            controller: _descCtrl,
+            style: AppTextStyles.body.copyWith(color: textPrimary),
+            decoration: _inputDeco('Description',
+                hint: 'Qualité, origine, conditionnement…', isDark: isDark),
+            maxLines: 3,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _priceSection(bool isDark, Color surface, Color border, Color textPrimary,
+      Color textSecondary) {
+    return _FormSection(
+      isDark: isDark,
+      surface: surface,
+      border: border,
+      icon: Symbols.payments,
+      title: 'Prix de référence',
+      subtitle: 'Prix indicatif — les variantes peuvent avoir leurs propres prix.',
+      child: TextFormField(
+        controller: _priceCtrl,
+        style: AppTextStyles.body.copyWith(color: textPrimary),
+        decoration: _inputDeco('Prix de base (FCFA) *', isDark: isDark).copyWith(
+          suffixText: 'FCFA',
+          suffixStyle: AppTextStyles.caption.copyWith(color: textSecondary),
+        ),
+        keyboardType: const TextInputType.numberWithOptions(decimal: false),
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        validator: (v) {
+          if (v == null || v.trim().isEmpty) return 'Champ requis';
+          if (double.tryParse(v.trim()) == null) return 'Nombre invalide';
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _variantsSection(bool isDark, Color surface, Color border, Color textPrimary,
+      Color textSecondary, List<ProductVariant> existingVariants) {
+    return _FormSection(
+      isDark: isDark,
+      surface: surface,
+      border: border,
+      icon: Symbols.package_2,
+      title: 'Variantes',
+      subtitle: 'Conditionnements proposés (sac 5kg, carton 12kg…)',
+      child: Column(
+        children: [
+          ...existingVariants.map((v) => _VariantTile(
+                isDark: isDark,
+                border: border,
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                label: v.label,
+                wholesaleUnit: v.wholesaleUnit,
+                price: v.price,
+                stock: v.stock,
+                minOrderQuantity: v.minOrderQuantity,
+                isExisting: true,
+                onDelete: () => setState(() => _deletedVariantIds.add(v.id)),
+              )),
+          ..._newVariants.asMap().entries.map((e) => _VariantTile(
+                isDark: isDark,
+                border: border,
+                textPrimary: textPrimary,
+                textSecondary: textSecondary,
+                label: e.value.label,
+                wholesaleUnit: e.value.wholesaleUnit,
+                price: e.value.price,
+                stock: e.value.stock,
+                minOrderQuantity: e.value.minOrderQuantity,
+                isExisting: false,
+                onDelete: () => setState(() => _newVariants.removeAt(e.key)),
+              )),
+          if (existingVariants.isNotEmpty || _newVariants.isNotEmpty)
+            const SizedBox(height: AppSpacing.s8),
+          OutlinedButton.icon(
+            onPressed: () => _showAddVariant(context, isDark),
+            icon: const Icon(Symbols.add, size: 16),
+            label: const Text('Ajouter une variante'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.primary,
+              side: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
+              minimumSize: const Size(double.infinity, 44),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMedium)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statusSection(bool isDark, Color surface, Color border, Color textPrimary,
+      Color textSecondary) {
+    return _FormSection(
+      isDark: isDark,
+      surface: surface,
+      border: border,
+      icon: Symbols.toggle_on,
+      title: 'Statut',
+      child: Row(
+        children: [
+          Icon(
+            _isActive ? Symbols.visibility : Symbols.visibility_off,
+            size: 20,
+            color: _isActive ? AppColors.success : textSecondary,
+          ),
+          const SizedBox(width: AppSpacing.s12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_isActive ? 'Produit actif' : 'Produit désactivé',
+                    style: AppTextStyles.body.copyWith(color: textPrimary)),
+                Text(
+                  _isActive ? 'Visible par les acheteurs' : 'Masqué du catalogue',
+                  style: AppTextStyles.caption.copyWith(color: textSecondary),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: _isActive,
+            onChanged: (v) => setState(() => _isActive = v),
+            activeThumbColor: AppColors.primary,
+            activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summarySection(bool isDark, Color surface, Color border, Color textPrimary,
+      Color textSecondary, int totalImages, List<ProductVariant> existingVariants) {
+    final totalVariants = existingVariants.length + _newVariants.length;
+    final price = double.tryParse(_priceCtrl.text.trim());
+    return _FormSection(
+      isDark: isDark,
+      surface: surface,
+      border: border,
+      icon: Symbols.checklist,
+      title: 'Récapitulatif',
+      subtitle: 'Vérifiez les informations avant de créer le produit.',
+      child: Column(
+        children: [
+          _SummaryRow(
+            icon: Symbols.shopping_bag,
+            label: 'Produit',
+            value: _titleCtrl.text.trim(),
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+            isDark: isDark,
+          ),
+          _SummaryRow(
+            icon: Symbols.category,
+            label: 'Catégorie',
+            value: _category ?? '—',
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+            isDark: isDark,
+          ),
+          if (_descCtrl.text.trim().isNotEmpty)
+            _SummaryRow(
+              icon: Symbols.notes,
+              label: 'Description',
+              value: _descCtrl.text.trim(),
+              textPrimary: textPrimary,
+              textSecondary: textSecondary,
+              isDark: isDark,
+            ),
+          _SummaryRow(
+            icon: Symbols.payments,
+            label: 'Prix de base',
+            value: price != null ? '${price.toStringAsFixed(0)} FCFA' : '—',
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+            isDark: isDark,
+          ),
+          _SummaryRow(
+            icon: Symbols.image,
+            label: 'Photos',
+            value: totalImages == 0
+                ? 'Aucune'
+                : '$totalImages photo${totalImages > 1 ? 's' : ''}',
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+            isDark: isDark,
+          ),
+          _SummaryRow(
+            icon: Symbols.package_2,
+            label: 'Variantes',
+            value: totalVariants == 0
+                ? 'Aucune'
+                : '$totalVariants variante${totalVariants > 1 ? 's' : ''}',
+            textPrimary: textPrimary,
+            textSecondary: textSecondary,
+            isDark: isDark,
+            isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Bottom bars ──────────────────────────────────────────────────────────────
+
+  Widget _buildSubmitBar(bool isDark, Color border) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.white,
+        border: Border(top: BorderSide(color: border)),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.s16,
+        AppSpacing.s12,
+        AppSpacing.s16,
+        MediaQuery.of(context).padding.bottom + AppSpacing.s12,
+      ),
+      child: FilledButton(
+        onPressed: _loading ? null : _submit,
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.white,
+          minimumSize: const Size(double.infinity, 52),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMedium)),
+        ),
+        child: _loading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white),
+              )
+            : Text(
+                widget.isEditing ? 'Mettre à jour' : 'Créer le produit',
+                style: AppTextStyles.label
+                    .copyWith(color: AppColors.white, fontWeight: FontWeight.w600),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildWizardFooter(bool isDark, Color border, Color textPrimary) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.white,
+        border: Border(top: BorderSide(color: border)),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.s16,
+        AppSpacing.s12,
+        AppSpacing.s16,
+        MediaQuery.of(context).padding.bottom + AppSpacing.s12,
+      ),
+      child: Row(
+        children: [
+          if (_step > 0) ...[
+            Expanded(
+              flex: 1,
+              child: OutlinedButton.icon(
+                onPressed: () => setState(() => _step--),
+                icon: const Icon(Symbols.arrow_back, size: 16),
+                label: const Text('Retour'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: textPrimary,
+                  side: BorderSide(
+                      color: isDark ? AppColors.darkBorder : AppColors.gray300),
+                  minimumSize: const Size(0, 52),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium)),
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.s12),
+          ],
+          Expanded(
+            flex: 2,
+            child: FilledButton(
+              onPressed: _loading ? null : _nextStep,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                minimumSize: const Size(0, 52),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMedium)),
+              ),
+              child: _loading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: AppColors.white),
+                    )
+                  : Text(
+                      _step == 2 ? 'Créer le produit' : 'Continuer',
+                      style: AppTextStyles.label.copyWith(
+                          color: AppColors.white, fontWeight: FontWeight.w600),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Build ────────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -386,7 +995,6 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
     final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
 
-    // Load categories and resolve existing UUID category to name
     final catsAsync = ref.watch(myCategoriesProvider);
     catsAsync.whenData((cats) {
       if (_category != null && cats.isNotEmpty) {
@@ -403,354 +1011,113 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
     final existingVariants = _activeExistingVariants;
     final totalImages = existingImages.length + _newImagePaths.length;
 
+    // ── Editing: flat form ───────────────────────────────────────────────────────
+    if (widget.isEditing) {
+      return Scaffold(
+        backgroundColor: bg,
+        appBar: AppBar(
+          backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
+          elevation: 0,
+          leading: IconButton(
+            tooltip: 'Retour',
+            icon: Icon(Symbols.arrow_back, color: textPrimary),
+            onPressed: () => context.pop(),
+          ),
+          title: Text('Modifier le produit',
+              style: AppTextStyles.sectionTitle.copyWith(color: textPrimary)),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Divider(height: 1, color: border),
+          ),
+        ),
+        body: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.only(bottom: AppSpacing.s96),
+            children: [
+              _photosSection(isDark, surface, border, textSecondary, existingImages, totalImages),
+              _infoSection(isDark, surface, border, textPrimary, textSecondary),
+              _priceSection(isDark, surface, border, textPrimary, textSecondary),
+              _variantsSection(isDark, surface, border, textPrimary, textSecondary, existingVariants),
+              _statusSection(isDark, surface, border, textPrimary, textSecondary),
+            ],
+          ),
+        ),
+        bottomNavigationBar: _buildSubmitBar(isDark, border),
+      );
+    }
+
+    // ── Création: wizard 3 étapes ────────────────────────────────────────────────
+    const stepTitles = ['Photos & Infos', 'Prix & Variantes', 'Finaliser'];
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
         elevation: 0,
         leading: IconButton(
+          tooltip: 'Retour',
           icon: Icon(Symbols.arrow_back, color: textPrimary),
-          onPressed: () => context.pop(),
+          onPressed: _onBackPressed,
         ),
-        title: Text(
-          widget.isEditing ? 'Modifier le produit' : 'Nouveau produit',
-          style: AppTextStyles.sectionTitle.copyWith(color: textPrimary),
-        ),
+        title: Text(stepTitles[_step],
+            style: AppTextStyles.sectionTitle.copyWith(color: textPrimary)),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Divider(height: 1, color: border),
+          preferredSize: const Size.fromHeight(72),
+          child: Column(
+            children: [
+              _buildProgressBar(isDark, textPrimary, textSecondary),
+              Divider(height: 1, color: border),
+            ],
+          ),
         ),
       ),
       body: Form(
         key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.only(
-            bottom: AppSpacing.s96,
-          ),
+        child: Column(
           children: [
-            // ── Photos ──────────────────────────────────────────────────────
-            _FormSection(
-              isDark: isDark,
-              surface: surface,
-              border: border,
-              icon: Symbols.photo_library,
-              title: 'Photos du produit',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Ajoutez jusqu\'à 5 photos (JPEG, PNG)',
-                    style: AppTextStyles.caption.copyWith(color: textSecondary),
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  SizedBox(
-                    height: 88,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        // Images existantes (edit)
-                        ...existingImages.map((img) => _ImageThumb(
-                              child: CachedNetworkImage(
-                                imageUrl: resolveImageUrl(img.url),
-                                fit: BoxFit.cover,
-                              ),
-                              onRemove: () => setState(() => _deletedImageIds.add(img.id)),
-                            )),
-                        // Nouvelles images (local)
-                        ..._newImagePaths.asMap().entries.map((e) => _ImageThumb(
-                              child: Image.file(File(e.value), fit: BoxFit.cover),
-                              onRemove: () => setState(() => _newImagePaths.removeAt(e.key)),
-                            )),
-                        // Bouton ajouter
-                        if (totalImages < 5)
-                          GestureDetector(
-                            onTap: () => ImagePickerSheet.show(
-                              context,
-                              onImagesPicked: (paths) => setState(() {
-                                final remaining = 5 - totalImages;
-                                _newImagePaths.addAll(paths.take(remaining));
-                              }),
-                            ),
-                            child: Container(
-                              width: 88,
-                              height: 88,
-                              margin: const EdgeInsets.only(right: AppSpacing.s8),
-                              decoration: BoxDecoration(
-                                color: isDark ? AppColors.darkSurface2 : AppColors.gray100,
-                                borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-                                border: Border.all(
-                                  color: AppColors.primary.withValues(alpha: 0.4),
-                                  style: BorderStyle.solid,
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Symbols.add_photo_alternate,
-                                      color: AppColors.primary, size: 24),
-                                  const SizedBox(height: AppSpacing.s4),
-                                  Text(
-                                    'Ajouter',
-                                    style: AppTextStyles.caption.copyWith(
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ── Informations ─────────────────────────────────────────────────
-            _FormSection(
-              isDark: isDark,
-              surface: surface,
-              border: border,
-              icon: Symbols.info,
-              title: 'Informations',
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _titleCtrl,
-                    style: AppTextStyles.body.copyWith(color: textPrimary),
-                    decoration: _inputDeco('Nom du produit *', isDark: isDark),
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Champ requis' : null,
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  // Catégorie — picker
-                  GestureDetector(
-                    onTap: () => _pickCategory(context, isDark),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.s16,
-                        vertical: AppSpacing.s14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.darkSurface : AppColors.gray50,
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-                        border: Border.all(
-                          color: _category == null
-                              ? AppColors.error.withValues(alpha: 0.5)
-                              : (isDark ? AppColors.darkBorder : AppColors.gray200),
-                        ),
-                      ),
-                      child: Row(
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                transitionBuilder: (child, animation) =>
+                    FadeTransition(opacity: animation, child: child),
+                child: KeyedSubtree(
+                  key: ValueKey(_step),
+                  child: switch (_step) {
+                    0 => ListView(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.s16),
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Catégorie *',
-                                  style: AppTextStyles.caption.copyWith(
-                                    color: AppColors.gray500,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  _category ?? 'Choisir une catégorie',
-                                  style: AppTextStyles.body.copyWith(
-                                    color: _category == null ? textSecondary : textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(Symbols.expand_more, color: textSecondary, size: 20),
+                          _photosSection(isDark, surface, border, textSecondary,
+                              existingImages, totalImages),
+                          _infoSection(isDark, surface, border, textPrimary,
+                              textSecondary),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  TextFormField(
-                    controller: _descCtrl,
-                    style: AppTextStyles.body.copyWith(color: textPrimary),
-                    decoration: _inputDeco(
-                      'Description',
-                      hint: 'Qualité, origine, conditionnement…',
-                      isDark: isDark,
-                    ),
-                    maxLines: 3,
-                  ),
-                ],
-              ),
-            ),
-
-            // ── Prix de base ─────────────────────────────────────────────────
-            _FormSection(
-              isDark: isDark,
-              surface: surface,
-              border: border,
-              icon: Symbols.payments,
-              title: 'Prix de référence',
-              subtitle: 'Prix indicatif — les variantes peuvent avoir leurs propres prix.',
-              child: TextFormField(
-                controller: _priceCtrl,
-                style: AppTextStyles.body.copyWith(color: textPrimary),
-                decoration: _inputDeco('Prix de base (FCFA) *', isDark: isDark).copyWith(
-                  suffixText: 'FCFA',
-                  suffixStyle: AppTextStyles.caption.copyWith(color: textSecondary),
-                ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: false),
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Champ requis';
-                  if (double.tryParse(v.trim()) == null) return 'Nombre invalide';
-                  return null;
-                },
-              ),
-            ),
-
-            // ── Variantes ────────────────────────────────────────────────────
-            _FormSection(
-              isDark: isDark,
-              surface: surface,
-              border: border,
-              icon: Symbols.package_2,
-              title: 'Variantes',
-              subtitle: 'Conditionnements proposés (sac 5kg, carton 12kg…)',
-              child: Column(
-                children: [
-                  // Variantes existantes (édition)
-                  ...existingVariants.map((v) => _VariantTile(
-                        isDark: isDark,
-                        border: border,
-                        textPrimary: textPrimary,
-                        textSecondary: textSecondary,
-                        label: v.label,
-                        pack: v.pack,
-                        price: v.price,
-                        stock: v.stock,
-                        isExisting: true,
-                        onDelete: () => setState(() => _deletedVariantIds.add(v.id)),
-                      )),
-                  // Nouvelles variantes
-                  ..._newVariants.asMap().entries.map((e) => _VariantTile(
-                        isDark: isDark,
-                        border: border,
-                        textPrimary: textPrimary,
-                        textSecondary: textSecondary,
-                        label: e.value.label,
-                        pack: e.value.pack,
-                        price: e.value.price,
-                        stock: e.value.stock,
-                        isExisting: false,
-                        onDelete: () => setState(() => _newVariants.removeAt(e.key)),
-                      )),
-                  if (existingVariants.isNotEmpty || _newVariants.isNotEmpty)
-                    const SizedBox(height: AppSpacing.s8),
-                  // Bouton ajouter variante
-                  OutlinedButton.icon(
-                    onPressed: () => _showAddVariant(context, isDark),
-                    icon: const Icon(Symbols.add, size: 16),
-                    label: const Text('Ajouter une variante'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: BorderSide(
-                        color: AppColors.primary.withValues(alpha: 0.5),
-                      ),
-                      minimumSize: const Size(double.infinity, 44),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // ── Statut (édition uniquement) ──────────────────────────────────
-            if (widget.isEditing)
-              _FormSection(
-                isDark: isDark,
-                surface: surface,
-                border: border,
-                icon: Symbols.toggle_on,
-                title: 'Statut',
-                child: Row(
-                  children: [
-                    Icon(
-                      _isActive ? Symbols.visibility : Symbols.visibility_off,
-                      size: 20,
-                      color: _isActive ? AppColors.success : textSecondary,
-                    ),
-                    const SizedBox(width: AppSpacing.s12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    1 => ListView(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.s16),
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
                         children: [
-                          Text(
-                            _isActive ? 'Produit actif' : 'Produit désactivé',
-                            style: AppTextStyles.body.copyWith(color: textPrimary),
-                          ),
-                          Text(
-                            _isActive
-                                ? 'Visible par les acheteurs'
-                                : 'Masqué du catalogue',
-                            style: AppTextStyles.caption.copyWith(color: textSecondary),
-                          ),
+                          _priceSection(isDark, surface, border, textPrimary,
+                              textSecondary),
+                          _variantsSection(isDark, surface, border, textPrimary,
+                              textSecondary, existingVariants),
                         ],
                       ),
-                    ),
-                    Switch(
-                      value: _isActive,
-                      onChanged: (v) => setState(() => _isActive = v),
-                      activeThumbColor: AppColors.primary,
-                      activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
-                    ),
-                  ],
+                    _ => ListView(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.s16),
+                        children: [
+                          _summarySection(isDark, surface, border, textPrimary,
+                              textSecondary, totalImages, existingVariants),
+                        ],
+                      ),
+                  },
                 ),
               ),
+            ),
+            _buildWizardFooter(isDark, border, textPrimary),
           ],
-        ),
-      ),
-      // ── Bouton soumettre ─────────────────────────────────────────────────────
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : AppColors.white,
-          border: Border(top: BorderSide(color: border)),
-        ),
-        padding: EdgeInsets.fromLTRB(
-          AppSpacing.s16,
-          AppSpacing.s12,
-          AppSpacing.s16,
-          MediaQuery.of(context).padding.bottom + AppSpacing.s12,
-        ),
-        child: FilledButton(
-          onPressed: _loading ? null : _submit,
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.white,
-            minimumSize: const Size(double.infinity, 52),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-            ),
-          ),
-          child: _loading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.white,
-                  ),
-                )
-              : Text(
-                  widget.isEditing ? 'Mettre à jour' : 'Créer le produit',
-                  style: AppTextStyles.label.copyWith(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
         ),
       ),
     );
@@ -882,9 +1249,10 @@ class _VariantTile extends StatelessWidget {
     required this.textPrimary,
     required this.textSecondary,
     required this.label,
-    required this.pack,
+    required this.wholesaleUnit,
     required this.price,
     required this.stock,
+    this.minOrderQuantity,
     required this.isExisting,
     required this.onDelete,
   });
@@ -894,16 +1262,16 @@ class _VariantTile extends StatelessWidget {
   final Color textPrimary;
   final Color textSecondary;
   final String label;
-  final String? pack;
+  final String? wholesaleUnit;
   final double price;
   final int stock;
+  final int? minOrderQuantity;
   final bool isExisting;
   final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
     final bg = isDark ? AppColors.darkSurface2 : AppColors.gray50;
-    final packLabel = pack != null && pack!.isNotEmpty ? '$pack · ' : '';
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.s8),
@@ -935,7 +1303,7 @@ class _VariantTile extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '$packLabel$label',
+                      label,
                       style: AppTextStyles.label.copyWith(
                         color: textPrimary,
                         fontWeight: FontWeight.w600,
@@ -963,7 +1331,7 @@ class _VariantTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${price.toStringAsFixed(0)} FCFA · Stock: $stock',
+                  '${price.toStringAsFixed(0)} FCFA · Stock: $stock${minOrderQuantity != null ? ' · Min. $minOrderQuantity' : ''}',
                   style: AppTextStyles.caption.copyWith(color: textSecondary),
                 ),
               ],
@@ -993,16 +1361,16 @@ class _AddVariantSheet extends StatefulWidget {
 
 class _AddVariantSheetState extends State<_AddVariantSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _labelCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
   final _stockCtrl = TextEditingController();
-  String? _pack;
+  final _minQtyCtrl = TextEditingController();
+  String? _wholesaleUnit;
 
   @override
   void dispose() {
-    _labelCtrl.dispose();
     _priceCtrl.dispose();
     _stockCtrl.dispose();
+    _minQtyCtrl.dispose();
     super.dispose();
   }
 
@@ -1081,9 +1449,9 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
             ),
             const SizedBox(height: AppSpacing.s16),
 
-            // Type de conditionnement
+            // Unité de vente en gros
             Text(
-              'Type de conditionnement',
+              'Unité de vente *',
               style: AppTextStyles.caption.copyWith(color: textSecondary),
             ),
             const SizedBox(height: AppSpacing.s8),
@@ -1091,13 +1459,13 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
               height: 36,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: _kPackTypes.length,
-                separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.s6),
+                itemCount: _kWholesaleUnits.length,
+                separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.s6),
                 itemBuilder: (_, i) {
-                  final p = _kPackTypes[i];
-                  final sel = _pack == p;
+                  final u = _kWholesaleUnits[i];
+                  final sel = _wholesaleUnit == u;
                   return GestureDetector(
-                    onTap: () => setState(() => _pack = sel ? null : p),
+                    onTap: () => setState(() => _wholesaleUnit = sel ? null : u),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 150),
                       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s12),
@@ -1112,7 +1480,7 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        p,
+                        _kWholesaleUnitLabels[u] ?? u,
                         style: AppTextStyles.label.copyWith(
                           color: sel ? AppColors.primary : textSecondary,
                           fontWeight: sel ? FontWeight.w600 : FontWeight.normal,
@@ -1122,15 +1490,6 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
                   );
                 },
               ),
-            ),
-            const SizedBox(height: AppSpacing.s12),
-
-            // Label
-            TextFormField(
-              controller: _labelCtrl,
-              style: AppTextStyles.body.copyWith(color: textPrimary),
-              decoration: _deco('Label * (ex: 5kg, Carton de 12…)', isDark: isDark),
-              validator: (v) => v == null || v.trim().isEmpty ? 'Champ requis' : null,
             ),
             const SizedBox(height: AppSpacing.s12),
 
@@ -1168,17 +1527,34 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
                 ),
               ],
             ),
+            const SizedBox(height: AppSpacing.s12),
+
+            // Commande minimale
+            TextFormField(
+              controller: _minQtyCtrl,
+              style: AppTextStyles.body.copyWith(color: textPrimary),
+              decoration: _deco('Qté minimale de commande', isDark: isDark),
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
             const SizedBox(height: AppSpacing.s20),
 
             FilledButton(
               onPressed: () {
                 if (!_formKey.currentState!.validate()) return;
+                if (_wholesaleUnit == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Choisissez une unité de vente')),
+                  );
+                  return;
+                }
                 Navigator.of(context).pop(
                   _VariantDraft(
-                    label: _labelCtrl.text.trim(),
-                    pack: _pack,
+                    label: _kWholesaleUnitLabels[_wholesaleUnit] ?? _wholesaleUnit!,
+                    wholesaleUnit: _wholesaleUnit,
                     price: double.parse(_priceCtrl.text.trim()),
                     stock: int.parse(_stockCtrl.text.trim()),
+                    minOrderQuantity: int.tryParse(_minQtyCtrl.text.trim()),
                   ),
                 );
               },
@@ -1201,6 +1577,60 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ─── Summary row ──────────────────────────────────────────────────────────────
+
+class _SummaryRow extends StatelessWidget {
+  const _SummaryRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.isDark,
+    this.isLast = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color textPrimary;
+  final Color textSecondary;
+  final bool isDark;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    final dividerColor = isDark ? AppColors.darkBorder : AppColors.gray100;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s10),
+          child: Row(
+            children: [
+              Icon(icon, size: 16, color: AppColors.primary.withValues(alpha: 0.7)),
+              const SizedBox(width: AppSpacing.s12),
+              SizedBox(
+                width: 90,
+                child: Text(label,
+                    style: AppTextStyles.caption.copyWith(color: textSecondary)),
+              ),
+              Expanded(
+                child: Text(
+                  value,
+                  style: AppTextStyles.label.copyWith(color: textPrimary),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (!isLast) Divider(height: 1, color: dividerColor),
+      ],
     );
   }
 }

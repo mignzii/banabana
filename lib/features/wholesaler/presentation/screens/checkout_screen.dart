@@ -73,16 +73,27 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           .map((i) => {'variantId': i.variantId, 'quantity': i.quantity})
           .toList();
 
-      final order = await ref
+      final address = '${_addressCtrl.text.trim()}, ${_cityCtrl.text.trim()}';
+      final orders = await ref
           .read(wholesalerOrdersProvider.notifier)
-          .placeOrder(items);
+          .placeOrder(
+            items,
+            deliveryName: _nameCtrl.text.trim(),
+            deliveryPhone: _phoneCtrl.text.trim(),
+            deliveryAddress: address,
+            notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
+            paymentMethod: _paymentMethod.apiKey,
+          );
 
       ref.read(cartProvider.notifier).clear();
 
       if (mounted) {
-        context.showSnack('Commande passée avec succès !',
-            type: SnackType.success);
-        context.pushReplacement('/shop/orders/${order.id}');
+        final count = orders.length;
+        final msg = count > 1
+            ? '$count commandes créées (une par producteur)'
+            : 'Commande passée avec succès !';
+        context.showSnack(msg, type: SnackType.success);
+        context.go('/shop/orders');
       }
     } catch (e) {
       if (mounted) {

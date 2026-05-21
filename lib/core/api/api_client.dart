@@ -24,10 +24,11 @@ final apiClientProvider = Provider<Dio>((ref) {
 
   final dio = Dio(BaseOptions(
     baseUrl: _kBaseUrl,
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 15),
+    connectTimeout: const Duration(seconds: 20),
+    receiveTimeout: const Duration(seconds: 30),
     headers: {'Content-Type': 'application/json'},
-  ));
+  ))
+    ..transformer = SyncTransformer();
 
   interceptor.setDio(dio);
   dio.interceptors.add(interceptor);

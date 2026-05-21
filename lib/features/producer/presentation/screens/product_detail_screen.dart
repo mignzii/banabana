@@ -9,6 +9,7 @@ import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/producer/providers/product_providers.dart';
 import 'package:banabana_b2b/features/producer/providers/category_providers.dart';
+import 'package:banabana_b2b/features/wholesaler/providers/wholesaler_order_providers.dart';
 import 'package:banabana_b2b/shared/models/product.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
@@ -19,10 +20,12 @@ class ProductDetailScreen extends ConsumerWidget {
     required this.productId,
     this.routePrefix = '/producer/products',
     this.showRestockAction = false,
+    this.showWholesalerAnalytics = false,
   });
   final String productId;
   final String routePrefix;
   final bool showRestockAction;
+  final bool showWholesalerAnalytics;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,6 +40,7 @@ class ProductDetailScreen extends ConsumerWidget {
         backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
         elevation: 0,
         leading: IconButton(
+          tooltip: 'Retour',
           icon: Icon(Symbols.arrow_back, color: textPrimary),
           onPressed: () => context.pop(),
         ),
@@ -68,7 +72,13 @@ class ProductDetailScreen extends ConsumerWidget {
           message: e.toString(),
           onRetry: () => ref.invalidate(productDetailProvider(productId)),
         ),
-        data: (product) => _ProductDetail(product: product, isDark: isDark, routePrefix: routePrefix, showRestockAction: showRestockAction),
+        data: (product) => _ProductDetail(
+          product: product,
+          isDark: isDark,
+          routePrefix: routePrefix,
+          showRestockAction: showRestockAction,
+          showWholesalerAnalytics: showWholesalerAnalytics,
+        ),
       ),
     );
   }
@@ -77,11 +87,18 @@ class ProductDetailScreen extends ConsumerWidget {
 // ─── Vue principale ───────────────────────────────────────────────────────────
 
 class _ProductDetail extends ConsumerStatefulWidget {
-  const _ProductDetail({required this.product, required this.isDark, required this.routePrefix, this.showRestockAction = false});
+  const _ProductDetail({
+    required this.product,
+    required this.isDark,
+    required this.routePrefix,
+    this.showRestockAction = false,
+    this.showWholesalerAnalytics = false,
+  });
   final Product product;
   final bool isDark;
   final String routePrefix;
   final bool showRestockAction;
+  final bool showWholesalerAnalytics;
 
   @override
   ConsumerState<_ProductDetail> createState() => _ProductDetailState();
@@ -392,6 +409,19 @@ class _ProductDetailState extends ConsumerState<_ProductDetail> {
                 ),
               ),
 
+              // ── Analytiques d'achat (grossiste) ─────────────────────────
+              if (widget.showWholesalerAnalytics) ...[
+                const SizedBox(height: AppSpacing.s16),
+                _WholesalerAnalyticsCard(
+                  productId: p.id,
+                  isDark: isDark,
+                  surface: surface,
+                  border: border,
+                  textPrimary: textPrimary,
+                  textSecondary: textSecondary,
+                ),
+              ],
+
               // ── Variantes ────────────────────────────────────────────────
               const SizedBox(height: AppSpacing.s16),
               Row(
@@ -697,6 +727,193 @@ class _VariantDetailCard extends StatelessWidget {
   }
 }
 
+// ─── Analytiques d'achat grossiste ───────────────────────────────────────────
+
+class _WholesalerAnalyticsCard extends ConsumerWidget {
+  const _WholesalerAnalyticsCard({
+    required this.productId,
+    required this.isDark,
+    required this.surface,
+    required this.border,
+    required this.textPrimary,
+    required this.textSecondary,
+  });
+
+  final String productId;
+  final bool isDark;
+  final Color surface;
+  final Color border;
+  final Color textPrimary;
+  final Color textSecondary;
+
+  String _formatDate(DateTime dt) {
+    final now = DateTime.now();
+    final diff = now.difference(dt);
+    if (diff.inDays == 0) return 'aujourd\'hui';
+    if (diff.inDays == 1) return 'hier';
+    if (diff.inDays < 7) return 'il y a ${diff.inDays}j';
+    return '${dt.day}/${dt.month}/${dt.year}';
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ordersAsync = ref.watch(wholesalerOrdersProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Symbols.bar_chart, size: 16, color: AppColors.primary),
+            const SizedBox(width: AppSpacing.s8),
+            Text(
+              'Mes achats',
+              style: AppTextStyles.sectionTitle.copyWith(color: textPrimary),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.s10),
+        ordersAsync.when(
+          loading: () => ShimmerBox(
+            height: 88,
+            borderRadius: AppSpacing.radiusLarge,
+          ),
+          error: (_, __) => const SizedBox.shrink(),
+          data: (orders) {
+            final relevant = orders
+                .where((o) => o.items.any((i) => i.productId == productId))
+                .toList();
+
+            if (relevant.isEmpty) {
+              return _InfoCard(
+                isDark: isDark,
+                surface: surface,
+                border: border,
+                child: Row(
+                  children: [
+                    Icon(Symbols.info, size: 16, color: textSecondary),
+                    const SizedBox(width: AppSpacing.s10),
+                    Expanded(
+                      child: Text(
+                        'Aucune commande passée pour ce produit.',
+                        style: AppTextStyles.caption.copyWith(color: textSecondary),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            final totalOrders = relevant.length;
+            final totalQty = relevant
+                .expand((o) => o.items.where((i) => i.productId == productId))
+                .fold<int>(0, (s, i) => s + i.quantity);
+            final totalSpent = relevant
+                .expand((o) => o.items.where((i) => i.productId == productId))
+                .fold<double>(0, (s, i) => s + i.unitPrice * i.quantity);
+            final lastOrder = relevant
+                .reduce((a, b) => a.createdAt.isAfter(b.createdAt) ? a : b);
+
+            return _InfoCard(
+              isDark: isDark,
+              surface: surface,
+              border: border,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      _AnalyticStat(
+                        isDark: isDark,
+                        icon: Symbols.receipt_long,
+                        label: 'Commandes',
+                        value: '$totalOrders',
+                        color: AppColors.primary,
+                      ),
+                      Container(width: 1, height: 40, color: border),
+                      _AnalyticStat(
+                        isDark: isDark,
+                        icon: Symbols.inventory_2,
+                        label: 'Qté totale',
+                        value: '$totalQty',
+                        color: AppColors.secondary,
+                      ),
+                      Container(width: 1, height: 40, color: border),
+                      _AnalyticStat(
+                        isDark: isDark,
+                        icon: Symbols.payments,
+                        label: 'Total dépensé',
+                        value: '${(totalSpent / 1000).toStringAsFixed(0)}k F',
+                        color: AppColors.success,
+                      ),
+                    ],
+                  ),
+                  Divider(height: AppSpacing.s20, color: border),
+                  Row(
+                    children: [
+                      Icon(Symbols.schedule,
+                          size: 13,
+                          color: textSecondary),
+                      const SizedBox(width: AppSpacing.s6),
+                      Text(
+                        'Dernière commande ${_formatDate(lastOrder.createdAt)}',
+                        style: AppTextStyles.caption.copyWith(color: textSecondary),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _AnalyticStat extends StatelessWidget {
+  const _AnalyticStat({
+    required this.isDark,
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final bool isDark;
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(height: AppSpacing.s4),
+          Text(
+            value,
+            style: AppTextStyles.label.copyWith(
+                color: textPrimary, fontWeight: FontWeight.w700),
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            label,
+            style: AppTextStyles.caption
+                .copyWith(color: textSecondary, fontSize: 10),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 class _WholesaleChip extends StatelessWidget {
   const _WholesaleChip({
     required this.isDark,
@@ -777,7 +994,6 @@ class _ActionsBarState extends ConsumerState<_ActionsBar> {
       } else {
         await repo.activate(widget.product.id);
       }
-      ref.invalidate(productDetailProvider(widget.product.id));
       ref.invalidate(productsNotifierProvider);
       if (mounted) {
         context.showSnack(
@@ -935,7 +1151,7 @@ class _MoreMenu extends ConsumerWidget {
               ref.invalidate(productsNotifierProvider);
               if (context.mounted) {
                 context.showSnack('Produit supprimé', type: SnackType.success);
-                context.pop();
+                context.go('/producer/products');
               }
             } catch (e) {
               if (context.mounted) {

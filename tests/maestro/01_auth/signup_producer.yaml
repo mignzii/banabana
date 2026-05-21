@@ -1,0 +1,75 @@
+# TEST : Inscription Producteur sans SMS (mode test)
+# Résultat attendu : compte créé, PIN défini, redirection vers l'accueil producteur
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  FIRST_NAME: "Kofi"
+  LAST_NAME: "Asante"
+---
+- launchApp:
+    clearState: true
+
+# ── Écran de connexion ────────────────────────────────────────────────────────
+- assertVisible: "Connectez-vous pour continuer"
+- assertVisible: "Producteur"
+- assertVisible: "Grossiste"
+- assertVisible: "Connexion PIN directe (sans OTP)"
+- assertVisible: "S'inscrire sans SMS (test)"
+
+- tapOn: "S'inscrire sans SMS (test)"
+
+# ── Formulaire d'inscription rapide ──────────────────────────────────────────
+- assertVisible: "Créer votre compte"
+- assertVisible: "Sans code SMS — PIN par défaut : 0000"
+
+- tapOn: "Prénom"
+- inputText: "${FIRST_NAME}"
+
+- tapOn: "Nom"
+- inputText: "${LAST_NAME}"
+
+- tapOn: "Numéro de téléphone"
+- eraseText: 4
+- inputText: "${PRODUCER_PHONE}"
+
+- tapOn: "Producteur"
+- assertVisible:
+    text: "Producteur"
+    enabled: true
+
+- tapOn: "Créer le compte"
+
+# ── Définition du PIN ─────────────────────────────────────────────────────────
+- assertVisible: "Créez votre PIN"
+- tapOn:
+    text: "1"
+- tapOn:
+    text: "2"
+- tapOn:
+    text: "3"
+- tapOn:
+    text: "4"
+
+- assertVisible: "Confirmez votre PIN"
+- tapOn:
+    text: "1"
+- tapOn:
+    text: "2"
+- tapOn:
+    text: "3"
+- tapOn:
+    text: "4"
+
+# ── Connexion avec le nouveau PIN ─────────────────────────────────────────────
+- assertVisible: "Entrez votre PIN"
+- tapOn:
+    text: "1"
+- tapOn:
+    text: "2"
+- tapOn:
+    text: "3"
+- tapOn:
+    text: "4"
+
+# ── Accueil Producteur ────────────────────────────────────────────────────────
+- assertVisible: "Actions rapides"

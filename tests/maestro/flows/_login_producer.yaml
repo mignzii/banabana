@@ -1,0 +1,21 @@
+# Flux réutilisable — connexion Producteur (sans OTP)
+# Usage: runFlow: flows/_login_producer.yaml
+# Requires env: PRODUCER_PHONE, PRODUCER_PIN
+appId: com.banabana.pro
+---
+- launchApp:
+    clearState: false
+# Phone field is autofocused — erase default "+221" and type
+- eraseText: 20
+- inputText: "${PRODUCER_PHONE}"
+- tapOn: "Votre profil"
+- tapOn:
+    text: "Producteur"
+- tapOn:
+    text: "Connexion PIN directe (sans OTP)"
+- assertVisible: "Entrez votre PIN"
+- tapOn: "1"
+- tapOn: "2"
+- tapOn: "3"
+- tapOn: "4"
+- assertVisible: "Actions rapides"

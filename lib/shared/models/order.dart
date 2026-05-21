@@ -45,9 +45,14 @@ class Order with _$Order {
     @JsonKey(fromJson: _parseDouble) required double totalAmount,
     required DateTime createdAt,
     @Default([]) List<OrderItem> items,
+    String? producerName,
     String? wholesalerName,
+    String? wholesalerPhone,
     String? notes,
     String? deliveryAddress,
+    String? deliveryName,
+    String? deliveryPhone,
+    String? paymentMethod,
   }) = _Order;
 
   factory Order.fromJson(Map<String, dynamic> json) =>

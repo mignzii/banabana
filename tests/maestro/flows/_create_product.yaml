@@ -1,0 +1,28 @@
+# Flux réutilisable — créer un produit complet (titre + catégorie + prix + variante)
+# Prérequis : être sur l'écran "Nouveau produit"
+# Variables attendues : PRODUCT_TITLE, PRODUCT_PRICE, VARIANT_LABEL, VARIANT_PRICE, VARIANT_STOCK
+appId: com.banabana.pro
+---
+- assertVisible: "Nouveau produit"
+- tapOn: "Nom du produit *"
+- inputText: "${PRODUCT_TITLE}"
+- tapOn: "Choisir une catégorie"
+- assertVisible: "Choisir une catégorie"
+- tapOn:
+    index: 0
+    text: "Fruits"
+- assertVisible: "Fruits"
+- tapOn: "Prix de base (FCFA) *"
+- inputText: "${PRODUCT_PRICE}"
+- tapOn: "Ajouter une variante"
+- assertVisible: "Ajouter une variante"
+- tapOn: "Sac"
+- tapOn: "Label * (ex: 5kg, Carton de 12…)"
+- inputText: "${VARIANT_LABEL}"
+- tapOn: "Prix (FCFA) *"
+- inputText: "${VARIANT_PRICE}"
+- tapOn: "Stock *"
+- inputText: "${VARIANT_STOCK}"
+- tapOn: "Ajouter cette variante"
+- assertVisible: "${VARIANT_LABEL}"
+- tapOn: "Créer le produit"

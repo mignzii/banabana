@@ -1,0 +1,104 @@
+# TEST : Flow rejet de commande — Grossiste commande → Producteur refuse → Grossiste voit "Annulée"
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  WHOLESALER_PHONE: "+2250700000020"
+  DELIVERY_NAME: "Ama Mensah"
+  DELIVERY_PHONE: "+2250700000020"
+  DELIVERY_ADDRESS: "Cocody, Abidjan"
+  DELIVERY_CITY: "Abidjan"
+---
+- launchApp:
+    clearState: true
+
+# ── Grossiste : passer une commande ───────────────────────────────────────────
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Catalogue"
+- tapOn:
+    index: 0
+    belowText: "Catalogue"
+- scrollUntilVisible:
+    element:
+      text: "Ajouter au panier"
+    direction: DOWN
+- tapOn: "Ajouter au panier"
+- tapOn:
+    id: "cart_icon"
+- tapOn: "Passer la commande →"
+
+- tapOn: "Nom complet *"
+- inputText: "${DELIVERY_NAME}"
+- tapOn: "Téléphone *"
+- inputText: "${DELIVERY_PHONE}"
+- tapOn: "Adresse *"
+- inputText: "${DELIVERY_ADDRESS}"
+- tapOn: "Ville *"
+- inputText: "${DELIVERY_CITY}"
+
+- scrollUntilVisible:
+    element:
+      text: "Paiement à la livraison"
+    direction: DOWN
+- tapOn: "Paiement à la livraison"
+- scrollUntilVisible:
+    element:
+      text: "Confirmer"
+    direction: DOWN
+- tapOn:
+    text: "Confirmer"
+- assertVisible: "Détail commande"
+
+# Déconnexion Grossiste
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- tapOn: "Déconnexion"
+
+# ── Producteur : rejeter la commande ─────────────────────────────────────────
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Commandes"
+- tapOn: "Nouvelles"
+- tapOn:
+    index: 0
+    text: "#"
+- assertVisible: "Détail commande"
+- tapOn: "Rejeter"
+- assertVisible:
+    anyOf:
+      - text: "Commande rejetée"
+      - text: "Annulée"
+- tapOn: "Retour"
+
+# Vérifier dans "Annulées"
+- tapOn: "Annulées"
+- assertVisible: "#"
+
+# Déconnexion Producteur
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: "Déconnexion"
+    direction: DOWN
+- tapOn: "Déconnexion"
+- tapOn: "Déconnexion"
+
+# ── Grossiste : voir la commande annulée ──────────────────────────────────────
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Commandes"
+- tapOn: "Annulées"
+- assertVisible: "#"
+- tapOn:
+    index: 0
+    text: "#"
+- assertVisible: "Détail commande"
+- assertVisible:
+    anyOf:
+      - text: "Annulée"
+      - text: "Annulé"
+- tapOn: "Retour"

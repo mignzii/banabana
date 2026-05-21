@@ -1,0 +1,65 @@
+# TEST : Catalogue Grossiste — recherche, filtres, navigation produit
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Catalogue"
+- assertVisible: "Catalogue"
+- assertVisible: "Rechercher un produit…"
+
+# ── Recherche textuelle ────────────────────────────────────────────────────────
+- tapOn: "Rechercher un produit…"
+- inputText: "zzz_produit_inexistant"
+- assertVisible: "Aucun produit trouvé"
+- assertVisible: "Essayez d'autres termes"
+
+- clearText
+- inputText: ""
+
+# Recherche avec terme valide
+- clearText
+- assertNotVisible: "Aucun produit trouvé"
+
+# ── Filtres ────────────────────────────────────────────────────────────────────
+- tapOn:
+    id: "filter_button"
+    optional: true
+- tapOn:
+    text: "Filtrer"
+    optional: true
+- assertVisible:
+    text: "Filtrer les résultats"
+    optional: true
+- tapOn:
+    text: "Appliquer les filtres"
+    optional: true
+
+# ── Accès à la recherche pleine page ─────────────────────────────────────────
+- tapOn:
+    id: "search_icon"
+- assertVisible: "Rechercher un produit, producteur..."
+- inputText: "Banane"
+- clearText
+- tapOn: "Retour"
+
+# ── Tap sur un produit du catalogue ───────────────────────────────────────────
+- assertVisible: "Catalogue"
+- tapOn:
+    index: 0
+    belowText: "Catalogue"
+    optional: true
+- assertVisible:
+    text: "Détails produit"
+    optional: true
+- tapOn: "Retour"
+    optional: true
+
+# ── Accès panier depuis catalogue ────────────────────────────────────────────
+- tapOn:
+    id: "cart_icon"
+- assertVisible: "Mon panier"
+- tapOn: "Retour"
