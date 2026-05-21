@@ -8,6 +8,7 @@ class CartItem {
     required this.variantLabel,
     required this.unitPrice,
     required this.quantity,
+    this.minOrderQuantity = 1,
   });
 
   final String variantId;
@@ -16,6 +17,7 @@ class CartItem {
   final String variantLabel;
   final double unitPrice;
   final int quantity;
+  final int minOrderQuantity;
 
   CartItem copyWith({int? quantity}) => CartItem(
         variantId: variantId,
@@ -24,6 +26,7 @@ class CartItem {
         variantLabel: variantLabel,
         unitPrice: unitPrice,
         quantity: quantity ?? this.quantity,
+        minOrderQuantity: minOrderQuantity,
       );
 }
 
@@ -37,6 +40,7 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     required String variantLabel,
     required double unitPrice,
     int quantity = 1,
+    int minOrderQuantity = 1,
   }) {
     final idx = state.indexWhere((i) => i.variantId == variantId);
     if (idx >= 0) {
@@ -57,14 +61,19 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
           variantLabel: variantLabel,
           unitPrice: unitPrice,
           quantity: quantity,
+          minOrderQuantity: minOrderQuantity,
         ),
       ];
     }
   }
 
   void updateQuantity(String variantId, int quantity) {
-    if (quantity <= 0) {
-      remove(variantId);
+    final item = state.firstWhere((i) => i.variantId == variantId, orElse: () => throw StateError('not found'));
+    final min = item.minOrderQuantity;
+    if (quantity < min) {
+      if (quantity <= 0) {
+        remove(variantId);
+      }
       return;
     }
     state = state

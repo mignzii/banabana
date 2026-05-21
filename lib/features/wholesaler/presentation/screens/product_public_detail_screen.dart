@@ -12,7 +12,6 @@ import 'package:banabana_b2b/features/producer/providers/category_providers.dart
 import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/shared/models/product.dart';
-import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
 class ProductPublicDetailScreen extends ConsumerStatefulWidget {
@@ -25,7 +24,8 @@ class ProductPublicDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ProductPublicDetailScreenState
-    extends ConsumerState<ProductPublicDetailScreen> {
+    extends ConsumerState<ProductPublicDetailScreen>
+    with SingleTickerProviderStateMixin {
   ProductVariant? _selectedVariant;
   int _quantity = 1;
   int _pageIndex = 0;
@@ -33,16 +33,27 @@ class _ProductPublicDetailScreenState
   final TextEditingController _qtyController = TextEditingController(text: '1');
   final FocusNode _qtyFocus = FocusNode();
 
+  late final AnimationController _toastCtrl;
+  OverlayEntry? _toastEntry;
+
   @override
   void initState() {
     super.initState();
     _qtyFocus.addListener(() {
       if (!_qtyFocus.hasFocus) _commitQty();
     });
+    _toastCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+      reverseDuration: const Duration(milliseconds: 220),
+    );
   }
 
   @override
   void dispose() {
+    _toastCtrl.dispose();
+    _toastEntry?.remove();
+    _toastEntry = null;
     _qtyController.dispose();
     _qtyFocus.dispose();
     super.dispose();
@@ -65,13 +76,41 @@ class _ProductPublicDetailScreenState
           variantLabel: _selectedVariant!.label,
           unitPrice: _selectedVariant!.price,
           quantity: _quantity,
+          minOrderQuantity: _selectedVariant!.minOrderQuantity ?? 1,
         );
-    context.showSnack(
-      'Ajouté au panier ✓',
-      type: SnackType.success,
-      actionLabel: 'Voir',
-      onAction: () => context.push('/shop/cart'),
+    _showCartToast();
+  }
+
+  void _showCartToast() {
+    _toastEntry?.remove();
+    _toastEntry = null;
+
+    final goRouter = GoRouter.of(context);
+    final entry = OverlayEntry(
+      builder: (_) => _CartToast(
+        animation: _toastCtrl,
+        onViewCart: () {
+          _dismissToast();
+          goRouter.push('/shop/cart');
+        },
+      ),
     );
+
+    Overlay.of(context).insert(entry);
+    _toastEntry = entry;
+    _toastCtrl.forward(from: 0);
+
+    Future.delayed(const Duration(milliseconds: 2400), () {
+      if (mounted) _dismissToast();
+    });
+  }
+
+  void _dismissToast() {
+    if (_toastEntry == null) return;
+    _toastCtrl.reverse().then((_) {
+      _toastEntry?.remove();
+      _toastEntry = null;
+    });
   }
 
   @override
@@ -93,6 +132,7 @@ class _ProductPublicDetailScreenState
 
     final isOwnProduct = productAsync.valueOrNull?.producer?.userId != null &&
         productAsync.valueOrNull!.producer!.userId == currentUserId;
+    final cartCount = ref.watch(cartItemCountProvider);
 
     return Scaffold(
       backgroundColor:
@@ -118,10 +158,44 @@ class _ProductPublicDetailScreenState
           if (!isOwnProduct)
             Padding(
               padding: const EdgeInsets.only(right: AppSpacing.s12),
-              child: _CircleButton(
-                icon: Symbols.shopping_cart,
-                isDark: isDark,
-                onTap: () => context.push('/shop/cart'),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  _CircleButton(
+                    icon: Symbols.shopping_cart,
+                    isDark: isDark,
+                    onTap: () => context.push('/shop/cart'),
+                  ),
+                  if (cartCount > 0)
+                    Positioned(
+                      top: -2,
+                      right: -2,
+                      child: AnimatedScale(
+                        scale: 1.0,
+                        duration: const Duration(milliseconds: 200),
+                        child: Container(
+                          constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.error,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.white, width: 1.5),
+                          ),
+                          child: Center(
+                            child: Text(
+                              cartCount > 99 ? '99+' : '$cartCount',
+                              style: const TextStyle(
+                                color: AppColors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                height: 1,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
         ],
@@ -1349,6 +1423,101 @@ class _WholesaleInfoItem extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CartToast extends StatelessWidget {
+  final Animation<double> animation;
+  final VoidCallback onViewCart;
+
+  const _CartToast({required this.animation, required this.onViewCart});
+
+  @override
+  Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
+    return Positioned(
+      top: topPadding + kToolbarHeight + AppSpacing.s8,
+      left: AppSpacing.s16,
+      right: AppSpacing.s16,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, -0.6),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+        child: FadeTransition(
+          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.s16,
+                vertical: AppSpacing.s12,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.gray900,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.18),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: AppColors.success,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.s12),
+                  const Expanded(
+                    child: Text(
+                      'Ajouté au panier',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: onViewCart,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.s12,
+                        vertical: AppSpacing.s6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+                      ),
+                      child: const Text(
+                        'Voir',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
