@@ -203,10 +203,14 @@ class _ProductPublicDetailScreenState
       bottomNavigationBar: productAsync.valueOrNull != null
           ? _buildBottomBar(productAsync.valueOrNull!, isDark, isOwnProduct)
           : null,
-      body: productAsync.when(
-        loading: () => _buildSkeleton(isDark),
-        error: (e, _) => _buildError(e, isDark),
-        data: (product) => _buildScrollContent(product, isDark),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: productAsync.when(
+          loading: () => _buildSkeleton(isDark),
+          error: (e, _) => _buildError(e, isDark),
+          data: (product) => _buildScrollContent(product, isDark),
+        ),
       ),
     );
   }
@@ -632,11 +636,19 @@ class _ProductPublicDetailScreenState
               variant: v,
               selected: selected,
               isDark: isDark,
-              onTap: () => setState(() {
-                _selectedVariant = v;
-                _quantity = v.minOrderQuantity ?? 1;
-                _qtyController.text = '$_quantity';
-              }),
+              // Re-taper la variante déjà active ne doit rien réinitialiser :
+              // c'est un geste courant pour fermer le clavier de la quantité.
+              onTap: () {
+                if (_selectedVariant?.id == v.id) {
+                  _qtyFocus.unfocus();
+                  return;
+                }
+                setState(() {
+                  _selectedVariant = v;
+                  _quantity = v.minOrderQuantity ?? 1;
+                  _qtyController.text = '$_quantity';
+                });
+              },
             );
           }).toList(),
         ),
@@ -654,13 +666,17 @@ class _ProductPublicDetailScreenState
         : 'Quantité';
     return Row(
       children: [
-        Text(
-          quantityLabel,
-          style: AppTextStyles.sectionTitle.copyWith(
-            fontSize: 16,
-            color: isDark ? AppColors.white : AppColors.gray900,
+        // Flexible : « Quantité (palette(s)) » déborde sinon dès 402 pt.
+        Flexible(
+          child: Text(
+            quantityLabel,
+            style: AppTextStyles.sectionTitle.copyWith(
+              fontSize: 16,
+              color: isDark ? AppColors.white : AppColors.gray900,
+            ),
           ),
         ),
+        const SizedBox(width: AppSpacing.s12),
         const Spacer(),
         // Stepper container
         Container(
@@ -698,6 +714,10 @@ class _ProductPublicDetailScreenState
                       color: isDark ? AppColors.white : AppColors.gray900,
                     ),
                     decoration: const InputDecoration.collapsed(hintText: ''),
+                    // Le pavé numérique iOS n'a pas de touche « valider » :
+                    // sans ça le clavier resterait ouvert et masquerait la
+                    // barre « Ajouter au panier ».
+                    onTapOutside: (_) => _qtyFocus.unfocus(),
                     onChanged: (v) {
                       final n = int.tryParse(v);
                       if (n != null && n >= minQty) setState(() => _quantity = n);
@@ -943,11 +963,13 @@ class _ProductPublicDetailScreenState
               children: [
                 Icon(Symbols.calculate, size: 20, color: AppColors.primary),
                 const SizedBox(width: AppSpacing.s8),
-                Text(
-                  'Calcul de votre commande',
-                  style: AppTextStyles.label.copyWith(
-                    color: textPrimary,
-                    fontWeight: FontWeight.w700,
+                Flexible(
+                  child: Text(
+                    'Calcul de votre commande',
+                    style: AppTextStyles.label.copyWith(
+                      color: textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
@@ -1002,12 +1024,14 @@ class _ProductPublicDetailScreenState
                                   const Icon(Symbols.sell,
                                       size: 11, color: AppColors.primary),
                                   const SizedBox(width: 3),
-                                  Text(
-                                    'Tarif grossiste',
-                                    style: AppTextStyles.caption.copyWith(
-                                      color: AppColors.primary,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
+                                  Flexible(
+                                    child: Text(
+                                      'Tarif grossiste',
+                                      style: AppTextStyles.caption.copyWith(
+                                        color: AppColors.primary,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -1041,11 +1065,13 @@ class _ProductPublicDetailScreenState
                       const Icon(Symbols.check_circle,
                           size: 16, color: AppColors.success),
                       const SizedBox(width: AppSpacing.s8),
-                      Text(
-                        '$_quantity $unitLabel${_quantity > 1 ? 's' : ''} sélectionné${_quantity > 1 ? 's' : ''}',
-                        style: AppTextStyles.label.copyWith(
-                          color: AppColors.success,
-                          fontWeight: FontWeight.w600,
+                      Flexible(
+                        child: Text(
+                          '$_quantity $unitLabel${_quantity > 1 ? 's' : ''} sélectionné${_quantity > 1 ? 's' : ''}',
+                          style: AppTextStyles.label.copyWith(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       if (totalUnits != null) ...[

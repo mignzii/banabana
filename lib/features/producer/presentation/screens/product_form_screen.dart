@@ -15,6 +15,7 @@ import 'package:banabana_b2b/features/producer/presentation/widgets/image_picker
 import 'package:banabana_b2b/shared/models/product.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
+import 'package:banabana_b2b/shared/widgets/unsaved_changes_guard.dart';
 
 // ─── Données statiques ────────────────────────────────────────────────────────
 
@@ -187,11 +188,11 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
     );
     _category = p?.category;
     _isActive = p?.isActive ?? true;
-    if (!widget.isEditing) {
-      _titleCtrl.addListener(() { if (mounted) setState(() => _isDirty = true); });
-      _descCtrl.addListener(() { if (mounted) setState(() => _isDirty = true); });
-      _priceCtrl.addListener(() { if (mounted) setState(() => _isDirty = true); });
-    }
+    // Suivi des modifications aussi en édition : sans ça le mode « Modifier »
+    // laissait perdre la saisie sans le moindre avertissement.
+    _titleCtrl.addListener(() { if (mounted) setState(() => _isDirty = true); });
+    _descCtrl.addListener(() { if (mounted) setState(() => _isDirty = true); });
+    _priceCtrl.addListener(() { if (mounted) setState(() => _isDirty = true); });
   }
 
   @override
@@ -437,30 +438,25 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
   }
 
   void _onBackPressed() {
-    if (_step == 0) {
-      if (!_isDirty) { context.pop(); return; }
-      showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Abandonner la création ?'),
-          content: const Text('Les informations saisies seront perdues.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Continuer'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text('Abandonner', style: TextStyle(color: AppColors.error)),
-            ),
-          ],
-        ),
-      ).then((confirmed) {
-        if (confirmed == true && mounted) context.pop();
-      });
-    } else {
+    if (_step > 0) {
       setState(() => _step--);
+      return;
     }
+    _leaveIfConfirmed(title: 'Abandonner la création ?');
+  }
+
+  /// Sortie via un bouton retour custom : `context.pop()` court-circuite
+  /// [PopScope], la confirmation doit donc être déclenchée explicitement.
+  Future<void> _leaveIfConfirmed({String? title}) async {
+    if (!_isDirty) {
+      context.pop();
+      return;
+    }
+    final leave = await UnsavedChangesGuard.confirmLeave(
+      context,
+      title: title ?? 'Abandonner les modifications ?',
+    );
+    if (leave && mounted) context.pop();
   }
 
   // ─── Progress bar ─────────────────────────────────────────────────────────────
@@ -1013,7 +1009,9 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
 
     // ── Editing: flat form ───────────────────────────────────────────────────────
     if (widget.isEditing) {
-      return Scaffold(
+      return UnsavedChangesGuard(
+        isDirty: _isDirty,
+        child: Scaffold(
         backgroundColor: bg,
         appBar: AppBar(
           backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
@@ -1021,7 +1019,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
           leading: IconButton(
             tooltip: 'Retour',
             icon: Icon(Symbols.arrow_back, color: textPrimary),
-            onPressed: () => context.pop(),
+            onPressed: _leaveIfConfirmed,
           ),
           title: Text('Modifier le produit',
               style: AppTextStyles.sectionTitle.copyWith(color: textPrimary)),
@@ -1030,10 +1028,15 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
             child: Divider(height: 1, color: border),
           ),
         ),
-        body: Form(
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.opaque,
+          child: Form(
           key: _formKey,
           child: ListView(
             padding: const EdgeInsets.only(bottom: AppSpacing.s96),
+            keyboardDismissBehavior:
+                ScrollViewKeyboardDismissBehavior.onDrag,
             children: [
               _photosSection(isDark, surface, border, textSecondary, existingImages, totalImages),
               _infoSection(isDark, surface, border, textPrimary, textSecondary),
@@ -1043,13 +1046,18 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
             ],
           ),
         ),
+        ),
         bottomNavigationBar: _buildSubmitBar(isDark, border),
+      ),
       );
     }
 
     // ── Création: wizard 3 étapes ────────────────────────────────────────────────
     const stepTitles = ['Photos & Infos', 'Prix & Variantes', 'Finaliser'];
-    return Scaffold(
+    return UnsavedChangesGuard(
+      isDirty: _isDirty,
+      title: 'Abandonner la création ?',
+      child: Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
@@ -1071,7 +1079,10 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
           ),
         ),
       ),
-      body: Form(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Form(
         key: _formKey,
         child: Column(
           children: [
@@ -1120,6 +1131,8 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
           ],
         ),
       ),
+      ),
+    ),
     );
   }
 }

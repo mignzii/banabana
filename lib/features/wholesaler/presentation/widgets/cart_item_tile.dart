@@ -181,6 +181,10 @@ class _CartItemTileState extends ConsumerState<CartItemTile> {
                           keyboardType: TextInputType.number,
                           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           onSubmitted: (_) => _commit(),
+                          // Le pavé numérique iOS n'a pas de touche « valider » :
+                          // sans ça le clavier resterait ouvert sur la barre de
+                          // commande.
+                          onTapOutside: (_) => _focus.unfocus(),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             isDense: true,
