@@ -9,6 +9,7 @@ import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/wholesaler_order_providers.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
+import 'package:banabana_b2b/shared/widgets/unsaved_changes_guard.dart';
 import 'package:intl/intl.dart';
 
 enum _PaymentMethod { mobileMoney, cash, card }
@@ -50,6 +51,20 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   _PaymentMethod _paymentMethod = _PaymentMethod.mobileMoney;
   bool _loading = false;
+
+  bool _isDirty = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // canPop est lu au build : sans setState, PopScope ne verrait jamais la
+    // saisie arriver.
+    for (final c in [_nameCtrl, _phoneCtrl, _addressCtrl, _cityCtrl, _notesCtrl]) {
+      c.addListener(() {
+        if (mounted && !_isDirty) setState(() => _isDirty = true);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -111,7 +126,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final total = ref.watch(cartTotalProvider);
     final fmt = NumberFormat('#,###', 'fr_FR');
 
-    return Scaffold(
+    return UnsavedChangesGuard(
+      isDirty: _isDirty && !_loading,
+      title: 'Abandonner la commande ?',
+      message: 'Les informations de livraison saisies seront perdues.',
+      child: Scaffold(
       backgroundColor: isDark ? AppColors.darkBg : AppColors.gray50,
       appBar: AppBar(
         backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
@@ -412,6 +431,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         ),
       ),
       ),
+    ),
     );
   }
 }

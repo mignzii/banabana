@@ -87,7 +87,10 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
         title: const Text('Inscription (sans SMS)'),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.opaque,
+          child: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(20, 24, 20, 20 + bottom),
           child: Form(
             key: _formKey,
@@ -143,6 +146,10 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
                     prefixIcon: const Icon(Symbols.phone, color: AppColors.primary),
                   ),
                   onFieldSubmitted: (_) => _submit(),
+                  // Le clavier téléphone iOS n'a pas de touche « valider » :
+                  // sans ça onFieldSubmitted est inatteignable et le clavier
+                  // masque le bouton « Créer le compte ».
+                  onTapOutside: (_) => _focusPhone.unfocus(),
                   validator: (v) {
                     if (v == null || v.replaceAll(RegExp(r'\D'), '').length < 9) {
                       return 'Numéro invalide — ex: +221 77 123 45 67';
@@ -171,6 +178,7 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

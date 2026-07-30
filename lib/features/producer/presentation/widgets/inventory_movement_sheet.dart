@@ -234,6 +234,9 @@ class _InventoryMovementSheetState
             controller: _qtyCtrl,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            // Pavé numérique iOS : pas de touche « valider », donc sans ça le
+            // clavier masque le bouton de confirmation de la sheet.
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
             style: AppTextStyles.body.copyWith(color: textPrimary),
             decoration: InputDecoration(
               hintText: '0',

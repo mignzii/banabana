@@ -43,7 +43,10 @@ class CartScreen extends ConsumerWidget {
             ),
         ],
       ),
-      body: cartItems.isEmpty
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: cartItems.isEmpty
           ? EmptyStateWidget(
               icon: Symbols.shopping_cart,
               title: 'Votre panier est vide',
@@ -72,6 +75,7 @@ class CartScreen extends ConsumerWidget {
                 ),
               ],
             ),
+      ),
     );
   }
 
