@@ -23,7 +23,7 @@ class ProducerDashboardScreen extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppColors.darkBg : AppColors.gray50;
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
     final analyticsAsync = ref.watch(analyticsSummaryProvider);
     final ordersAsync = ref.watch(ordersNotifierProvider);
@@ -336,7 +336,7 @@ class _StatCard extends StatelessWidget {
                 Text(
                   label,
                   style: AppTextStyles.caption
-                      .copyWith(color: AppColors.gray500, fontSize: 11),
+                      .copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500, fontSize: 11),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -480,7 +480,7 @@ class _OrderTile extends StatelessWidget {
                   Text(
                     '${fmt.format(order.totalAmount)} FCFA • ${order.items.length} article${order.items.length > 1 ? 's' : ''}',
                     style: AppTextStyles.caption
-                        .copyWith(color: AppColors.gray500, fontSize: 12),
+                        .copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500, fontSize: 12),
                   ),
                 ],
               ),

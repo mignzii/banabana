@@ -121,7 +121,7 @@ class CatalogItemCard extends StatelessWidget {
                       Text(
                         item.producer.businessName,
                         style: AppTextStyles.caption.copyWith(
-                          color: isDark ? AppColors.gray500 : AppColors.gray400,
+                          color: AppColors.gray400,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -140,7 +140,7 @@ class CatalogItemCard extends StatelessWidget {
                                   TextSpan(
                                     text: ' F',
                                     style: AppTextStyles.caption.copyWith(
-                                      color: isDark ? AppColors.gray500 : AppColors.gray400,
+                                      color: AppColors.gray400,
                                     ),
                                   ),
                                 ],

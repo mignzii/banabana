@@ -136,7 +136,7 @@ class _InventoryMovementSheetState
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: isDark ? AppColors.gray600 : AppColors.gray300,
+                color: isDark ? AppColors.gray500 : AppColors.gray300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -152,7 +152,7 @@ class _InventoryMovementSheetState
           const SizedBox(height: 2),
           Text(
             widget.variantLabel,
-            style: AppTextStyles.caption.copyWith(color: AppColors.gray500),
+            style: AppTextStyles.caption.copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -241,7 +241,7 @@ class _InventoryMovementSheetState
             decoration: InputDecoration(
               hintText: '0',
               hintStyle: AppTextStyles.caption.copyWith(
-                  color: isDark ? AppColors.gray500 : AppColors.gray400),
+                  color: AppColors.gray400),
               filled: true,
               fillColor: isDark ? AppColors.darkBorder : AppColors.gray50,
               enabledBorder: OutlineInputBorder(
@@ -274,7 +274,7 @@ class _InventoryMovementSheetState
             decoration: InputDecoration(
               hintText: 'Ex: Inventaire, Livraison fournisseur...',
               hintStyle: AppTextStyles.caption.copyWith(
-                  color: isDark ? AppColors.gray500 : AppColors.gray400),
+                  color: AppColors.gray400),
               filled: true,
               fillColor: isDark ? AppColors.darkBorder : AppColors.gray50,
               enabledBorder: OutlineInputBorder(

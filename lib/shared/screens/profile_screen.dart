@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -22,6 +24,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isEditing = false;
   bool _saving = false;
   bool _submittedLocally = false;
+  bool _accountBusy = false;
 
   @override
   void initState() {
@@ -101,7 +104,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final surface = isDark ? AppColors.darkSurface : AppColors.white;
     final border = isDark ? AppColors.darkBorder : AppColors.gray100;
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
     return Scaffold(
       backgroundColor: bg,
@@ -270,7 +273,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               decoration: InputDecoration(
                                 hintText: 'votre@email.com',
                                 hintStyle: AppTextStyles.bodySecondary.copyWith(
-                                  color: isDark ? AppColors.gray600 : AppColors.gray400,
+                                  color: isDark ? AppColors.gray500 : AppColors.gray400,
                                 ),
                                 filled: true,
                                 fillColor: isDark ? AppColors.darkSurface2 : AppColors.gray50,
@@ -441,10 +444,92 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ),
 
+          const SizedBox(height: AppSpacing.s16),
+
+          // Gestion du compte
+          _SectionCard(
+            isDark: isDark,
+            surface: surface,
+            border: border,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Compte',
+                  style: AppTextStyles.label.copyWith(
+                    color: textSecondary,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s4),
+                _AccountActionTile(
+                  icon: Symbols.person_off,
+                  label: 'Désactiver mon compte',
+                  color: AppColors.warning,
+                  enabled: !_isEditing && !_accountBusy,
+                  onTap: () => _onAccountAction(_AccountAction.deactivate),
+                ),
+                Divider(height: 1, color: border),
+                _AccountActionTile(
+                  icon: Symbols.delete_forever,
+                  label: 'Supprimer mon compte',
+                  color: AppColors.error,
+                  enabled: !_isEditing && !_accountBusy,
+                  onTap: () => _onAccountAction(_AccountAction.delete),
+                ),
+              ],
+            ),
+          ),
+
           const SizedBox(height: AppSpacing.s24),
         ],
       ),
     );
+  }
+
+  Future<void> _onAccountAction(_AccountAction action) async {
+    final pin = await showDialog<String>(
+      context: context,
+      builder: (_) => _AccountActionDialog(action: action),
+    );
+    if (pin == null || !mounted) return;
+
+    // La réinitialisation de l'auth redirige vers /auth/login et démonte cet
+    // écran : on garde un contexte qui survit pour le message de confirmation.
+    final rootContext = Navigator.of(context, rootNavigator: true).context;
+    setState(() => _accountBusy = true);
+    try {
+      final notifier = ref.read(authProvider.notifier);
+      if (action == _AccountAction.delete) {
+        await notifier.deleteAccount(pin: pin);
+      } else {
+        await notifier.deactivateAccount(pin: pin);
+      }
+      if (!rootContext.mounted) return;
+      rootContext.go('/auth/login');
+      rootContext.showSnack(
+        action == _AccountAction.delete
+            ? 'Votre compte a été supprimé'
+            : 'Votre compte a été désactivé. Reconnectez-vous pour le réactiver.',
+        type: SnackType.success,
+      );
+    } catch (e) {
+      if (mounted) context.showSnack(_accountErrorMessage(e), type: SnackType.error);
+    } finally {
+      if (mounted) setState(() => _accountBusy = false);
+    }
+  }
+
+  String _accountErrorMessage(Object e) {
+    if (e is DioException) {
+      final status = e.response?.statusCode;
+      if (status == 403 || status == 400) return 'Code PIN incorrect';
+      if (status == 404) return 'Service indisponible, réessayez plus tard';
+      final data = e.response?.data;
+      if (data is Map && data['message'] is String) return data['message'] as String;
+      return 'Erreur réseau, réessayez';
+    }
+    return e.toString();
   }
 
   void _confirmLogout(BuildContext context, WidgetRef ref) {
@@ -518,7 +603,7 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
 
     return Row(
@@ -533,6 +618,139 @@ class _InfoRow extends StatelessWidget {
               const SizedBox(height: 2),
               Text(value, style: AppTextStyles.body.copyWith(color: textPrimary)),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+enum _AccountAction { deactivate, delete }
+
+class _AccountActionTile extends StatelessWidget {
+  const _AccountActionTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      enabled: enabled,
+      leading: Icon(icon, size: 20, color: color),
+      title: Text(label, style: AppTextStyles.body.copyWith(color: color)),
+      trailing: Icon(Symbols.chevron_right, size: 18, color: color),
+      onTap: onTap,
+    );
+  }
+}
+
+/// Confirmation d'une action sensible sur le compte : rappelle les
+/// conséquences et exige le code PIN. Renvoie le PIN saisi, ou null.
+class _AccountActionDialog extends StatefulWidget {
+  const _AccountActionDialog({required this.action});
+  final _AccountAction action;
+
+  @override
+  State<_AccountActionDialog> createState() => _AccountActionDialogState();
+}
+
+class _AccountActionDialogState extends State<_AccountActionDialog> {
+  final _pinCtrl = TextEditingController();
+  bool _acknowledged = false;
+
+  bool get _isDelete => widget.action == _AccountAction.delete;
+  bool get _canConfirm =>
+      _pinCtrl.text.length == 4 && (!_isDelete || _acknowledged);
+
+  @override
+  void dispose() {
+    _pinCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+    final textSecondary = isDark ? AppColors.gray300 : AppColors.gray600;
+    final color = _isDelete ? AppColors.error : AppColors.warning;
+
+    return AlertDialog(
+      title: Text(
+        _isDelete ? 'Supprimer mon compte' : 'Désactiver mon compte',
+        style: AppTextStyles.sectionTitle.copyWith(color: textPrimary),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _isDelete
+                  ? 'Cette action est définitive. Vos informations personnelles, '
+                      'vos produits et vos documents seront supprimés. '
+                      'L\'historique des commandes est conservé de façon anonyme.'
+                  : 'Votre compte et vos produits ne seront plus visibles. '
+                      'Vous pourrez le réactiver à tout moment en vous reconnectant.',
+              style: AppTextStyles.body.copyWith(color: textSecondary, fontSize: 14),
+            ),
+            const SizedBox(height: AppSpacing.s16),
+            TextField(
+              controller: _pinCtrl,
+              autofocus: true,
+              obscureText: true,
+              keyboardType: TextInputType.number,
+              maxLength: 4,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              style: AppTextStyles.body.copyWith(color: textPrimary, letterSpacing: 8),
+              decoration: InputDecoration(
+                labelText: 'Code PIN',
+                labelStyle: AppTextStyles.label.copyWith(color: textSecondary),
+                counterText: '',
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+            if (_isDelete) ...[
+              const SizedBox(height: AppSpacing.s8),
+              CheckboxListTile(
+                value: _acknowledged,
+                onChanged: (v) => setState(() => _acknowledged = v ?? false),
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                activeColor: AppColors.error,
+                title: Text(
+                  'Je comprends que cette action est irréversible',
+                  style: AppTextStyles.label.copyWith(color: textPrimary),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('Annuler', style: AppTextStyles.body.copyWith(color: textSecondary)),
+        ),
+        TextButton(
+          onPressed: _canConfirm ? () => Navigator.of(context).pop(_pinCtrl.text) : null,
+          child: Text(
+            _isDelete ? 'Supprimer' : 'Désactiver',
+            style: AppTextStyles.body.copyWith(
+              color: _canConfirm ? color : color.withValues(alpha: 0.4),
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],

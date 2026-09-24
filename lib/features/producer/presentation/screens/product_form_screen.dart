@@ -293,15 +293,19 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
     final border = isDark ? AppColors.darkBorder : AppColors.gray100;
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
 
-    // Get categories from provider (already loaded in build)
-    final cats = ref.read(myCategoriesProvider).valueOrNull ?? [];
+    // Même liste globale que le catalogue grossiste (déjà chargée dans build)
+    final cats = ref.read(allCategoriesProvider).valueOrNull ?? [];
     final names = cats.isNotEmpty
         ? cats.map((c) => (name: c.name, icon: c.icon)).toList()
         : _kFallbackCategories.map<({String name, String? icon})>((n) => (name: n, icon: null)).toList();
 
     showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       backgroundColor: surface,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.75,
+      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXL)),
       ),
@@ -326,34 +330,35 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
               ),
             ),
             Divider(height: 1, color: border),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: names.length,
-              separatorBuilder: (_, _) => Divider(height: 1, color: border),
-              itemBuilder: (_, i) {
-                final entry = names[i];
-                final isSelected = _category == entry.name;
-                return ListTile(
-                  leading: entry.icon != null && entry.icon!.isNotEmpty
-                      ? Text(entry.icon!, style: const TextStyle(fontSize: 20))
-                      : null,
-                  title: Text(
-                    entry.name,
-                    style: AppTextStyles.body.copyWith(
-                      color: isSelected ? AppColors.primary : textPrimary,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: names.length,
+                separatorBuilder: (_, _) => Divider(height: 1, color: border),
+                itemBuilder: (_, i) {
+                  final entry = names[i];
+                  final isSelected = _category == entry.name;
+                  return ListTile(
+                    leading: entry.icon != null && entry.icon!.isNotEmpty
+                        ? Text(entry.icon!, style: const TextStyle(fontSize: 20))
+                        : null,
+                    title: Text(
+                      entry.name,
+                      style: AppTextStyles.body.copyWith(
+                        color: isSelected ? AppColors.primary : textPrimary,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      ),
                     ),
-                  ),
-                  trailing: isSelected
-                      ? const Icon(Symbols.check, color: AppColors.primary, size: 18)
-                      : null,
-                  onTap: () {
-                    setState(() { _category = entry.name; _isDirty = true; });
-                    Navigator.of(context).pop();
-                  },
-                );
-              },
+                    trailing: isSelected
+                        ? const Icon(Symbols.check, color: AppColors.primary, size: 18)
+                        : null,
+                    onTap: () {
+                      setState(() { _category = entry.name; _isDirty = true; });
+                      Navigator.of(context).pop();
+                    },
+                  );
+                },
+              ),
             ),
             const SizedBox(height: AppSpacing.s8),
           ],
@@ -380,7 +385,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
       labelText: label,
       hintText: hint,
       labelStyle: AppTextStyles.caption.copyWith(
-        color: isDark ? AppColors.gray500 : AppColors.gray500,
+        color: isDark ? AppColors.gray400 : AppColors.gray500,
       ),
       filled: true,
       fillColor: fill,
@@ -501,7 +506,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
                                   i == _step ? FontWeight.w700 : FontWeight.w400,
                               color: i == _step
                                   ? active
-                                  : (isDark ? AppColors.gray500 : AppColors.gray400),
+                                  : (AppColors.gray400),
                             ),
                           ),
                   ),
@@ -654,7 +659,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
                         children: [
                           Text('Catégorie *',
                               style: AppTextStyles.caption
-                                  .copyWith(color: AppColors.gray500, fontSize: 11)),
+                                  .copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500, fontSize: 11)),
                           const SizedBox(height: 2),
                           Text(
                             _category ?? 'Choisir une catégorie',
@@ -989,9 +994,9 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
     final surface = isDark ? AppColors.darkSurface : AppColors.white;
     final border = isDark ? AppColors.darkBorder : AppColors.gray100;
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
-    final catsAsync = ref.watch(myCategoriesProvider);
+    final catsAsync = ref.watch(allCategoriesProvider);
     catsAsync.whenData((cats) {
       if (_category != null && cats.isNotEmpty) {
         final resolved = resolveCategory(_category!, cats);
@@ -1161,7 +1166,7 @@ class _FormSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
     return Container(
       margin: const EdgeInsets.fromLTRB(
@@ -1392,7 +1397,7 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
     final border = isDark ? AppColors.darkBorder : AppColors.gray200;
     return InputDecoration(
       labelText: label,
-      labelStyle: AppTextStyles.caption.copyWith(color: AppColors.gray500),
+      labelStyle: AppTextStyles.caption.copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500),
       filled: true,
       fillColor: fill,
       border: OutlineInputBorder(
@@ -1419,7 +1424,7 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
     final isDark = widget.isDark;
     final surface = isDark ? AppColors.darkSurface : AppColors.white;
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
     return Container(
       decoration: BoxDecoration(

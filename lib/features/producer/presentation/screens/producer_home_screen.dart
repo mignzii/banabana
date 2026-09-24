@@ -42,7 +42,7 @@ class ProducerHomeScreen extends ConsumerWidget {
             Text(
               'Tableau de bord producteur',
               style: AppTextStyles.caption.copyWith(
-                color: isDark ? AppColors.gray500 : AppColors.gray400,
+                color: AppColors.gray400,
               ),
             ),
           ],
@@ -330,7 +330,7 @@ class _StatChip extends StatelessWidget {
                 Text(
                   label,
                   style: AppTextStyles.caption.copyWith(
-                    color: isDark ? AppColors.gray500 : AppColors.gray400,
+                    color: AppColors.gray400,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),

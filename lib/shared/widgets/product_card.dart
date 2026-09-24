@@ -123,7 +123,7 @@ class ProductCard extends StatelessWidget {
                                   TextSpan(
                                     text: ' F',
                                     style: AppTextStyles.caption.copyWith(
-                                      color: isDark ? AppColors.gray500 : AppColors.gray400,
+                                      color: AppColors.gray400,
                                     ),
                                   ),
                                 ],

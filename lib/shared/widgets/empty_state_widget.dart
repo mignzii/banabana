@@ -20,20 +20,28 @@ class EmptyStateWidget extends StatelessWidget {
   final VoidCallback? onCta;
 
   @override
-  Widget build(BuildContext context) => Center(
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 64, color: AppColors.gray300),
+              Icon(icon,
+                  size: 64,
+                  color: isDark ? AppColors.gray600 : AppColors.gray300),
               const SizedBox(height: 20),
               Text(title,
-                  style: AppTextStyles.sectionTitle,
+                  style: AppTextStyles.sectionTitle.copyWith(
+                    color: isDark ? AppColors.gray100 : AppColors.gray900,
+                  ),
                   textAlign: TextAlign.center),
               const SizedBox(height: 8),
               Text(subtitle,
-                  style: AppTextStyles.bodySecondary,
+                  style: AppTextStyles.bodySecondary.copyWith(
+                    color: isDark ? AppColors.gray400 : AppColors.gray500,
+                  ),
                   textAlign: TextAlign.center),
               if (ctaLabel != null) ...[
                 const SizedBox(height: 24),
@@ -43,4 +51,5 @@ class EmptyStateWidget extends StatelessWidget {
           ),
         ),
       );
+  }
 }

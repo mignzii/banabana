@@ -118,7 +118,7 @@ class _InfoCard extends StatelessWidget {
     final shadowColor = isDark
         ? AppColors.black.withValues(alpha: 0.2)
         : AppColors.black.withValues(alpha: 0.05);
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
     return Container(
       padding: EdgeInsets.all(AppSpacing.s12),

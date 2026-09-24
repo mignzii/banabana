@@ -80,7 +80,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             decoration: InputDecoration(
               hintText: 'Rechercher un produit...',
               hintStyle: AppTextStyles.bodySecondary.copyWith(
-                color: isDark ? AppColors.gray600 : AppColors.gray400,
+                color: isDark ? AppColors.gray500 : AppColors.gray400,
               ),
               prefixIcon: Icon(
                 Symbols.search,
@@ -143,7 +143,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           Symbols.search_off,
                           size: 64,
                           color:
-                              isDark ? AppColors.gray600 : AppColors.gray300,
+                              isDark ? AppColors.gray500 : AppColors.gray300,
                         ),
                         const SizedBox(height: AppSpacing.s16),
                         Text(
@@ -159,7 +159,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           'Essayez avec d\'autres mots-clés.',
                           style: AppTextStyles.caption.copyWith(
                             color:
-                                isDark ? AppColors.gray600 : AppColors.gray400,
+                                isDark ? AppColors.gray500 : AppColors.gray400,
                           ),
                         ),
                       ],
@@ -237,7 +237,7 @@ class _EmptyPrompt extends StatelessWidget {
           Text(
             'Entrez un nom de produit ou un producteur.',
             style: AppTextStyles.caption.copyWith(
-              color: isDark ? AppColors.gray600 : AppColors.gray400,
+              color: isDark ? AppColors.gray500 : AppColors.gray400,
             ),
           ),
         ],

@@ -72,6 +72,17 @@ class AuthRepository {
     return User.fromJson(res.data as Map<String, dynamic>);
   }
 
+  /// Désactivation réversible : le compte est masqué et les sessions
+  /// révoquées ; une reconnexion (OTP/PIN) le réactive.
+  Future<void> deactivateAccount({required String pin}) async {
+    await dio.post('/users/me/deactivate', data: {'pin': pin});
+  }
+
+  /// Suppression définitive du compte et anonymisation des données.
+  Future<void> deleteAccount({required String pin}) async {
+    await dio.delete('/users/me', data: {'pin': pin});
+  }
+
   Future<void> submitKyc({
     required String frontPath,
     required String backPath,

@@ -513,7 +513,7 @@ class _InfoRow extends StatelessWidget {
         Icon(
           icon,
           size: 14,
-          color: isDark ? AppColors.gray500 : AppColors.gray400,
+          color: AppColors.gray400,
         ),
         const SizedBox(width: AppSpacing.s6),
         Expanded(

@@ -76,6 +76,7 @@ class _SetPinScreenState extends ConsumerState<SetPinScreen> {
   @override
   Widget build(BuildContext context) {
     final current = _confirming ? _confirmPin : _pin;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -87,12 +88,16 @@ class _SetPinScreenState extends ConsumerState<SetPinScreen> {
               const SizedBox(height: 16),
               Text(
                 _confirming ? 'Confirmez votre PIN' : 'Créez votre PIN',
-                style: AppTextStyles.screenTitle,
+                style: AppTextStyles.screenTitle.copyWith(
+                  color: isDark ? AppColors.gray100 : AppColors.gray900,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text('4 chiffres pour sécuriser votre accès',
-                  style: AppTextStyles.bodySecondary,
+                  style: AppTextStyles.bodySecondary.copyWith(
+                    color: isDark ? AppColors.gray400 : AppColors.gray500,
+                  ),
                   textAlign: TextAlign.center),
               const SizedBox(height: 40),
               Row(

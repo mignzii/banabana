@@ -82,7 +82,7 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const activeColor = AppColors.primary;
-    final inactiveColor = isDark ? AppColors.gray600 : AppColors.gray400;
+    final inactiveColor = isDark ? AppColors.gray500 : AppColors.gray400;
 
     return Semantics(
       label: item.label,

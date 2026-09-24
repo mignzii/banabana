@@ -540,7 +540,7 @@ class _Field extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppTextStyles.bodySecondary.copyWith(
-              color: isDark ? AppColors.gray600 : AppColors.gray400,
+              color: isDark ? AppColors.gray500 : AppColors.gray400,
             ),
             filled: true,
             fillColor:

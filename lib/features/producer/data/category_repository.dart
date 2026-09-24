@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:banabana_b2b/shared/models/category.dart';
 
+/// Catégories à ne jamais proposer (créées par erreur côté données).
+const _kHiddenCategorySlugs = {'pomme'};
+
 class CategoryRepository {
   final Dio _dio;
   CategoryRepository(this._dio);
@@ -10,6 +13,7 @@ class CategoryRepository {
     final List data = response.data as List;
     return data
         .map((e) => Category.fromJson(e as Map<String, dynamic>))
+        .where((c) => !_kHiddenCategorySlugs.contains(c.slug?.toLowerCase()))
         .toList();
   }
 
