@@ -401,27 +401,35 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.s8),
-                Row(
-                  children: [
-                    Icon(
-                      isDarkMode ? Symbols.dark_mode : Symbols.light_mode,
-                      size: 20,
-                      color: textSecondary,
+                // Toute la ligne bascule le thème ; MergeSemantics associe le
+                // libellé au switch pour VoiceOver/TalkBack.
+                MergeSemantics(
+                  child: InkWell(
+                    onTap: () => ref.read(themeModeProvider.notifier).toggle(),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+                    child: Row(
+                      children: [
+                        Icon(
+                          isDarkMode ? Symbols.dark_mode : Symbols.light_mode,
+                          size: 20,
+                          color: textSecondary,
+                        ),
+                        const SizedBox(width: AppSpacing.s12),
+                        Expanded(
+                          child: Text(
+                            'Mode sombre',
+                            style: AppTextStyles.body.copyWith(color: textPrimary),
+                          ),
+                        ),
+                        Switch(
+                          value: isDarkMode,
+                          onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
+                          activeThumbColor: AppColors.primary,
+                          activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: AppSpacing.s12),
-                    Expanded(
-                      child: Text(
-                        'Mode sombre',
-                        style: AppTextStyles.body.copyWith(color: textPrimary),
-                      ),
-                    ),
-                    Switch(
-                      value: isDarkMode,
-                      onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
-                      activeThumbColor: AppColors.primary,
-                      activeTrackColor: AppColors.primary.withValues(alpha: 0.4),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),

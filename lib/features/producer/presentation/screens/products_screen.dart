@@ -132,10 +132,12 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen>
               color: _showSearch ? AppColors.primary : textSecondary,
             ),
             onPressed: _toggleSearch,
+            tooltip: _showSearch ? 'Fermer la recherche' : 'Rechercher',
           ),
           IconButton(
             icon: const Icon(Symbols.add_circle, color: AppColors.primary),
             onPressed: () => context.push('${widget.routePrefix}/new'),
+            tooltip: 'Nouveau produit',
           ),
           const SizedBox(width: AppSpacing.s4),
         ],

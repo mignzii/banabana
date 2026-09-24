@@ -24,7 +24,7 @@ env:
 # Recherche dans l'inventaire
 - tapOn: "Rechercher..."
 - inputText: "zzz_inexistant"
-- clearText
+- eraseText: 50
 
 # Réapprovisionner un article si disponible
 - scrollUntilVisible:

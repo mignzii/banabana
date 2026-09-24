@@ -287,7 +287,7 @@ class _StatChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,
+      constraints: const BoxConstraints(minWidth: 120),
       padding: const EdgeInsets.all(AppSpacing.s12),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.white,
@@ -303,6 +303,7 @@ class _StatChip extends StatelessWidget {
               ],
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 36,
@@ -314,28 +315,24 @@ class _StatChip extends StatelessWidget {
             child: Icon(icon, size: 18, color: color),
           ),
           const SizedBox(width: AppSpacing.s8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  value,
-                  style: AppTextStyles.sectionTitle.copyWith(
-                    fontSize: 18,
-                    color: isDark ? AppColors.white : AppColors.gray900,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                value,
+                style: AppTextStyles.sectionTitle.copyWith(
+                  fontSize: 18,
+                  color: isDark ? AppColors.white : AppColors.gray900,
                 ),
-                Text(
-                  label,
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.gray400,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                label,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.gray400,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),

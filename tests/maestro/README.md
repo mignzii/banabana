@@ -48,9 +48,14 @@ tests/maestro/
 │   ├── checkout.yaml
 │   ├── orders.yaml
 │   └── profile.yaml
-└── 04_cross_role/                # Flows inter-rôles
+├── 04_cross_role/                # Flows inter-rôles
     ├── order_flow_complete.yaml  # Commande de A à Z
     └── order_rejection.yaml     # Rejet de commande
+└── 05_regression/                # Non-régression (catégories, compte, mode sombre)
+    ├── producer_categories.yaml
+    ├── wholesaler_catalog_no_pomme.yaml
+    ├── account_actions.yaml     # Dialogues désactivation/suppression (toujours annulés)
+    └── dark_mode.yaml           # Captures des écrans principaux en mode sombre
 ```
 
 ## Lancer les tests
@@ -141,6 +146,14 @@ maestro studio
 | order_rejection | Grossiste commande → Producteur refuse → Grossiste voit "Annulée" |
 
 ## Conventions
+
+- Plusieurs cartes Flutter fusionnent leurs textes dans l'arbre d'accessibilité
+  (ex. `"Tous\n0"`, `"Prix de référence\n…\nPrix de base (FCFA) *"`) : utiliser
+  une regex `(?s)Libellé.*` plutôt que le texte exact.
+- Échapper les parenthèses et `*` dans les sélecteurs (ce sont des regex) :
+  `"S'inscrire sans SMS \\(test\\)"`.
+- `hideKeyboard` ne fonctionne pas avec le clavier iOS : fermer le clavier en
+  tapant sur un titre (ex. `tapOn: "Photos & Infos"`).
 
 - `optional: true` — l'élément peut être absent (cas dépendant de données backend)
 - `anyOf` — plusieurs labels possibles selon l'état du backend

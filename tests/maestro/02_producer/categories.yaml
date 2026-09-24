@@ -37,7 +37,7 @@ env:
 # Naviguer vers l'écran catégories (via produits ou menu)
 - tapOn: "Mes produits"
 - tapOn: "Nouveau produit"
-- assertVisible: "Nouveau produit"
+- assertVisible: "Photos & Infos"
 - tapOn: "Retour"
 
 # Retour à l'accueil pour trouver les catégories via un autre chemin
@@ -57,5 +57,5 @@ env:
       - text: "Tubercules"
 - tapOn:
     index: 0
-- assertVisible: "Nouveau produit"
+- assertVisible: "Photos & Infos"
 - tapOn: "Retour"

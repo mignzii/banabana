@@ -3,7 +3,7 @@
 # Variables attendues : PRODUCT_TITLE, PRODUCT_PRICE, VARIANT_LABEL, VARIANT_PRICE, VARIANT_STOCK
 appId: com.banabana.pro
 ---
-- assertVisible: "Nouveau produit"
+- assertVisible: "Photos & Infos"
 - tapOn: "Nom du produit *"
 - inputText: "${PRODUCT_TITLE}"
 - tapOn: "Choisir une catégorie"

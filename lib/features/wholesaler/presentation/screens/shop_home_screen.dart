@@ -277,7 +277,7 @@ class _CategoryChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 80,
+        width: 96,
         decoration: BoxDecoration(
           color: isDark ? AppColors.darkSurface : AppColors.white,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),

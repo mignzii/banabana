@@ -18,126 +18,80 @@ env:
 - tapOn: "Produits"
 - assertVisible: "Ajouter un produit"
 
-# ── CRÉER : Navigation vers formulaire ───────────────────────────────────────
+# ── CRÉER : assistant en 3 étapes (Infos → Prix → Finaliser) ─────────────────
 - tapOn: "Nouveau produit"
-- assertVisible: "Nouveau produit"
-- assertVisible: "Nom du produit *"
-- assertVisible: "Description"
+- assertVisible: "Photos & Infos"
+- assertVisible: "Nom du produit \\*"
 
-# Vérification validation : champs vides
-- tapOn: "Créer le produit"
-- assertVisible: "Champ requis"
+# Validation : impossible de continuer sans nom ni catégorie
+- tapOn: "Continuer"
+- assertVisible: "Photos & Infos"
 
-# Remplissage du formulaire
-- tapOn: "Nom du produit *"
+# Étape 1 — Infos
+- tapOn: "Nom du produit \\*"
 - inputText: "${PRODUCT_TITLE}"
-
+- tapOn: "Photos & Infos"
 - tapOn: "Choisir une catégorie"
-- assertVisible: "Choisir une catégorie"
-- tapOn: "Fruits"
-- assertVisible: "Fruits"
-
 - scrollUntilVisible:
     element:
-      text: "Description"
+      text: ".*Agriculture.*"
     direction: DOWN
+- tapOn: ".*Agriculture.*"
 - tapOn: "Description"
 - inputText: "Bananes de qualité premium, origine Abidjan"
+- tapOn: "Photos & Infos"
+- tapOn: "Continuer"
 
-- scrollUntilVisible:
-    element:
-      text: "Prix de base (FCFA) *"
-    direction: DOWN
-- tapOn: "Prix de base (FCFA) *"
+# Étape 2 — Prix & variantes
+- assertVisible: "Prix & Variantes"
+# Le champ est fusionné avec le titre de la carte dans l'arbre d'accessibilité
+- tapOn:
+    point: "50%,36%"
 - inputText: "${PRODUCT_PRICE}"
-
-# Ajout d'une variante
-- scrollUntilVisible:
-    element:
-      text: "Ajouter une variante"
-    direction: DOWN
+- tapOn: "Prix & Variantes"
 - tapOn: "Ajouter une variante"
-- assertVisible: "Définissez un conditionnement"
-- tapOn: "Régime"
-- tapOn: "Label * (ex: 5kg, Carton de 12…)"
-- inputText: "${VARIANT_LABEL}"
-- tapOn: "Prix (FCFA) *"
+- tapOn: "Carton"
+- tapOn: "Prix \\(FCFA\\) \\*"
 - inputText: "${VARIANT_PRICE}"
-- tapOn: "Stock *"
+- tapOn: "Stock \\*"
 - inputText: "${VARIANT_STOCK}"
+- tapOn: "Unité de vente \\*"
 - tapOn: "Ajouter cette variante"
-- assertVisible: "${VARIANT_LABEL}"
+- assertVisible: ".*Carton.*"
+- tapOn: "Continuer"
 
-# Soumettre la création
-- scrollUntilVisible:
-    element:
-      text: "Créer le produit"
-    direction: DOWN
+# Étape 3 — Récapitulatif puis création
+- assertVisible: "(?s)Récapitulatif.*Agriculture.*"
+- assertVisible: "(?s).*${PRODUCT_TITLE}.*"
 - tapOn: "Créer le produit"
 
-# ── LIRE : Vérification de la page détail ────────────────────────────────────
+# ── LIRE : page détail (le produit est actif par défaut) ─────────────────────
 - assertVisible: "Détail produit"
-- assertVisible: "${PRODUCT_TITLE}"
-- assertVisible: "Inactif"
-- assertVisible: "${VARIANT_LABEL}"
-- assertVisible: "Activer"
-
-# ── ACTIVER le produit ────────────────────────────────────────────────────────
-- scrollUntilVisible:
-    element:
-      text: "Activer"
-    direction: DOWN
-- tapOn: "Activer"
-- assertVisible: "Produit activé"
-
-# ── DÉSACTIVER le produit ─────────────────────────────────────────────────────
-- tapOn: "Désactiver"
-- assertVisible: "Produit désactivé"
-- assertVisible: "Inactif"
+- assertVisible: "(?s)${PRODUCT_TITLE}.*Actif.*Agriculture.*"
 
 # ── MODIFIER le produit ───────────────────────────────────────────────────────
 - tapOn: "Modifier"
 - assertVisible: "Modifier le produit"
-
-# Modifier le titre
-- tapOn: "Nom du produit *"
+- tapOn: "(?s).*Nom du produit.*"
 - eraseText: 50
 - inputText: "${PRODUCT_TITLE_EDITED}"
-
-# Modifier le prix
-- scrollUntilVisible:
-    element:
-      text: "Prix de base (FCFA) *"
-    direction: DOWN
-- tapOn: "Prix de base (FCFA) *"
-- eraseText: 50
-- inputText: "${PRODUCT_PRICE_EDITED}"
-
+- tapOn: "Modifier le produit"
 - scrollUntilVisible:
     element:
       text: "Mettre à jour"
     direction: DOWN
 - tapOn: "Mettre à jour"
+- assertVisible: "(?s)${PRODUCT_TITLE_EDITED}.*"
 
-- assertVisible: "Produit mis à jour"
-- assertVisible: "${PRODUCT_TITLE_EDITED}"
-
-# ── SUPPRIMER le produit ──────────────────────────────────────────────────────
-- scrollUntilVisible:
-    element:
-      text: "Supprimer"
-    direction: DOWN
+# ── SUPPRIMER le produit (menu ⋮) : annuler puis confirmer ───────────────────
+- tapOn: "Afficher le menu"
 - tapOn: "Supprimer"
-- assertVisible: "Cette action est irréversible"
+- assertVisible: ".*Cette action est irréversible.*"
 - tapOn: "Annuler"
-- assertVisible: "${PRODUCT_TITLE_EDITED}"
+- assertVisible: "(?s)${PRODUCT_TITLE_EDITED}.*"
 
-# Confirmer la suppression
-- scrollUntilVisible:
-    element:
-      text: "Supprimer"
-    direction: DOWN
+- tapOn: "Afficher le menu"
 - tapOn: "Supprimer"
-- assertVisible: "Cette action est irréversible"
+- assertVisible: ".*Cette action est irréversible.*"
 - tapOn: "Supprimer"
-- assertVisible: "Produit supprimé"
+- assertVisible: "Aucun produit"

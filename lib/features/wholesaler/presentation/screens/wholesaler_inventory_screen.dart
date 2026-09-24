@@ -229,6 +229,7 @@ class _WholesalerInventoryScreenState
                     isDark ? AppColors.gray400 : AppColors.gray500,
                 indicatorColor: AppColors.primary,
                 indicatorWeight: 2.5,
+                labelPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
                 labelStyle: AppTextStyles.label
                     .copyWith(fontWeight: FontWeight.w600, fontSize: 12),
                 tabs: [

@@ -625,6 +625,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
       child: Column(
         children: [
           TextFormField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
             controller: _titleCtrl,
             style: AppTextStyles.body.copyWith(color: textPrimary),
             decoration: _inputDeco('Nom du produit *', isDark: isDark),
@@ -678,6 +679,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
           ),
           const SizedBox(height: AppSpacing.s12),
           TextFormField(
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
             controller: _descCtrl,
             style: AppTextStyles.body.copyWith(color: textPrimary),
             decoration: _inputDeco('Description',
@@ -699,6 +701,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
       title: 'Prix de référence',
       subtitle: 'Prix indicatif — les variantes peuvent avoir leurs propres prix.',
       child: TextFormField(
+        onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
         controller: _priceCtrl,
         style: AppTextStyles.body.copyWith(color: textPrimary),
         decoration: _inputDeco('Prix de base (FCFA) *', isDark: isDark).copyWith(
@@ -1516,6 +1519,7 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
               children: [
                 Expanded(
                   child: TextFormField(
+                    onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                     controller: _priceCtrl,
                     style: AppTextStyles.body.copyWith(color: textPrimary),
                     decoration: _deco('Prix (FCFA) *', isDark: isDark),
@@ -1531,6 +1535,7 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
                 const SizedBox(width: AppSpacing.s12),
                 Expanded(
                   child: TextFormField(
+                    onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                     controller: _stockCtrl,
                     style: AppTextStyles.body.copyWith(color: textPrimary),
                     decoration: _deco('Stock *', isDark: isDark),
@@ -1549,6 +1554,7 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
 
             // Commande minimale
             TextFormField(
+              onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
               controller: _minQtyCtrl,
               style: AppTextStyles.body.copyWith(color: textPrimary),
               decoration: _deco('Qté minimale de commande', isDark: isDark),

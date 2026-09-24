@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_input_decoration.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/auth/data/auth_repository.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
@@ -82,10 +83,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 64,
-                    height: 64,
+                  // Le texte du logo est sombre : fond clair en mode sombre.
+                  child: Container(
+                    padding: EdgeInsets.all(isDark ? 6 : 0),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.gray100 : null,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+                    ),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 64,
+                      height: 64,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),

@@ -1,0 +1,18 @@
+# TEST : Catalogue grossiste — la catégorie « Pomme » n'apparaît plus
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+# Accueil : chips de catégories
+- assertVisible: "Catégories"
+- assertNotVisible: ".*Pomme.*"
+- takeScreenshot: 05_wholesaler_home
+
+# Catalogue
+- tapOn: "Catalogue"
+- assertNotVisible: ".*Pomme.*"
+- takeScreenshot: 05_wholesaler_catalog
