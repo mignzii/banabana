@@ -8,14 +8,13 @@ env:
 - runFlow: ../flows/_login_wholesaler.yaml
 
 - tapOn: "Tableau de bord"
-- assertVisible: "BanaBana Shop"
-- assertVisible: "Bienvenue"
+- assertVisible: "(?s)Bienvenue.*BanaBana Shop.*"
 
 # ── Cartes statistiques ───────────────────────────────────────────────────────
-- assertVisible: "Commandes"
-- assertVisible: "Dépenses FCFA"
-- assertVisible: "En cours"
-- assertVisible: "Livrées"
+- assertVisible: "(?s).*Commandes"
+- assertVisible: "(?s).*Dépenses FCFA"
+- assertVisible: "(?s).*En cours"
+- assertVisible: "(?s).*Livrées"
 
 # ── Bouton explorer le catalogue ──────────────────────────────────────────────
 - scrollUntilVisible:
@@ -24,7 +23,7 @@ env:
     direction: DOWN
 - tapOn: "Explorer le catalogue"
 - assertVisible: "Catalogue"
-- tapOn: "Retour"
+- tapOn: "(?s)Accueil.*"
 
 # ── Section commandes récentes ────────────────────────────────────────────────
 - tapOn: "Tableau de bord"
@@ -37,3 +36,4 @@ env:
 - tapOn: "Voir tout"
 - assertVisible: "Mes commandes"
 - tapOn: "Retour"
+- assertVisible: "(?s)Bienvenue.*BanaBana Shop.*"

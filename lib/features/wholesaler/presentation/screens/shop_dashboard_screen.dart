@@ -34,6 +34,8 @@ class ShopDashboardScreen extends ConsumerWidget {
             floating: true,
             snap: true,
             backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.white,
+            iconTheme: const IconThemeData(color: AppColors.white),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 padding: const EdgeInsets.fromLTRB(
