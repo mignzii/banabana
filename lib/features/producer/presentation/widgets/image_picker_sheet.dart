@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 
+// Photos redimensionnées et compressées avant envoi : une photo de téléphone
+// brute (3–8 Mo) dépasse vite la limite d'upload du serveur (≈10 Mo).
+const _kMaxImageSide = 1600.0;
+const _kImageQuality = 80;
+
 class ImagePickerSheet extends StatelessWidget {
   final void Function(List<String> paths) onImagesPicked;
   const ImagePickerSheet({super.key, required this.onImagesPicked});
@@ -10,10 +15,20 @@ class ImagePickerSheet extends StatelessWidget {
     Navigator.pop(context);
     final picker = ImagePicker();
     if (source == ImageSource.gallery) {
-      final files = await picker.pickMultiImage(limit: 5);
+      final files = await picker.pickMultiImage(
+        limit: 5,
+        maxWidth: _kMaxImageSide,
+        maxHeight: _kMaxImageSide,
+        imageQuality: _kImageQuality,
+      );
       if (files.isNotEmpty) onImagesPicked(files.map((f) => f.path).toList());
     } else {
-      final file = await picker.pickImage(source: source);
+      final file = await picker.pickImage(
+        source: source,
+        maxWidth: _kMaxImageSide,
+        maxHeight: _kMaxImageSide,
+        imageQuality: _kImageQuality,
+      );
       if (file != null) onImagesPicked([file.path]);
     }
   }

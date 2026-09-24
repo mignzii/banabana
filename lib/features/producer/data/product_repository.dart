@@ -36,12 +36,15 @@ class ProductRepository {
     return Product.fromJson(response.data as Map<String, dynamic>);
   }
 
+  /// Une photo par requête : la taille de chaque envoi reste bien sous la
+  /// limite du serveur, quel que soit le nombre de photos.
   Future<void> uploadImages(String productId, List<String> filePaths) async {
-    final files = await Future.wait(
-      filePaths.map((p) => MultipartFile.fromFile(p)),
-    );
-    final formData = FormData.fromMap({'files': files});
-    await _dio.post('/products/$productId/images', data: formData);
+    for (final path in filePaths) {
+      final formData = FormData.fromMap({
+        'files': [await MultipartFile.fromFile(path)],
+      });
+      await _dio.post('/products/$productId/images', data: formData);
+    }
   }
 
   Future<void> deleteImage(String productId, String imageId) async {

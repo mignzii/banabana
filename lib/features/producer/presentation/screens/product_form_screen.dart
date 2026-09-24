@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/api/api_client.dart';
+import 'package:banabana_b2b/core/api/api_error.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
@@ -174,6 +175,9 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
   late bool _isActive;
 
   bool _loading = false;
+  // Produit déjà créé lors d'une tentative précédente : évite un doublon si
+  // l'utilisateur réessaie après une erreur.
+  String? _createdProductId;
   int _step = 0;
   bool _isDirty = false;
 
@@ -248,6 +252,14 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
             await repo.deactivate(targetId);
           }
         }
+      } else if (_createdProductId != null) {
+        targetId = _createdProductId!;
+        await repo.updateProduct(targetId, {
+          'title': _titleCtrl.text.trim(),
+          'category': _category,
+          'description': _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
+          'basePrice': double.parse(_priceCtrl.text.trim()),
+        });
       } else {
         final product = await repo.createProduct(
           title: _titleCtrl.text.trim(),
@@ -256,25 +268,44 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
           basePrice: double.parse(_priceCtrl.text.trim()),
         );
         targetId = product.id;
+        _createdProductId = targetId;
       }
 
-      // Upload nouvelles images
-      if (_newImagePaths.isNotEmpty) {
-        await repo.uploadImages(targetId, _newImagePaths);
+      // Variantes avant les photos : le produit reste utilisable même si
+      // l'envoi des photos échoue. Chaque variante créée est retirée de la
+      // liste pour ne pas être recréée en cas de nouvelle tentative.
+      while (_newVariants.isNotEmpty) {
+        await repo.createVariant(targetId, _newVariants.first.toJson());
+        _newVariants.removeAt(0);
       }
-      // Créer nouvelles variantes
-      for (final v in _newVariants) {
-        await repo.createVariant(targetId, v.toJson());
+
+      var imagesFailed = false;
+      if (_newImagePaths.isNotEmpty) {
+        try {
+          await repo.uploadImages(targetId, _newImagePaths);
+        } catch (_) {
+          imagesFailed = true;
+        }
       }
 
       ref.invalidate(productsNotifierProvider);
       if (widget.isEditing) ref.invalidate(productDetailProvider(widget.productId!));
 
       if (mounted) {
-        context.showSnack(
-          widget.isEditing ? 'Produit mis à jour' : 'Produit créé avec succès',
-          type: SnackType.success,
-        );
+        if (imagesFailed) {
+          context.showSnack(
+            widget.isEditing
+                ? 'Produit mis à jour, mais certaines photos n\'ont pas pu être envoyées'
+                : 'Produit créé, mais certaines photos n\'ont pas pu être envoyées. '
+                    'Ajoutez-les depuis « Modifier ».',
+            type: SnackType.warning,
+          );
+        } else {
+          context.showSnack(
+            widget.isEditing ? 'Produit mis à jour' : 'Produit créé avec succès',
+            type: SnackType.success,
+          );
+        }
         if (widget.isEditing) {
           context.pop();
         } else {
@@ -282,7 +313,7 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
         }
       }
     } catch (e) {
-      if (mounted) context.showSnack(e.toString(), type: SnackType.error);
+      if (mounted) context.showSnack(apiErrorMessage(e), type: SnackType.error);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
