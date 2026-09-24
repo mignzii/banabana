@@ -34,6 +34,8 @@ class ShopDashboardScreen extends ConsumerWidget {
             floating: true,
             snap: true,
             backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.white,
+            iconTheme: const IconThemeData(color: AppColors.white),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 padding: const EdgeInsets.fromLTRB(
@@ -183,7 +185,7 @@ class ShopDashboardScreen extends ConsumerWidget {
                           child: Text(
                             'Aucune commande',
                             style: AppTextStyles.bodySecondary.copyWith(
-                                color: AppColors.gray500),
+                                color: isDark ? AppColors.gray400 : AppColors.gray500),
                           ),
                         ),
                       );
@@ -248,7 +250,7 @@ class _RecentOrderTile extends StatelessWidget {
                   Text(
                     '${order.totalAmount.toStringAsFixed(0)} FCFA',
                     style: AppTextStyles.caption
-                        .copyWith(color: AppColors.gray500, fontSize: 12),
+                        .copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500, fontSize: 12),
                   ),
                 ],
               ),

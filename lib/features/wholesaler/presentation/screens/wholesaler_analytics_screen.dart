@@ -472,7 +472,7 @@ class _StatCard extends StatelessWidget {
                 Text(
                   label,
                   style: AppTextStyles.caption.copyWith(
-                      color: AppColors.gray500,
+                      color: isDark ? AppColors.gray400 : AppColors.gray500,
                       fontSize: 11),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -558,7 +558,7 @@ class _TopProductRow extends StatelessWidget {
                   Text(
                     '$qty unités',
                     style: AppTextStyles.caption.copyWith(
-                        color: AppColors.gray500, fontSize: 11),
+                        color: isDark ? AppColors.gray400 : AppColors.gray500, fontSize: 11),
                   ),
                 ],
               ),

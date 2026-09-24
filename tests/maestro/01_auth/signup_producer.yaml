@@ -8,15 +8,16 @@ env:
 ---
 - launchApp:
     clearState: true
+- tapOn: "Votre profil"
 
 # ── Écran de connexion ────────────────────────────────────────────────────────
 - assertVisible: "Connectez-vous pour continuer"
 - assertVisible: "Producteur"
 - assertVisible: "Grossiste"
-- assertVisible: "Connexion PIN directe (sans OTP)"
-- assertVisible: "S'inscrire sans SMS (test)"
+- assertVisible: "Connexion PIN directe \\(sans OTP\\)"
+- assertVisible: "S'inscrire sans SMS \\(test\\)"
 
-- tapOn: "S'inscrire sans SMS (test)"
+- tapOn: "S'inscrire sans SMS \\(test\\)"
 
 # ── Formulaire d'inscription rapide ──────────────────────────────────────────
 - assertVisible: "Créer votre compte"
@@ -39,37 +40,39 @@ env:
 
 - tapOn: "Créer le compte"
 
-# ── Définition du PIN ─────────────────────────────────────────────────────────
-- assertVisible: "Créez votre PIN"
-- tapOn:
-    text: "1"
-- tapOn:
-    text: "2"
-- tapOn:
-    text: "3"
-- tapOn:
-    text: "4"
+# Compte déjà existant (cas normal après la 1re exécution) : avertissement,
+# pas de création de doublon côté back
+- assertVisible: "(Créez votre PIN|.*déjà enregistré.*)"
 
-- assertVisible: "Confirmez votre PIN"
-- tapOn:
-    text: "1"
-- tapOn:
-    text: "2"
-- tapOn:
-    text: "3"
-- tapOn:
-    text: "4"
-
-# ── Connexion avec le nouveau PIN ─────────────────────────────────────────────
-- assertVisible: "Entrez votre PIN"
-- tapOn:
-    text: "1"
-- tapOn:
-    text: "2"
-- tapOn:
-    text: "3"
-- tapOn:
-    text: "4"
-
-# ── Accueil Producteur ────────────────────────────────────────────────────────
-- assertVisible: "Actions rapides"
+# ── Définition du PIN (nouveau compte uniquement) ─────────────────────────────
+- runFlow:
+    when:
+      visible: "Créez votre PIN"
+    commands:
+        - tapOn:
+            text: "1"
+        - tapOn:
+            text: "2"
+        - tapOn:
+            text: "3"
+        - tapOn:
+            text: "4"
+        - assertVisible: "Confirmez votre PIN"
+        - tapOn:
+            text: "1"
+        - tapOn:
+            text: "2"
+        - tapOn:
+            text: "3"
+        - tapOn:
+            text: "4"
+        - assertVisible: "Entrez votre PIN"
+        - tapOn:
+            text: "1"
+        - tapOn:
+            text: "2"
+        - tapOn:
+            text: "3"
+        - tapOn:
+            text: "4"
+        - assertVisible: "Actions rapides"

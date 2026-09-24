@@ -791,12 +791,12 @@ class _ProductPublicDetailScreenState
           ),
           const SizedBox(width: AppSpacing.s8),
           Icon(Symbols.location_on, size: 14,
-              color: isDark ? AppColors.gray500 : AppColors.gray400),
+              color: AppColors.gray400),
           const SizedBox(width: AppSpacing.s4),
           Text(
             producer.zone,
             style: AppTextStyles.caption.copyWith(
-              color: isDark ? AppColors.gray500 : AppColors.gray500,
+              color: isDark ? AppColors.gray400 : AppColors.gray500,
             ),
           ),
         ],
@@ -1434,7 +1434,7 @@ class _WholesaleInfoItem extends StatelessWidget {
             Text(
               label,
               style: AppTextStyles.caption.copyWith(
-                color: isDark ? AppColors.gray500 : AppColors.gray400,
+                color: AppColors.gray400,
                 fontSize: 10,
               ),
             ),

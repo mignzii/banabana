@@ -1,0 +1,79 @@
+# TEST : Mode sombre — bascule depuis le profil puis captures des écrans
+# principaux (producteur, auth, grossiste) pour contrôle visuel de lisibilité
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  PRODUCER_PIN: "1234"
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: ".*Mode sombre.*"
+    direction: DOWN
+- tapOn: ".*Mode sombre.*"
+- takeScreenshot: 05_dark_profile
+- scrollUntilVisible:
+    element:
+      text: "Supprimer mon compte"
+    direction: DOWN
+- tapOn: "Supprimer mon compte"
+- takeScreenshot: 05_dark_delete_dialog
+- tapOn: "Annuler"
+
+- tapOn: "Accueil"
+- takeScreenshot: 05_dark_producer_home
+- tapOn: "Produits"
+- takeScreenshot: 05_dark_products
+- tapOn: "Commandes"
+- takeScreenshot: 05_dark_orders
+- tapOn: "Produits"
+- tapOn: "Nouveau produit"
+- takeScreenshot: 05_dark_product_form
+- tapOn: "Choisir une catégorie"
+- takeScreenshot: 05_dark_category_picker
+- scrollUntilVisible:
+    element:
+      text: ".*Agriculture.*"
+    direction: DOWN
+- tapOn: ".*Agriculture.*"
+- tapOn: "Retour"
+- tapOn:
+    text: "Abandonner"
+    optional: true
+
+# Écrans d'authentification (le thème sombre est conservé après déconnexion)
+- tapOn: "Profil"
+- runFlow: ../flows/_logout.yaml
+- takeScreenshot: 05_dark_login
+- eraseText: 20
+- inputText: "${WHOLESALER_PHONE}"
+- tapOn: "Votre profil"
+- tapOn: "Grossiste"
+- takeScreenshot: 05_dark_login_filled
+- tapOn: "Connexion PIN directe (sans OTP)"
+- takeScreenshot: 05_dark_pin
+- tapOn: "0"
+- tapOn: "0"
+- tapOn: "0"
+- tapOn: "0"
+
+# Grossiste
+- assertVisible: "Catégories"
+- takeScreenshot: 05_dark_shop_home
+- tapOn: "Catalogue"
+- takeScreenshot: 05_dark_catalog
+- tapOn: "Inventaire"
+- takeScreenshot: 05_dark_inventory
+- tapOn: "Commandes"
+- takeScreenshot: 05_dark_shop_orders
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: ".*Mode sombre.*"
+    direction: DOWN
+- tapOn: ".*Mode sombre.*"

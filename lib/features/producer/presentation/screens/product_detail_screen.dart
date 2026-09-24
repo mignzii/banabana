@@ -125,7 +125,7 @@ class _ProductDetailState extends ConsumerState<_ProductDetail> {
     final surface = isDark ? AppColors.darkSurface : AppColors.white;
     final border = isDark ? AppColors.darkBorder : AppColors.gray100;
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
     final categories = ref.watch(allCategoriesProvider).valueOrNull ?? [];
     final categoryName = resolveCategory(p.category, categories);
@@ -888,7 +888,7 @@ class _AnalyticStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
     return Expanded(
       child: Column(
         children: [
@@ -1230,7 +1230,7 @@ class _StockStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
     return Expanded(
       child: Column(
@@ -1305,7 +1305,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
     return Center(
       child: Padding(

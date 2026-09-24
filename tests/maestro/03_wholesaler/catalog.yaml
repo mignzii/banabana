@@ -17,11 +17,11 @@ env:
 - assertVisible: "Aucun produit trouvé"
 - assertVisible: "Essayez d'autres termes"
 
-- clearText
+- eraseText: 50
 - inputText: ""
 
 # Recherche avec terme valide
-- clearText
+- eraseText: 50
 - assertNotVisible: "Aucun produit trouvé"
 
 # ── Filtres ────────────────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ env:
     id: "search_icon"
 - assertVisible: "Rechercher un produit, producteur..."
 - inputText: "Banane"
-- clearText
+- eraseText: 50
 - tapOn: "Retour"
 
 # ── Tap sur un produit du catalogue ───────────────────────────────────────────

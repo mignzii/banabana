@@ -22,11 +22,13 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = iconColor ?? AppColors.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: isDark ? Border.all(color: AppColors.darkBorder) : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -64,10 +66,18 @@ class StatCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: isDark ? AppColors.gray100 : AppColors.gray900,
+            ),
           ),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 12, color: AppColors.gray500)),
+          Text(label,
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.gray400 : AppColors.gray500,
+              )),
         ],
       ),
     );

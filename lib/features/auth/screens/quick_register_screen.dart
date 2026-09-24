@@ -76,6 +76,9 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+    final textSecondary = isDark ? AppColors.gray400 : AppColors.gray500;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -97,10 +100,11 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Créer votre compte', style: AppTextStyles.screenTitle),
+                Text('Créer votre compte',
+                    style: AppTextStyles.screenTitle.copyWith(color: textPrimary)),
                 const SizedBox(height: 8),
                 Text('Sans code SMS — PIN par défaut : 0000',
-                    style: AppTextStyles.bodySecondary),
+                    style: AppTextStyles.bodySecondary.copyWith(color: textSecondary)),
                 const SizedBox(height: 32),
                 TextFormField(
                   controller: _firstNameCtrl,
@@ -109,6 +113,7 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   decoration: AppInputDecoration.standard(
+                    isDark: isDark,
                     label: 'Prénom',
                     prefixIcon: const Icon(Symbols.person),
                   ),
@@ -124,6 +129,7 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   decoration: AppInputDecoration.standard(
+                    isDark: isDark,
                     label: 'Nom',
                     prefixIcon: const Icon(Symbols.badge),
                   ),
@@ -141,6 +147,7 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
                     FilteringTextInputFormatter.allow(RegExp(r'[+\d]')),
                   ],
                   decoration: AppInputDecoration.standard(
+                    isDark: isDark,
                     label: 'Numéro de téléphone',
                     hint: '+221 77 123 45 67',
                     prefixIcon: const Icon(Symbols.phone, color: AppColors.primary),
@@ -158,7 +165,9 @@ class _QuickRegisterScreenState extends ConsumerState<QuickRegisterScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                Text('Votre profil', style: AppTextStyles.label),
+                Text('Votre profil',
+                    style: AppTextStyles.label.copyWith(
+                        color: isDark ? AppColors.gray300 : AppColors.gray700)),
                 const SizedBox(height: 8),
                 _QuickRoleSelector(
                   selected: _role,
@@ -220,6 +229,7 @@ class _QuickRoleChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSelected = value == selected;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Semantics(
         button: true,
@@ -230,10 +240,14 @@ class _QuickRoleChip extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : AppColors.gray50,
+              color: isSelected
+                  ? AppColors.primary
+                  : (isDark ? AppColors.darkSurface2 : AppColors.gray50),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.gray200,
+                color: isSelected
+                    ? AppColors.primary
+                    : (isDark ? AppColors.darkBorder2 : AppColors.gray200),
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -241,11 +255,15 @@ class _QuickRoleChip extends StatelessWidget {
               children: [
                 Icon(icon,
                     size: 22,
-                    color: isSelected ? AppColors.white : AppColors.gray500),
+                    color: isSelected
+                        ? AppColors.white
+                        : (isDark ? AppColors.gray400 : AppColors.gray500)),
                 const SizedBox(height: 4),
                 Text(label,
                     style: AppTextStyles.caption.copyWith(
-                      color: isSelected ? AppColors.white : AppColors.gray600,
+                      color: isSelected
+                          ? AppColors.white
+                          : (isDark ? AppColors.gray300 : AppColors.gray600),
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     )),
               ],

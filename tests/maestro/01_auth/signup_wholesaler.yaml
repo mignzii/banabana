@@ -8,9 +8,10 @@ env:
 ---
 - launchApp:
     clearState: true
+- tapOn: "Votre profil"
 
 - assertVisible: "Connectez-vous pour continuer"
-- tapOn: "S'inscrire sans SMS (test)"
+- tapOn: "S'inscrire sans SMS \\(test\\)"
 
 - assertVisible: "Créer votre compte"
 - tapOn: "Prénom"
@@ -24,35 +25,39 @@ env:
 
 - tapOn: "Créer le compte"
 
-- assertVisible: "Créez votre PIN"
-- tapOn:
-    text: "0"
-- tapOn:
-    text: "0"
-- tapOn:
-    text: "0"
-- tapOn:
-    text: "0"
+# Compte déjà existant (cas normal après la 1re exécution) : avertissement,
+# pas de création de doublon côté back
+- assertVisible: "(Créez votre PIN|.*déjà enregistré.*)"
 
-- assertVisible: "Confirmez votre PIN"
-- tapOn:
-    text: "0"
-- tapOn:
-    text: "0"
-- tapOn:
-    text: "0"
-- tapOn:
-    text: "0"
-
-# ── Connexion avec le nouveau PIN ─────────────────────────────────────────────
-- assertVisible: "Entrez votre PIN"
-- tapOn:
-    text: "0"
-- tapOn:
-    text: "0"
-- tapOn:
-    text: "0"
-- tapOn:
-    text: "0"
-
-- assertVisible: "BanaBana"
+# ── Définition du PIN (nouveau compte uniquement) ─────────────────────────────
+- runFlow:
+    when:
+      visible: "Créez votre PIN"
+    commands:
+        - tapOn:
+            text: "0"
+        - tapOn:
+            text: "0"
+        - tapOn:
+            text: "0"
+        - tapOn:
+            text: "0"
+        - assertVisible: "Confirmez votre PIN"
+        - tapOn:
+            text: "0"
+        - tapOn:
+            text: "0"
+        - tapOn:
+            text: "0"
+        - tapOn:
+            text: "0"
+        - assertVisible: "Entrez votre PIN"
+        - tapOn:
+            text: "0"
+        - tapOn:
+            text: "0"
+        - tapOn:
+            text: "0"
+        - tapOn:
+            text: "0"
+        - assertVisible: "BanaBana"

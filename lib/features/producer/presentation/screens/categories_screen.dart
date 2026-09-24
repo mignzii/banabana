@@ -202,7 +202,7 @@ class _CategoryCard extends StatelessWidget {
                   Text(
                     '/${category.slug}',
                     style: AppTextStyles.caption.copyWith(
-                      color: isDark ? AppColors.gray500 : AppColors.gray400,
+                      color: AppColors.gray400,
                     ),
                   ),
               ],
@@ -435,7 +435,7 @@ class _CategorySheetState extends ConsumerState<_CategorySheet> {
   InputDecoration _inputDec(String hint, bool isDark, Color border) => InputDecoration(
     hintText: hint,
     hintStyle: AppTextStyles.bodySecondary.copyWith(
-      color: isDark ? AppColors.gray600 : AppColors.gray400,
+      color: isDark ? AppColors.gray500 : AppColors.gray400,
     ),
     filled: true,
     fillColor: isDark ? AppColors.darkSurface2 : AppColors.gray50,

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_input_decoration.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/auth/data/auth_repository.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
@@ -60,6 +62,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+    final textSecondary = isDark ? AppColors.gray400 : AppColors.gray500;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -78,17 +83,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 64,
-                    height: 64,
+                  // Le texte du logo est sombre : fond clair en mode sombre.
+                  child: Container(
+                    padding: EdgeInsets.all(isDark ? 6 : 0),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.gray100 : null,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+                    ),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 64,
+                      height: 64,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text('Créer votre compte', style: AppTextStyles.screenTitle),
+                Text('Créer votre compte',
+                    style: AppTextStyles.screenTitle.copyWith(color: textPrimary)),
                 const SizedBox(height: 8),
                 Text('Quelques informations pour commencer',
-                    style: AppTextStyles.bodySecondary),
+                    style: AppTextStyles.bodySecondary.copyWith(color: textSecondary)),
                 const SizedBox(height: 32),
                 TextFormField(
                   controller: _firstNameCtrl,
@@ -97,6 +111,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   decoration: AppInputDecoration.standard(
+                    isDark: isDark,
                     label: 'Prénom',
                     prefixIcon: const Icon(Symbols.person),
                   ),
@@ -112,6 +127,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   decoration: AppInputDecoration.standard(
+                    isDark: isDark,
                     label: 'Nom',
                     prefixIcon: const Icon(Symbols.badge),
                   ),
@@ -126,6 +142,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
                   decoration: AppInputDecoration.standard(
+                    isDark: isDark,
                     label: 'Email (optionnel)',
                     prefixIcon: const Icon(Symbols.mail),
                   ),

@@ -202,6 +202,10 @@ class _DocUploadTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final labelStyle = AppTextStyles.body.copyWith(
+      color: isDark ? AppColors.gray100 : AppColors.gray900,
+    );
     if (file != null) {
       return Semantics(
         label: '$label, document chargé. Appuyer pour prévisualiser.',
@@ -226,7 +230,7 @@ class _DocUploadTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.s12),
-              Expanded(child: Text(label, style: AppTextStyles.body)),
+              Expanded(child: Text(label, style: labelStyle)),
               InkWell(
                 onTap: onReplace ?? onTap,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
@@ -236,13 +240,13 @@ class _DocUploadTile extends StatelessWidget {
                     vertical: AppSpacing.s6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.gray100,
+                    color: isDark ? AppColors.darkSurface2 : AppColors.gray100,
                     borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
                   ),
                   child: Text(
                     'Modifier',
                     style: AppTextStyles.caption.copyWith(
-                      color: AppColors.gray700,
+                      color: isDark ? AppColors.gray200 : AppColors.gray700,
                     ),
                   ),
                 ),
@@ -264,12 +268,13 @@ class _DocUploadTile extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.s16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-            border: Border.all(color: AppColors.gray200),
+            border: Border.all(
+                color: isDark ? AppColors.darkBorder2 : AppColors.gray200),
           ),
           child: Row(children: [
             const Icon(Symbols.upload_file, color: AppColors.gray400),
             const SizedBox(width: AppSpacing.s12),
-            Expanded(child: Text(label, style: AppTextStyles.body)),
+            Expanded(child: Text(label, style: labelStyle)),
           ]),
         ),
       ),

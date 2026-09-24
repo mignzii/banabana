@@ -127,7 +127,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     child: Text(
                       'Commencez la conversation',
                       style: AppTextStyles.bodySecondary.copyWith(
-                        color: isDark ? AppColors.gray500 : AppColors.gray400,
+                        color: AppColors.gray400,
                       ),
                     ),
                   )
@@ -230,7 +230,7 @@ class _MessageBubble extends StatelessWidget {
                 Text(
                   timeStr,
                   style: AppTextStyles.caption.copyWith(
-                    color: isDark ? AppColors.gray600 : AppColors.gray400,
+                    color: isDark ? AppColors.gray500 : AppColors.gray400,
                     fontSize: 10,
                   ),
                 ),
@@ -286,7 +286,7 @@ class _InputBar extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: 'Écrire un message...',
                   hintStyle: AppTextStyles.bodySecondary.copyWith(
-                    color: isDark ? AppColors.gray600 : AppColors.gray400,
+                    color: isDark ? AppColors.gray500 : AppColors.gray400,
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(

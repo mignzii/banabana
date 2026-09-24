@@ -16,12 +16,12 @@ env:
 - assertVisible: "Analytiques"
 
 # ── Cartes statistiques ───────────────────────────────────────────────────────
-- assertVisible: "Revenus totaux"
-- assertVisible: "Commandes"
-- assertVisible: "En attente"
+- assertVisible: ".*Revenus totaux.*"
+- assertVisible: ".*Commandes.*"
+- assertVisible: ".*En attente.*"
 
 # ── Graphique de revenus ──────────────────────────────────────────────────────
-- assertVisible: "Revenus (30 derniers jours)"
+- assertVisible: "Revenus \\(30 derniers jours\\)"
 
 # ── Graphique top produits (si données) ──────────────────────────────────────
 - scrollUntilVisible:

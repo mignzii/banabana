@@ -8,22 +8,28 @@ abstract final class AppInputDecoration {
     String? hint,
     Widget? prefixIcon,
     Widget? suffixIcon,
+    bool isDark = false,
   }) {
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.gray200;
     return InputDecoration(
       labelText: label,
       hintText: hint,
-      hintStyle: AppTextStyles.bodySecondary.copyWith(color: AppColors.gray400),
-      labelStyle: AppTextStyles.label,
+      hintStyle: AppTextStyles.bodySecondary.copyWith(
+        color: isDark ? AppColors.gray500 : AppColors.gray400,
+      ),
+      labelStyle: AppTextStyles.label.copyWith(
+        color: isDark ? AppColors.gray300 : AppColors.gray700,
+      ),
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.gray200),
+        borderSide: BorderSide(color: borderColor),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.gray200),
+        borderSide: BorderSide(color: borderColor),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -39,7 +45,7 @@ abstract final class AppInputDecoration {
       ),
       errorStyle: AppTextStyles.caption.copyWith(color: AppColors.error),
       filled: true,
-      fillColor: AppColors.gray50,
+      fillColor: isDark ? AppColors.darkSurface2 : AppColors.gray50,
     );
   }
 }

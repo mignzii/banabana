@@ -198,6 +198,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen>
                 unselectedLabelColor: isDark ? AppColors.gray400 : AppColors.gray500,
                 indicatorColor: AppColors.primary,
                 indicatorWeight: 2.5,
+                labelPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.s4),
                 labelStyle: AppTextStyles.label
                     .copyWith(fontWeight: FontWeight.w600, fontSize: 12),
                 tabs: [
@@ -247,10 +248,10 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen>
                   decoration: InputDecoration(
                     hintText: 'Rechercher...',
                     hintStyle: AppTextStyles.caption
-                        .copyWith(color: isDark ? AppColors.gray500 : AppColors.gray400),
+                        .copyWith(color: AppColors.gray400),
                     prefixIcon: Icon(Symbols.search,
                         size: 20,
-                        color: isDark ? AppColors.gray400 : AppColors.gray400),
+                        color: AppColors.gray400),
                     filled: true,
                     fillColor: isDark ? AppColors.darkBorder : AppColors.gray100,
                     contentPadding: const EdgeInsets.symmetric(
@@ -368,7 +369,7 @@ class _StatChip extends StatelessWidget {
             Text(
               label,
               style: AppTextStyles.caption
-                  .copyWith(color: AppColors.gray500, fontSize: 10),
+                  .copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500, fontSize: 10),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -405,7 +406,7 @@ class _AllTab extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Symbols.inventory_2,
-                size: 56, color: isDark ? AppColors.gray600 : AppColors.gray300),
+                size: 56, color: isDark ? AppColors.gray500 : AppColors.gray300),
             const SizedBox(height: AppSpacing.s12),
             Text(
               'Aucun article en inventaire',
@@ -416,7 +417,7 @@ class _AllTab extends StatelessWidget {
             const SizedBox(height: AppSpacing.s4),
             Text(
               'Créez des produits avec des variantes pour gérer votre stock',
-              style: AppTextStyles.caption.copyWith(color: AppColors.gray500),
+              style: AppTextStyles.caption.copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500),
               textAlign: TextAlign.center,
             ),
           ],
@@ -476,7 +477,7 @@ class _AllTab extends StatelessWidget {
                             Text(
                               r.meta.category,
                               style: AppTextStyles.caption
-                                  .copyWith(color: AppColors.gray500),
+                                  .copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500),
                             ),
                         ],
                       ),
@@ -591,7 +592,7 @@ class _DetailRow extends StatelessWidget {
         children: [
           Text(label,
               style: AppTextStyles.caption
-                  .copyWith(color: AppColors.gray500, fontSize: 12)),
+                  .copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500, fontSize: 12)),
           Text(
             value,
             style: AppTextStyles.caption.copyWith(
@@ -674,7 +675,7 @@ class _AlertsTab extends StatelessWidget {
             const SizedBox(height: AppSpacing.s4),
             Text(
               'Tous vos stocks sont suffisants',
-              style: AppTextStyles.caption.copyWith(color: AppColors.gray500),
+              style: AppTextStyles.caption.copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500),
             ),
           ],
         ),
@@ -872,7 +873,7 @@ class _MovementsTab extends StatelessWidget {
               children: [
                 Icon(Symbols.swap_vert,
                     size: 56,
-                    color: isDark ? AppColors.gray600 : AppColors.gray300),
+                    color: isDark ? AppColors.gray500 : AppColors.gray300),
                 const SizedBox(height: AppSpacing.s12),
                 Text(
                   'Aucun mouvement',
@@ -948,7 +949,7 @@ class _MovementsTab extends StatelessWidget {
                           Text(
                             m.reason!,
                             style: AppTextStyles.caption
-                                .copyWith(color: AppColors.gray500),
+                                .copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500),
                           ),
                         Text(
                           DateFormat('d MMM yyyy · HH:mm', 'fr_FR')
@@ -975,7 +976,7 @@ class _MovementsTab extends StatelessWidget {
                       Text(
                         info.label,
                         style: AppTextStyles.caption
-                            .copyWith(color: AppColors.gray500, fontSize: 10),
+                            .copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500, fontSize: 10),
                       ),
                     ],
                   ),
@@ -1087,7 +1088,7 @@ class _StatsTab extends StatelessWidget {
                               Text(
                                 '${e.value.count} unités • ${fmt.format(e.value.value)} FCFA',
                                 style: AppTextStyles.caption.copyWith(
-                                    color: AppColors.gray500),
+                                    color: isDark ? AppColors.gray400 : AppColors.gray500),
                               ),
                             ],
                           ),

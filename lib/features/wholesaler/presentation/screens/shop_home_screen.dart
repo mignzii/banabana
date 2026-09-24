@@ -38,6 +38,14 @@ class ShopHomeScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: Icon(
+              Symbols.dashboard,
+              color: isDark ? AppColors.gray300 : AppColors.gray700,
+            ),
+            tooltip: 'Tableau de bord',
+            onPressed: () => context.push('/shop/dashboard'),
+          ),
+          IconButton(
+            icon: Icon(
               Symbols.analytics,
               color: isDark ? AppColors.gray300 : AppColors.gray700,
             ),
@@ -277,7 +285,7 @@ class _CategoryChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 80,
+        width: 96,
         decoration: BoxDecoration(
           color: isDark ? AppColors.darkSurface : AppColors.white,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),

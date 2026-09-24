@@ -32,6 +32,10 @@ class PinPad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final keys = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final keyColor = disabled
+        ? (isDark ? AppColors.gray700 : AppColors.gray300)
+        : (isDark ? AppColors.gray100 : AppColors.gray900);
     return GridView.count(
       crossAxisCount: 3,
       shrinkWrap: true,
@@ -47,7 +51,7 @@ class PinPad extends StatelessWidget {
           child: Center(
             child: Text(k,
                 style: AppTextStyles.sectionTitle.copyWith(
-                  color: disabled ? AppColors.gray300 : AppColors.gray900,
+                  color: keyColor,
                 )),
           ),
         );

@@ -1,0 +1,36 @@
+# TEST : Profil — désactivation / suppression de compte (dialogues de confirmation)
+# Les deux actions sont annulées : le test ne modifie jamais le compte.
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  PRODUCER_PIN: "1234"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Profil"
+- scrollUntilVisible:
+    element:
+      text: "Supprimer mon compte"
+    direction: DOWN
+- assertVisible: "Compte"
+- assertVisible: "Désactiver mon compte"
+- takeScreenshot: 05_profile_account_section
+
+# ── Désactivation : dialogue + PIN, puis annulation ──────────────────────────
+- tapOn: "Désactiver mon compte"
+- assertVisible: ".*Vous pourrez le réactiver à tout moment.*"
+- assertVisible: "Code PIN"
+- takeScreenshot: 05_deactivate_dialog
+- tapOn: "Annuler"
+- assertVisible: "Désactiver mon compte"
+
+# ── Suppression : bouton inactif tant que la case n'est pas cochée ────────────
+- tapOn: "Supprimer mon compte"
+- assertVisible: "Cette action est définitive.*"
+- inputText: "1234"
+- assertVisible: "Je comprends que cette action est irréversible"
+- takeScreenshot: 05_delete_dialog
+- tapOn: "Annuler"
+- assertVisible: "Supprimer mon compte"

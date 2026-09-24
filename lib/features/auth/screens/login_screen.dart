@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/features/auth/data/auth_repository.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_input_decoration.dart';
+import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 
@@ -66,6 +67,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+    final textSecondary = isDark ? AppColors.gray400 : AppColors.gray500;
+    final testBorder = isDark ? AppColors.darkBorder2 : AppColors.gray200;
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -80,18 +85,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 90,
-                    height: 90,
+                  // Le texte du logo est sombre : fond clair en mode sombre.
+                  child: Container(
+                    padding: EdgeInsets.all(isDark ? 6 : 0),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.gray100 : null,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+                    ),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 90,
+                      height: 90,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text('BanaBana Business',
-                    style: AppTextStyles.screenTitle,
+                    style: AppTextStyles.screenTitle.copyWith(color: textPrimary),
                     textAlign: TextAlign.center),
                 Text('Connectez-vous pour continuer',
-                    style: AppTextStyles.bodySecondary,
+                    style: AppTextStyles.bodySecondary.copyWith(color: textSecondary),
                     textAlign: TextAlign.center),
                 const SizedBox(height: 40),
                 TextFormField(
@@ -106,12 +119,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     label: 'Numéro de téléphone',
                     hint: '+221 77 123 45 67',
                     prefixIcon: const Icon(Symbols.phone, color: AppColors.primary),
+                    isDark: isDark,
                   ),
                   validator: _validatePhone,
                   onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 16),
-                Text('Votre profil', style: AppTextStyles.label),
+                Text('Votre profil',
+                    style: AppTextStyles.label.copyWith(
+                        color: isDark ? AppColors.gray300 : AppColors.gray700)),
                 const SizedBox(height: 8),
                 _RoleSelector(
                   selected: _role,
@@ -136,7 +152,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Text(
                         'TEST',
                         style: AppTextStyles.caption.copyWith(
-                          color: AppColors.gray400,
+                          color: textSecondary,
                           letterSpacing: 1,
                           fontWeight: FontWeight.w600,
                         ),
@@ -151,15 +167,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   icon: const Icon(Symbols.lock_open, size: 18),
                   label: const Text('Connexion PIN directe (sans OTP)'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.gray500,
-                    side: const BorderSide(color: AppColors.gray200),
+                    foregroundColor: textSecondary,
+                    side: BorderSide(color: testBorder),
                     textStyle: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'PIN par défaut : 0000',
-                  style: AppTextStyles.caption.copyWith(color: AppColors.gray400),
+                  style: AppTextStyles.caption.copyWith(color: textSecondary),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
@@ -168,8 +184,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   icon: const Icon(Symbols.person_add, size: 18),
                   label: const Text('S\'inscrire sans SMS (test)'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.gray500,
-                    side: const BorderSide(color: AppColors.gray200),
+                    foregroundColor: textSecondary,
+                    side: BorderSide(color: testBorder),
                     textStyle: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -219,6 +235,7 @@ class _RoleChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSelected = value == selected;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: Semantics(
         button: true,
@@ -229,10 +246,14 @@ class _RoleChip extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : AppColors.gray50,
+              color: isSelected
+                  ? AppColors.primary
+                  : (isDark ? AppColors.darkSurface2 : AppColors.gray50),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.gray200,
+                color: isSelected
+                    ? AppColors.primary
+                    : (isDark ? AppColors.darkBorder2 : AppColors.gray200),
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -240,11 +261,15 @@ class _RoleChip extends StatelessWidget {
               children: [
                 Icon(icon,
                     size: 22,
-                    color: isSelected ? AppColors.white : AppColors.gray500),
+                    color: isSelected
+                        ? AppColors.white
+                        : (isDark ? AppColors.gray400 : AppColors.gray500)),
                 const SizedBox(height: 4),
                 Text(label,
                     style: AppTextStyles.caption.copyWith(
-                      color: isSelected ? AppColors.white : AppColors.gray600,
+                      color: isSelected
+                          ? AppColors.white
+                          : (isDark ? AppColors.gray300 : AppColors.gray600),
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                     )),
               ],

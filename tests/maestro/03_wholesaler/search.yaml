@@ -19,7 +19,7 @@ env:
 - assertVisible: "Aucun résultat"
 
 # Effacer et chercher un terme réel
-- clearText
+- eraseText: 50
 - inputText: "Banane"
 # Laisser le temps au debounce
 - tapOn:

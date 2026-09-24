@@ -93,7 +93,7 @@ class _StepDot extends StatelessWidget {
         : (isDark ? AppColors.darkSurface2 : AppColors.gray200);
     final iconColor = isCompleted
         ? AppColors.white
-        : (isDark ? AppColors.gray600 : AppColors.gray400);
+        : (isDark ? AppColors.gray500 : AppColors.gray400);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -125,7 +125,7 @@ class _StepDot extends StatelessWidget {
           style: AppTextStyles.caption.copyWith(
             color: isCompleted
                 ? AppColors.primary
-                : (isDark ? AppColors.gray600 : AppColors.gray400),
+                : (isDark ? AppColors.gray500 : AppColors.gray400),
             fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w400,
             fontSize: 9,
           ),

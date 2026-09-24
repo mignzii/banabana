@@ -130,6 +130,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState();
   }
 
+  Future<void> deactivateAccount({required String pin}) async {
+    await repo.deactivateAccount(pin: pin);
+    await storage.clearAll();
+    state = const AuthState();
+  }
+
+  Future<void> deleteAccount({required String pin}) async {
+    await repo.deleteAccount(pin: pin);
+    await storage.clearAll();
+    state = const AuthState();
+  }
+
   Future<void> refreshProfile() async {
     try {
       final freshUser = await repo.getProfile();

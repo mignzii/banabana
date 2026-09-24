@@ -85,7 +85,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen>
     final surface = isDark ? AppColors.darkSurface : AppColors.white;
     final border = isDark ? AppColors.darkBorder : AppColors.gray100;
     final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
 
     return Scaffold(
       backgroundColor: bg,
@@ -132,10 +132,12 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen>
               color: _showSearch ? AppColors.primary : textSecondary,
             ),
             onPressed: _toggleSearch,
+            tooltip: _showSearch ? 'Fermer la recherche' : 'Rechercher',
           ),
           IconButton(
             icon: const Icon(Symbols.add_circle, color: AppColors.primary),
             onPressed: () => context.push('${widget.routePrefix}/new'),
+            tooltip: 'Nouveau produit',
           ),
           const SizedBox(width: AppSpacing.s4),
         ],
@@ -296,19 +298,19 @@ class _SearchBar extends StatelessWidget {
         decoration: InputDecoration(
           hintText: 'Rechercher un produit…',
           hintStyle: AppTextStyles.body.copyWith(
-            color: isDark ? AppColors.gray600 : AppColors.gray400,
+            color: isDark ? AppColors.gray500 : AppColors.gray400,
           ),
           prefixIcon: Icon(
             Symbols.search,
             size: 18,
-            color: isDark ? AppColors.gray500 : AppColors.gray400,
+            color: AppColors.gray400,
           ),
           suffixIcon: controller.text.isNotEmpty
               ? IconButton(
                   icon: Icon(
                     Symbols.close,
                     size: 16,
-                    color: isDark ? AppColors.gray500 : AppColors.gray400,
+                    color: AppColors.gray400,
                   ),
                   onPressed: onClear,
                 )
@@ -613,7 +615,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textSecondary = isDark ? AppColors.gray500 : AppColors.gray400;
+    final textSecondary = AppColors.gray400;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.s32),

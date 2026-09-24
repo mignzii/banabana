@@ -35,7 +35,7 @@ env:
 # Email champ (mode édition)
 - tapOn: "Email"
     optional: true
-- clearText
+- eraseText: 50
     optional: true
 - inputText: "${NEW_EMAIL}"
     optional: true
@@ -51,7 +51,7 @@ env:
     optional: true
 - tapOn: "Email"
     optional: true
-- clearText
+- eraseText: 50
     optional: true
 - inputText: "email-invalide"
     optional: true

@@ -343,7 +343,7 @@ class _OrderCard extends StatelessWidget {
                   Icon(
                     Symbols.inventory_2,
                     size: 14,
-                    color: isDark ? AppColors.gray500 : AppColors.gray400,
+                    color: AppColors.gray400,
                   ),
                   const SizedBox(width: AppSpacing.s6),
                   Text(
@@ -358,7 +358,7 @@ class _OrderCard extends StatelessWidget {
                   Icon(
                     Symbols.schedule,
                     size: 14,
-                    color: isDark ? AppColors.gray500 : AppColors.gray400,
+                    color: AppColors.gray400,
                   ),
                   const SizedBox(width: AppSpacing.s6),
                   Text(

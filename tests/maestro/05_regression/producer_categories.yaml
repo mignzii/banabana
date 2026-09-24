@@ -1,0 +1,33 @@
+# TEST : Formulaire produit — liste de catégories complète (même liste que le
+# catalogue grossiste) et « Pomme » absente
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  PRODUCER_PIN: "1234"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Produits"
+- tapOn: "Nouveau produit"
+- assertVisible: "Photos & Infos"
+- tapOn: "Choisir une catégorie"
+- assertVisible: ".*Véhicules et transport.*"
+- assertNotVisible: ".*Pomme.*"
+- takeScreenshot: 05_producer_categories_top
+
+# La liste est longue : elle doit défiler jusqu'aux dernières catégories
+- scrollUntilVisible:
+    element:
+      text: ".*Alimentation et boissons.*"
+    direction: DOWN
+- scrollUntilVisible:
+    element:
+      text: ".*Services aux entreprises.*"
+    direction: DOWN
+- assertNotVisible: ".*Pomme.*"
+- takeScreenshot: 05_producer_categories_bottom
+- tapOn: ".*Services aux entreprises.*"
+- assertVisible: ".*Services aux entreprises.*"
+- takeScreenshot: 05_producer_category_selected

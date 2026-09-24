@@ -15,13 +15,13 @@ class WholesalerShell extends ConsumerWidget {
   final String location;
 
   int get _currentIndex {
-    if (location.startsWith('/shop/home')) return 0;
+    if (location.startsWith('/shop/home') ||
+        location.startsWith('/shop/dashboard')) return 0;
     if (location.startsWith('/shop/catalog') ||
         location.startsWith('/shop/product')) return 1;
     if (location.startsWith('/shop/inventory')) return 2;
     if (location.startsWith('/shop/orders')) return 3;
-    if (location.startsWith('/shop/profile') ||
-        location.startsWith('/shop/dashboard')) return 4;
+    if (location.startsWith('/shop/profile')) return 4;
     return 0;
   }
 

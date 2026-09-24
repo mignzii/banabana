@@ -124,6 +124,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -142,11 +143,15 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               const Icon(Symbols.sms, size: 48, color: AppColors.primary),
               const SizedBox(height: 16),
               Text('Code de vérification',
-                  style: AppTextStyles.screenTitle,
+                  style: AppTextStyles.screenTitle.copyWith(
+                    color: isDark ? AppColors.gray100 : AppColors.gray900,
+                  ),
                   textAlign: TextAlign.center),
               const SizedBox(height: 8),
               Text('Entrez le code envoyé au ${widget.phone}',
-                  style: AppTextStyles.bodySecondary,
+                  style: AppTextStyles.bodySecondary.copyWith(
+                    color: isDark ? AppColors.gray400 : AppColors.gray500,
+                  ),
                   textAlign: TextAlign.center),
               const SizedBox(height: 40),
               Row(
@@ -199,7 +204,9 @@ class _OtpBox extends StatelessWidget {
   final ValueChanged<String> onPaste;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return SizedBox(
         width: 44,
         height: 56,
         child: TextField(
@@ -211,18 +218,25 @@ class _OtpBox extends StatelessWidget {
           maxLength: 1,
           enableInteractiveSelection: true,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          style: AppTextStyles.sectionTitle,
+          style: AppTextStyles.sectionTitle.copyWith(
+            color: isDark ? AppColors.gray100 : AppColors.gray900,
+          ),
           decoration: InputDecoration(
             counterText: '',
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.gray200)),
+                borderSide: BorderSide(
+                    color: isDark ? AppColors.darkBorder2 : AppColors.gray200)),
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                    color: isDark ? AppColors.darkBorder2 : AppColors.gray200)),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide:
                     const BorderSide(color: AppColors.primary, width: 2)),
             filled: true,
-            fillColor: AppColors.gray50,
+            fillColor: isDark ? AppColors.darkSurface2 : AppColors.gray50,
           ),
           onChanged: (v) {
             if (v.length > 1) {
@@ -234,4 +248,5 @@ class _OtpBox extends StatelessWidget {
           onSubmitted: (_) {},
         ),
       );
+  }
 }

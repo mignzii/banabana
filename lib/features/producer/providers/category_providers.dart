@@ -12,7 +12,7 @@ final allCategoriesProvider = FutureProvider<List<Category>>((ref) {
   return ref.watch(categoryRepositoryProvider).getAll();
 });
 
-/// Producer's own categories (for product form)
+/// Producer's own categories (for the categories management screen)
 final myCategoriesProvider = FutureProvider<List<Category>>((ref) {
   return ref.watch(categoryRepositoryProvider).getMyCategories();
 });
@@ -59,6 +59,7 @@ class CategoriesNotifier extends AsyncNotifier<List<Category>> {
       name: name, slug: slug, icon: icon, order: order,
     );
     state = state.whenData((list) => [...list, cat]);
+    ref.invalidate(allCategoriesProvider);
   }
 
   Future<void> edit(
@@ -74,11 +75,13 @@ class CategoriesNotifier extends AsyncNotifier<List<Category>> {
     state = state.whenData(
       (list) => list.map((c) => c.id == id ? cat : c).toList(),
     );
+    ref.invalidate(allCategoriesProvider);
   }
 
   Future<void> delete(String id) async {
     await ref.read(categoryRepositoryProvider).delete(id);
     state = state.whenData((list) => list.where((c) => c.id != id).toList());
+    ref.invalidate(allCategoriesProvider);
   }
 }
 

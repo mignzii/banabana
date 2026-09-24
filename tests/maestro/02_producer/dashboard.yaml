@@ -26,7 +26,7 @@ env:
 
 # ── Navigation : Ajouter produit ─────────────────────────────────────────────
 - tapOn: "Ajouter produit"
-- assertVisible: "Nouveau produit"
+- assertVisible: "Photos & Infos"
 - tapOn: "Retour"
 
 # ── Navigation : Mes produits ────────────────────────────────────────────────

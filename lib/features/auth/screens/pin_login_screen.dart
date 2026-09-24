@@ -125,6 +125,7 @@ class _PinLoginScreenState extends ConsumerState<PinLoginScreen> {
   @override
   Widget build(BuildContext context) {
     final biometric = ref.watch(biometricProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -147,7 +148,10 @@ class _PinLoginScreenState extends ConsumerState<PinLoginScreen> {
               const Icon(Symbols.lock_open, size: 48, color: AppColors.primary),
               const SizedBox(height: 16),
               Text('Entrez votre PIN',
-                  style: AppTextStyles.screenTitle, textAlign: TextAlign.center),
+                  style: AppTextStyles.screenTitle.copyWith(
+                    color: isDark ? AppColors.gray100 : AppColors.gray900,
+                  ),
+                  textAlign: TextAlign.center),
               if (_blocked)
                 Text('Réessayez dans ${_blockCountdown}s',
                     style: AppTextStyles.bodySecondary.copyWith(color: AppColors.error),

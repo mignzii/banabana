@@ -136,7 +136,7 @@ class _ConversationTile extends StatelessWidget {
                         Text(
                           timeStr,
                           style: AppTextStyles.caption.copyWith(
-                            color: hasUnread ? AppColors.primary : (isDark ? AppColors.gray600 : AppColors.gray400),
+                            color: hasUnread ? AppColors.primary : (isDark ? AppColors.gray500 : AppColors.gray400),
                             fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w400,
                           ),
                         ),
@@ -151,7 +151,7 @@ class _ConversationTile extends StatelessWidget {
                             style: AppTextStyles.bodySecondary.copyWith(
                               color: hasUnread
                                   ? (isDark ? AppColors.gray200 : AppColors.gray700)
-                                  : (isDark ? AppColors.gray500 : AppColors.gray400),
+                                  : (AppColors.gray400),
                               fontWeight: hasUnread ? FontWeight.w500 : FontWeight.w400,
                             ),
                             maxLines: 1,

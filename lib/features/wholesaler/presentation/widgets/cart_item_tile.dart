@@ -114,7 +114,7 @@ class _CartItemTileState extends ConsumerState<CartItemTile> {
                 const SizedBox(height: AppSpacing.s4),
                 Text(
                   widget.item.variantLabel,
-                  style: AppTextStyles.caption.copyWith(color: AppColors.gray500),
+                  style: AppTextStyles.caption.copyWith(color: isDark ? AppColors.gray400 : AppColors.gray500),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -131,7 +131,7 @@ class _CartItemTileState extends ConsumerState<CartItemTile> {
                   Text(
                     'Min. $min unité${min > 1 ? 's' : ''}',
                     style: AppTextStyles.caption.copyWith(
-                      color: isDark ? AppColors.gray500 : AppColors.gray400,
+                      color: AppColors.gray400,
                       fontSize: 11,
                     ),
                   ),
@@ -149,7 +149,7 @@ class _CartItemTileState extends ConsumerState<CartItemTile> {
                 child: Icon(
                   Symbols.delete_outline,
                   size: 18,
-                  color: isDark ? AppColors.gray600 : AppColors.gray400,
+                  color: isDark ? AppColors.gray500 : AppColors.gray400,
                 ),
               ),
               const SizedBox(height: AppSpacing.s10),
