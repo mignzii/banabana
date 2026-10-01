@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:banabana_b2b/core/api/api_error.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
@@ -34,20 +36,12 @@ String _relativeDate(DateTime dt) {
   return DateFormat('d MMM', 'fr_FR').format(dt);
 }
 
-class OrdersScreen extends ConsumerStatefulWidget {
+class OrdersScreen extends StatelessWidget {
   const OrdersScreen({super.key});
-
-  @override
-  ConsumerState<OrdersScreen> createState() => _OrdersScreenState();
-}
-
-class _OrdersScreenState extends ConsumerState<OrdersScreen> {
-  OrderStatus? _filter;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final ordersAsync = ref.watch(ordersNotifierProvider);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBg : AppColors.gray50,
@@ -61,7 +55,37 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           ),
         ),
       ),
-      body: Column(
+      body: const ReceivedOrdersView(),
+    );
+  }
+}
+
+/// Liste des commandes reçues par un vendeur (filtres + actions rapides).
+/// Partagée entre l'écran producteur et l'onglet « Commandes reçues » du
+/// grossiste ; [routePrefix] est la route du détail d'une commande.
+class ReceivedOrdersView extends ConsumerStatefulWidget {
+  const ReceivedOrdersView({
+    super.key,
+    this.routePrefix = '/producer/orders',
+    this.emptySubtitle = 'Les commandes des grossistes apparaîtront ici.',
+  });
+
+  final String routePrefix;
+  final String emptySubtitle;
+
+  @override
+  ConsumerState<ReceivedOrdersView> createState() => _ReceivedOrdersViewState();
+}
+
+class _ReceivedOrdersViewState extends ConsumerState<ReceivedOrdersView> {
+  OrderStatus? _filter;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final ordersAsync = ref.watch(ordersNotifierProvider);
+
+    return Column(
         children: [
           // Filter chips
           Container(
@@ -138,11 +162,19 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                   itemCount: 5,
                   itemBuilder: (_, __) => const OrderCardShimmer(),
                 ),
-                error: (e, _) => ErrorStateWidget(
-                  message: e.toString(),
-                  onRetry: () =>
-                      ref.read(ordersNotifierProvider.notifier).load(),
-                ),
+                error: (e, _) => _isForbidden(e)
+                    // Accès vendeur pas encore ouvert côté serveur pour ce rôle.
+                    ? const EmptyStateWidget(
+                        icon: Symbols.lock_clock,
+                        title: 'Bientôt disponible',
+                        subtitle:
+                            'Les commandes reçues ne sont pas encore disponibles pour votre compte.',
+                      )
+                    : ErrorStateWidget(
+                        message: apiErrorMessage(e),
+                        onRetry: () =>
+                            ref.read(ordersNotifierProvider.notifier).load(),
+                      ),
                 data: (orders) {
                   final filtered = _filter == null
                       ? orders
@@ -155,7 +187,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                       icon: Symbols.receipt_long,
                       title: 'Aucune commande',
                       subtitle: _filter == null
-                          ? 'Les commandes des grossistes apparaîtront ici.'
+                          ? widget.emptySubtitle
                           : 'Aucune commande dans cet état.',
                     );
                   }
@@ -172,7 +204,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
                       order: filtered[i],
                       isDark: isDark,
                       onTap: () => context
-                          .push('/producer/orders/${filtered[i].id}'),
+                          .push('${widget.routePrefix}/${filtered[i].id}'),
                     ),
                   );
                 },
@@ -180,10 +212,12 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
             ),
           ),
         ],
-      ),
     );
   }
 }
+
+bool _isForbidden(Object e) =>
+    e is DioException && e.response?.statusCode == 403;
 
 class _FilterChip extends StatelessWidget {
   const _FilterChip({

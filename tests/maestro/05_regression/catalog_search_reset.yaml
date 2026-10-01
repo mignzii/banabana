@@ -1,0 +1,40 @@
+# TEST : Catalogue grossiste — après une recherche, on peut revenir à tous les
+# produits (bouton ✕, champ vidé, ou « Voir tous les produits »)
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Catalogue"
+- assertVisible: "(?s).*onion.*"
+
+# Recherche sans résultat puis retour via le bouton de l'état vide
+- tapOn: "Rechercher un produit..."
+- inputText: "zzz_inexistant"
+- pressKey: Enter
+- assertVisible: "Aucun produit trouvé"
+- tapOn: "Voir tous les produits"
+- assertVisible: "(?s).*onion.*"
+- assertNotVisible: "Aucun produit trouvé"
+
+# Recherche avec résultat puis retour via le bouton ✕
+- tapOn: "Rechercher un produit..."
+- inputText: "tomates"
+- pressKey: Enter
+- assertVisible: "(?s).*tomates.*"
+- assertNotVisible: "(?s).*onion.*"
+- tapOn: "Effacer la recherche"
+- assertVisible: "(?s).*onion.*"
+
+# La recherche ne reste pas active après un changement d'onglet
+- tapOn: "Rechercher un produit..."
+- inputText: "tomates"
+- pressKey: Enter
+- assertNotVisible: "(?s).*onion.*"
+- tapOn: "Effacer la recherche"
+- tapOn: "(?s)Accueil.*"
+- tapOn: "Catalogue"
+- assertVisible: "(?s).*onion.*"

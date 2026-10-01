@@ -24,14 +24,36 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   final _searchCtrl = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // La recherche survit au changement d'onglet : on la réaffiche dans le
+    // champ pour que l'utilisateur voie pourquoi la liste est filtrée.
+    _searchCtrl.text = ref.read(catalogSearchParamsProvider).q;
+  }
+
+  @override
   void dispose() {
     _searchCtrl.dispose();
     super.dispose();
   }
 
+  // Une chaîne vide réinitialise la recherche (retour à tous les produits).
   void _onSearch(String q) => ref
       .read(catalogSearchParamsProvider.notifier)
-      .update((s) => s.copyWith(q: q.isEmpty ? null : q, page: 1));
+      .update((s) => s.copyWith(q: q.trim(), page: 1));
+
+  void _clearSearch() {
+    _searchCtrl.clear();
+    _onSearch('');
+    setState(() {});
+  }
+
+  void _resetAll() {
+    _searchCtrl.clear();
+    ref.read(catalogSearchParamsProvider.notifier).state =
+        const CatalogSearchParams();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,12 +161,34 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                           color: AppColors.primary,
                           size: 20,
                         ),
+                        suffixIcon: _searchCtrl.text.isNotEmpty
+                            ? IconButton(
+                                tooltip: 'Effacer la recherche',
+                                icon: Icon(
+                                  Symbols.close,
+                                  size: 18,
+                                  color: isDark
+                                      ? AppColors.gray400
+                                      : AppColors.gray500,
+                                ),
+                                onPressed: _clearSearch,
+                              )
+                            : null,
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: AppSpacing.s12,
                         ),
                         isDense: true,
                       ),
+                      onChanged: (v) {
+                        // Champ vidé au clavier : retour immédiat à la liste.
+                        if (v.trim().isEmpty && params.q.isNotEmpty) {
+                          _onSearch('');
+                        }
+                        setState(() {});
+                      },
+                      onTapOutside: (_) =>
+                          FocusManager.instance.primaryFocus?.unfocus(),
                       onSubmitted: _onSearch,
                       textInputAction: TextInputAction.search,
                     ),
@@ -253,13 +297,17 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
               ),
               data: (result) {
                 if (result.data.isEmpty) {
+                  final isFiltered = params.q.isNotEmpty ||
+                      hasFilters ||
+                      params.inStockOnly;
                   return EmptyStateWidget(
                     icon: Symbols.search_off,
                     title: 'Aucun produit trouvé',
-                    subtitle:
-                        'Essayez d\'autres termes ou modifiez les filtres.',
-                    ctaLabel: 'Modifier les filtres',
-                    onCta: () => FilterSheet.show(context),
+                    subtitle: isFiltered
+                        ? 'Essayez d\'autres termes ou revenez à tous les produits.'
+                        : 'Aucun produit n\'est disponible pour le moment.',
+                    ctaLabel: isFiltered ? 'Voir tous les produits' : null,
+                    onCta: isFiltered ? _resetAll : null,
                   );
                 }
                 return RefreshIndicator(

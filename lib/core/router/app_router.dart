@@ -310,6 +310,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, state) =>
             _fadePage(WholesalerOrderDetailScreen(orderId: state.pathParameters['id']!)),
       ),
+      // Commande reçue par le grossiste en tant que vendeur (écran partagé
+      // avec le producteur : accepter / refuser / expédier).
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/received-orders/:id',
+        name: 'shop-received-order-detail',
+        pageBuilder: (_, state) =>
+            _fadePage(OrderDetailScreen(orderId: state.pathParameters['id']!)),
+      ),
       GoRoute(
         parentNavigatorKey: _rootNavKey,
         path: '/shop/analytics',

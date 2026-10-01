@@ -55,7 +55,9 @@ tests/maestro/
     ├── producer_categories.yaml
     ├── wholesaler_catalog_no_pomme.yaml
     ├── account_actions.yaml     # Dialogues désactivation/suppression (toujours annulés)
-    └── dark_mode.yaml           # Captures des écrans principaux en mode sombre
+    ├── dark_mode.yaml           # Captures des écrans principaux en mode sombre
+    ├── catalog_search_reset.yaml        # Retour à tous les produits après recherche
+    └── wholesaler_received_orders.yaml  # Onglets Mes achats / Commandes reçues
 ```
 
 ## Lancer les tests
