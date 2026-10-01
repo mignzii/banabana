@@ -5,6 +5,9 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:banabana_b2b/core/theme/app_colors.dart';
 import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
+import 'package:banabana_b2b/core/api/api_error.dart';
+import 'package:banabana_b2b/features/producer/presentation/screens/orders_screen.dart';
+import 'package:banabana_b2b/features/producer/providers/order_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/wholesaler_order_providers.dart';
 import 'package:banabana_b2b/shared/models/order.dart';
 import 'package:banabana_b2b/shared/widgets/empty_state_widget.dart';
@@ -50,8 +53,17 @@ class _WholesalerOrdersScreenState
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final ordersAsync = ref.watch(wholesalerOrdersProvider);
+    // Commandes reçues en attente de décision (à accepter ou refuser).
+    final newReceived = ref
+            .watch(ordersNotifierProvider)
+            .valueOrNull
+            ?.where((o) => o.status == OrderStatus.created)
+            .length ??
+        0;
 
-    return Scaffold(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
       backgroundColor: isDark ? AppColors.darkBg : AppColors.gray50,
       appBar: AppBar(
         backgroundColor: isDark ? AppColors.darkBg : AppColors.white,
@@ -62,8 +74,44 @@ class _WholesalerOrdersScreenState
             color: isDark ? AppColors.white : AppColors.gray900,
           ),
         ),
+        bottom: TabBar(
+          labelColor: AppColors.primary,
+          unselectedLabelColor: isDark ? AppColors.gray400 : AppColors.gray500,
+          indicatorColor: AppColors.primary,
+          indicatorWeight: 2.5,
+          labelStyle: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600),
+          tabs: [
+            const Tab(text: 'Mes achats'),
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Commandes reçues'),
+                  if (newReceived > 0) ...[
+                    const SizedBox(width: AppSpacing.s6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.error,
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusPill),
+                      ),
+                      child: Text(
+                        '$newReceived',
+                        style: AppTextStyles.badge,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-      body: Column(
+      body: TabBarView(
+        children: [
+          Column(
         children: [
           Container(
             color: isDark ? AppColors.darkBg : AppColors.white,
@@ -141,7 +189,7 @@ class _WholesalerOrdersScreenState
                   itemBuilder: (_, __) => const OrderCardShimmer(),
                 ),
                 error: (e, _) => ErrorStateWidget(
-                  message: e.toString(),
+                  message: apiErrorMessage(e),
                   onRetry: () =>
                       ref.read(wholesalerOrdersProvider.notifier).load(),
                 ),
@@ -182,6 +230,14 @@ class _WholesalerOrdersScreenState
             ),
           ),
         ],
+          ),
+          const ReceivedOrdersView(
+            routePrefix: '/shop/received-orders',
+            emptySubtitle:
+                'Les commandes passées sur vos produits apparaîtront ici.',
+          ),
+        ],
+      ),
       ),
     );
   }

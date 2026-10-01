@@ -1,0 +1,23 @@
+# TEST : Grossiste — onglets « Mes achats » / « Commandes reçues »
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+- tapOn: "Commandes"
+- assertVisible: "Mes commandes"
+- assertVisible: "(?s)Mes achats.*"
+- assertVisible: "(?s)Commandes reçues.*"
+- takeScreenshot: 05_wholesaler_orders_purchases
+
+- tapOn: "(?s)Commandes reçues.*"
+- takeScreenshot: 05_wholesaler_orders_received
+# Filtres de la liste des commandes reçues (ou message si l'accès n'est pas
+# encore ouvert côté serveur)
+- assertVisible: "((?s)Nouvelles.*|.*pas encore disponibles.*)"
+
+- tapOn: "(?s)Mes achats.*"
+- assertVisible: "(?s)Toutes.*"
