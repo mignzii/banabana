@@ -56,7 +56,15 @@ workflows:
 
       - name: Build iOS (release)
         script: |
-          flutter build ipa --release
+          # Numéro de build = dernier build TestFlight + 1 (Apple refuse un numéro déjà envoyé)
+          APP_ID=$(app-store-connect apps list \
+            --bundle-id-identifier com.banabana.pro \
+            --strict-match-identifier \
+            --json | jq -r '.[0].id')
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_ID")
+          BUILD_NUMBER=$((LATEST + 1))
+          echo "Dernier build TestFlight : $LATEST → build $BUILD_NUMBER"
+          flutter build ipa --release --build-number=$BUILD_NUMBER
 
     artifacts:
       - build/ios/ipa/*.ipa
