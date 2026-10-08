@@ -22,7 +22,12 @@ CatalogProducer _$CatalogProducerFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$CatalogProducer {
   String get businessName => throw _privateConstructorUsedError;
-  String get zone => throw _privateConstructorUsedError;
+  String get zone =>
+      throw _privateConstructorUsedError; // Nom à afficher calculé par le serveur, et nom de la personne : utilisés
+  // à la place d'un nom d'entreprise généré (« Producer +221… »).
+  String? get displayName => throw _privateConstructorUsedError;
+  String? get firstName => throw _privateConstructorUsedError;
+  String? get lastName => throw _privateConstructorUsedError;
 
   /// Serializes this CatalogProducer to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +46,13 @@ abstract class $CatalogProducerCopyWith<$Res> {
     $Res Function(CatalogProducer) then,
   ) = _$CatalogProducerCopyWithImpl<$Res, CatalogProducer>;
   @useResult
-  $Res call({String businessName, String zone});
+  $Res call({
+    String businessName,
+    String zone,
+    String? displayName,
+    String? firstName,
+    String? lastName,
+  });
 }
 
 /// @nodoc
@@ -58,7 +69,13 @@ class _$CatalogProducerCopyWithImpl<$Res, $Val extends CatalogProducer>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? businessName = null, Object? zone = null}) {
+  $Res call({
+    Object? businessName = null,
+    Object? zone = null,
+    Object? displayName = freezed,
+    Object? firstName = freezed,
+    Object? lastName = freezed,
+  }) {
     return _then(
       _value.copyWith(
             businessName: null == businessName
@@ -69,6 +86,18 @@ class _$CatalogProducerCopyWithImpl<$Res, $Val extends CatalogProducer>
                 ? _value.zone
                 : zone // ignore: cast_nullable_to_non_nullable
                       as String,
+            displayName: freezed == displayName
+                ? _value.displayName
+                : displayName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            firstName: freezed == firstName
+                ? _value.firstName
+                : firstName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            lastName: freezed == lastName
+                ? _value.lastName
+                : lastName // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -84,7 +113,13 @@ abstract class _$$CatalogProducerImplCopyWith<$Res>
   ) = __$$CatalogProducerImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String businessName, String zone});
+  $Res call({
+    String businessName,
+    String zone,
+    String? displayName,
+    String? firstName,
+    String? lastName,
+  });
 }
 
 /// @nodoc
@@ -100,7 +135,13 @@ class __$$CatalogProducerImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? businessName = null, Object? zone = null}) {
+  $Res call({
+    Object? businessName = null,
+    Object? zone = null,
+    Object? displayName = freezed,
+    Object? firstName = freezed,
+    Object? lastName = freezed,
+  }) {
     return _then(
       _$CatalogProducerImpl(
         businessName: null == businessName
@@ -111,6 +152,18 @@ class __$$CatalogProducerImplCopyWithImpl<$Res>
             ? _value.zone
             : zone // ignore: cast_nullable_to_non_nullable
                   as String,
+        displayName: freezed == displayName
+            ? _value.displayName
+            : displayName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        firstName: freezed == firstName
+            ? _value.firstName
+            : firstName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        lastName: freezed == lastName
+            ? _value.lastName
+            : lastName // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -119,7 +172,13 @@ class __$$CatalogProducerImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$CatalogProducerImpl implements _CatalogProducer {
-  const _$CatalogProducerImpl({required this.businessName, required this.zone});
+  const _$CatalogProducerImpl({
+    required this.businessName,
+    required this.zone,
+    this.displayName,
+    this.firstName,
+    this.lastName,
+  });
 
   factory _$CatalogProducerImpl.fromJson(Map<String, dynamic> json) =>
       _$$CatalogProducerImplFromJson(json);
@@ -128,10 +187,18 @@ class _$CatalogProducerImpl implements _CatalogProducer {
   final String businessName;
   @override
   final String zone;
+  // Nom à afficher calculé par le serveur, et nom de la personne : utilisés
+  // à la place d'un nom d'entreprise généré (« Producer +221… »).
+  @override
+  final String? displayName;
+  @override
+  final String? firstName;
+  @override
+  final String? lastName;
 
   @override
   String toString() {
-    return 'CatalogProducer(businessName: $businessName, zone: $zone)';
+    return 'CatalogProducer(businessName: $businessName, zone: $zone, displayName: $displayName, firstName: $firstName, lastName: $lastName)';
   }
 
   @override
@@ -141,12 +208,25 @@ class _$CatalogProducerImpl implements _CatalogProducer {
             other is _$CatalogProducerImpl &&
             (identical(other.businessName, businessName) ||
                 other.businessName == businessName) &&
-            (identical(other.zone, zone) || other.zone == zone));
+            (identical(other.zone, zone) || other.zone == zone) &&
+            (identical(other.displayName, displayName) ||
+                other.displayName == displayName) &&
+            (identical(other.firstName, firstName) ||
+                other.firstName == firstName) &&
+            (identical(other.lastName, lastName) ||
+                other.lastName == lastName));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, businessName, zone);
+  int get hashCode => Object.hash(
+    runtimeType,
+    businessName,
+    zone,
+    displayName,
+    firstName,
+    lastName,
+  );
 
   /// Create a copy of CatalogProducer
   /// with the given fields replaced by the non-null parameter values.
@@ -169,6 +249,9 @@ abstract class _CatalogProducer implements CatalogProducer {
   const factory _CatalogProducer({
     required final String businessName,
     required final String zone,
+    final String? displayName,
+    final String? firstName,
+    final String? lastName,
   }) = _$CatalogProducerImpl;
 
   factory _CatalogProducer.fromJson(Map<String, dynamic> json) =
@@ -177,7 +260,14 @@ abstract class _CatalogProducer implements CatalogProducer {
   @override
   String get businessName;
   @override
-  String get zone;
+  String get zone; // Nom à afficher calculé par le serveur, et nom de la personne : utilisés
+  // à la place d'un nom d'entreprise généré (« Producer +221… »).
+  @override
+  String? get displayName;
+  @override
+  String? get firstName;
+  @override
+  String? get lastName;
 
   /// Create a copy of CatalogProducer
   /// with the given fields replaced by the non-null parameter values.

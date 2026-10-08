@@ -1,0 +1,31 @@
+# TEST : Nom des vendeurs — jamais de numéro de téléphone sur les produits
+appId: com.banabana.pro
+env:
+  WHOLESALER_PHONE: "+2250700000020"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_wholesaler.yaml
+
+# Catalogue : aucun nom généré « Producer +221… » / « Wholesaler +221… »
+- tapOn: "Catalogue"
+- assertVisible: "(?s).*En stock.*"
+- assertNotVisible: "(?s).*(Producer|Wholesaler) \\+.*"
+- takeScreenshot: 05_seller_names_catalog
+- scroll
+- assertNotVisible: "(?s).*(Producer|Wholesaler) \\+.*"
+
+# Détail produit
+- tapOn:
+    point: "25%,40%"
+- assertNotVisible: "(?s).*(Producer|Wholesaler) \\+.*"
+- takeScreenshot: 05_seller_names_detail
+- tapOn: "Retour"
+
+# Profil : champ « Nom de l'entreprise » (édition annulée, compte inchangé)
+- tapOn: "Profil"
+- assertVisible: "(?s).*Nom de l'entreprise.*"
+- tapOn: "Modifier"
+- assertVisible: "Affiché sur vos produits"
+- takeScreenshot: 05_seller_names_profile_edit
+- tapOn: "Annuler"

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:banabana_b2b/shared/utils/seller_name.dart';
 
 part 'product.freezed.dart';
 part 'product.g.dart';
@@ -55,10 +56,22 @@ class ProductProducer with _$ProductProducer {
     required String businessName,
     required String zone,
     String? userId,
+    String? displayName,
+    String? firstName,
+    String? lastName,
   }) = _ProductProducer;
 
   factory ProductProducer.fromJson(Map<String, dynamic> json) =>
       _$ProductProducerFromJson(json);
+}
+
+extension ProductProducerName on ProductProducer {
+  String get name => sellerDisplayName(
+        displayName: displayName,
+        businessName: businessName,
+        firstName: firstName,
+        lastName: lastName,
+      );
 }
 
 @freezed

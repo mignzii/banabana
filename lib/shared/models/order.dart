@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:banabana_b2b/shared/utils/seller_name.dart';
 
 part 'order.freezed.dart';
 part 'order.g.dart';
@@ -57,4 +58,15 @@ class Order with _$Order {
 
   factory Order.fromJson(Map<String, dynamic> json) =>
       _$OrderFromJson(json);
+}
+
+/// Noms affichables : jamais le nom généré à partir du téléphone.
+extension OrderPartyNames on Order {
+  String? get producerDisplayName => producerName == null
+      ? null
+      : sellerDisplayName(businessName: producerName, fallback: 'Producteur');
+
+  String? get wholesalerDisplayName => wholesalerName == null
+      ? null
+      : sellerDisplayName(businessName: wholesalerName, fallback: 'Grossiste');
 }

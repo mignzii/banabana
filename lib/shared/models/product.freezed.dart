@@ -679,6 +679,9 @@ mixin _$ProductProducer {
   String get businessName => throw _privateConstructorUsedError;
   String get zone => throw _privateConstructorUsedError;
   String? get userId => throw _privateConstructorUsedError;
+  String? get displayName => throw _privateConstructorUsedError;
+  String? get firstName => throw _privateConstructorUsedError;
+  String? get lastName => throw _privateConstructorUsedError;
 
   /// Serializes this ProductProducer to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -697,7 +700,14 @@ abstract class $ProductProducerCopyWith<$Res> {
     $Res Function(ProductProducer) then,
   ) = _$ProductProducerCopyWithImpl<$Res, ProductProducer>;
   @useResult
-  $Res call({String businessName, String zone, String? userId});
+  $Res call({
+    String businessName,
+    String zone,
+    String? userId,
+    String? displayName,
+    String? firstName,
+    String? lastName,
+  });
 }
 
 /// @nodoc
@@ -714,7 +724,14 @@ class _$ProductProducerCopyWithImpl<$Res, $Val extends ProductProducer>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? businessName = null, Object? zone = null, Object? userId = freezed}) {
+  $Res call({
+    Object? businessName = null,
+    Object? zone = null,
+    Object? userId = freezed,
+    Object? displayName = freezed,
+    Object? firstName = freezed,
+    Object? lastName = freezed,
+  }) {
     return _then(
       _value.copyWith(
             businessName: null == businessName
@@ -728,6 +745,18 @@ class _$ProductProducerCopyWithImpl<$Res, $Val extends ProductProducer>
             userId: freezed == userId
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            displayName: freezed == displayName
+                ? _value.displayName
+                : displayName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            firstName: freezed == firstName
+                ? _value.firstName
+                : firstName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            lastName: freezed == lastName
+                ? _value.lastName
+                : lastName // ignore: cast_nullable_to_non_nullable
                       as String?,
           )
           as $Val,
@@ -744,7 +773,14 @@ abstract class _$$ProductProducerImplCopyWith<$Res>
   ) = __$$ProductProducerImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String businessName, String zone, String? userId});
+  $Res call({
+    String businessName,
+    String zone,
+    String? userId,
+    String? displayName,
+    String? firstName,
+    String? lastName,
+  });
 }
 
 /// @nodoc
@@ -760,7 +796,14 @@ class __$$ProductProducerImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? businessName = null, Object? zone = null, Object? userId = freezed}) {
+  $Res call({
+    Object? businessName = null,
+    Object? zone = null,
+    Object? userId = freezed,
+    Object? displayName = freezed,
+    Object? firstName = freezed,
+    Object? lastName = freezed,
+  }) {
     return _then(
       _$ProductProducerImpl(
         businessName: null == businessName
@@ -775,6 +818,18 @@ class __$$ProductProducerImplCopyWithImpl<$Res>
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        displayName: freezed == displayName
+            ? _value.displayName
+            : displayName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        firstName: freezed == firstName
+            ? _value.firstName
+            : firstName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        lastName: freezed == lastName
+            ? _value.lastName
+            : lastName // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -783,7 +838,14 @@ class __$$ProductProducerImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ProductProducerImpl implements _ProductProducer {
-  const _$ProductProducerImpl({required this.businessName, required this.zone, this.userId});
+  const _$ProductProducerImpl({
+    required this.businessName,
+    required this.zone,
+    this.userId,
+    this.displayName,
+    this.firstName,
+    this.lastName,
+  });
 
   factory _$ProductProducerImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProductProducerImplFromJson(json);
@@ -794,10 +856,16 @@ class _$ProductProducerImpl implements _ProductProducer {
   final String zone;
   @override
   final String? userId;
+  @override
+  final String? displayName;
+  @override
+  final String? firstName;
+  @override
+  final String? lastName;
 
   @override
   String toString() {
-    return 'ProductProducer(businessName: $businessName, zone: $zone, userId: $userId)';
+    return 'ProductProducer(businessName: $businessName, zone: $zone, userId: $userId, displayName: $displayName, firstName: $firstName, lastName: $lastName)';
   }
 
   @override
@@ -808,12 +876,26 @@ class _$ProductProducerImpl implements _ProductProducer {
             (identical(other.businessName, businessName) ||
                 other.businessName == businessName) &&
             (identical(other.zone, zone) || other.zone == zone) &&
-            (identical(other.userId, userId) || other.userId == userId));
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.displayName, displayName) ||
+                other.displayName == displayName) &&
+            (identical(other.firstName, firstName) ||
+                other.firstName == firstName) &&
+            (identical(other.lastName, lastName) ||
+                other.lastName == lastName));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, businessName, zone, userId);
+  int get hashCode => Object.hash(
+    runtimeType,
+    businessName,
+    zone,
+    userId,
+    displayName,
+    firstName,
+    lastName,
+  );
 
   /// Create a copy of ProductProducer
   /// with the given fields replaced by the non-null parameter values.
@@ -837,6 +919,9 @@ abstract class _ProductProducer implements ProductProducer {
     required final String businessName,
     required final String zone,
     final String? userId,
+    final String? displayName,
+    final String? firstName,
+    final String? lastName,
   }) = _$ProductProducerImpl;
 
   factory _ProductProducer.fromJson(Map<String, dynamic> json) =
@@ -848,6 +933,12 @@ abstract class _ProductProducer implements ProductProducer {
   String get zone;
   @override
   String? get userId;
+  @override
+  String? get displayName;
+  @override
+  String? get firstName;
+  @override
+  String? get lastName;
 
   /// Create a copy of ProductProducer
   /// with the given fields replaced by the non-null parameter values.

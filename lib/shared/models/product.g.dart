@@ -61,6 +61,9 @@ _$ProductProducerImpl _$$ProductProducerImplFromJson(
   businessName: json['businessName'] as String,
   zone: json['zone'] as String,
   userId: json['userId'] as String?,
+  displayName: json['displayName'] as String?,
+  firstName: json['firstName'] as String?,
+  lastName: json['lastName'] as String?,
 );
 
 Map<String, dynamic> _$$ProductProducerImplToJson(
@@ -69,6 +72,9 @@ Map<String, dynamic> _$$ProductProducerImplToJson(
   'businessName': instance.businessName,
   'zone': instance.zone,
   'userId': instance.userId,
+  'displayName': instance.displayName,
+  'firstName': instance.firstName,
+  'lastName': instance.lastName,
 };
 
 _$ProductImpl _$$ProductImplFromJson(Map<String, dynamic> json) =>

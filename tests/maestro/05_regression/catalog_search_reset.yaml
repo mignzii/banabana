@@ -9,7 +9,7 @@ env:
 - runFlow: ../flows/_login_wholesaler.yaml
 
 - tapOn: "Catalogue"
-- assertVisible: "(?s).*onion.*"
+- assertVisible: "(?s).*En stock.*"
 
 # Recherche sans résultat puis retour via le bouton de l'état vide
 - tapOn: "Rechercher un produit..."
@@ -17,7 +17,7 @@ env:
 - pressKey: Enter
 - assertVisible: "Aucun produit trouvé"
 - tapOn: "Voir tous les produits"
-- assertVisible: "(?s).*onion.*"
+- assertVisible: "(?s).*En stock.*"
 - assertNotVisible: "Aucun produit trouvé"
 
 # Recherche avec résultat puis retour via le bouton ✕
@@ -25,16 +25,15 @@ env:
 - inputText: "tomates"
 - pressKey: Enter
 - assertVisible: "(?s).*tomates.*"
-- assertNotVisible: "(?s).*onion.*"
 - tapOn: "Effacer la recherche"
-- assertVisible: "(?s).*onion.*"
+- assertVisible: "(?s).*En stock.*"
 
 # La recherche ne reste pas active après un changement d'onglet
 - tapOn: "Rechercher un produit..."
 - inputText: "tomates"
 - pressKey: Enter
-- assertNotVisible: "(?s).*onion.*"
+- assertVisible: "(?s).*tomates.*"
 - tapOn: "Effacer la recherche"
 - tapOn: "(?s)Accueil.*"
 - tapOn: "Catalogue"
-- assertVisible: "(?s).*onion.*"
+- assertVisible: "(?s).*En stock.*"

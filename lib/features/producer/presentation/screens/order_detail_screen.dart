@@ -39,7 +39,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       builder: (ctx) => AlertDialog(
         title: const Text('Accepter la commande ?'),
         content: Text(
-          'Confirmer la commande de ${order.wholesalerName ?? 'ce grossiste'} ?',
+          'Confirmer la commande de ${order.wholesalerDisplayName ?? 'ce grossiste'} ?',
         ),
         actions: [
           TextButton(
@@ -274,7 +274,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       ),
                     ),
                     Text(
-                      order.wholesalerName ?? 'Non spécifié',
+                      order.wholesalerDisplayName ?? 'Non spécifié',
                       style: AppTextStyles.label.copyWith(
                         fontWeight: FontWeight.w600,
                         color: isDark

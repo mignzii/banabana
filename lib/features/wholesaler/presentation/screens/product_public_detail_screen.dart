@@ -782,23 +782,25 @@ class _ProductPublicDetailScreenState
           const SizedBox(width: AppSpacing.s8),
           Expanded(
             child: Text(
-              producer.businessName,
+              producer.name,
               style: AppTextStyles.label.copyWith(
                 color: isDark ? AppColors.gray300 : AppColors.gray700,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          const SizedBox(width: AppSpacing.s8),
-          Icon(Symbols.location_on, size: 14,
-              color: AppColors.gray400),
-          const SizedBox(width: AppSpacing.s4),
-          Text(
-            producer.zone,
-            style: AppTextStyles.caption.copyWith(
-              color: isDark ? AppColors.gray400 : AppColors.gray500,
+          if (producer.zone.isNotEmpty) ...[
+            const SizedBox(width: AppSpacing.s8),
+            Icon(Symbols.location_on, size: 14,
+                color: AppColors.gray400),
+            const SizedBox(width: AppSpacing.s4),
+            Text(
+              producer.zone,
+              style: AppTextStyles.caption.copyWith(
+                color: isDark ? AppColors.gray400 : AppColors.gray500,
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:banabana_b2b/shared/utils/seller_name.dart';
 
 part 'catalog_item.freezed.dart';
 part 'catalog_item.g.dart';
@@ -14,10 +15,24 @@ class CatalogProducer with _$CatalogProducer {
   const factory CatalogProducer({
     required String businessName,
     required String zone,
+    // Nom à afficher calculé par le serveur, et nom de la personne : utilisés
+    // à la place d'un nom d'entreprise généré (« Producer +221… »).
+    String? displayName,
+    String? firstName,
+    String? lastName,
   }) = _CatalogProducer;
 
   factory CatalogProducer.fromJson(Map<String, dynamic> json) =>
       _$CatalogProducerFromJson(json);
+}
+
+extension CatalogProducerName on CatalogProducer {
+  String get name => sellerDisplayName(
+        displayName: displayName,
+        businessName: businessName,
+        firstName: firstName,
+        lastName: lastName,
+      );
 }
 
 @freezed
