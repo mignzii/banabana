@@ -150,8 +150,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (_) {}
   }
 
-  Future<void> updateProfile({String? email, String? firstName, String? lastName}) async {
-    final updated = await repo.updateProfile(email: email, firstName: firstName, lastName: lastName);
+  Future<void> updateProfile({
+    String? email,
+    String? firstName,
+    String? lastName,
+    String? businessName,
+  }) async {
+    final updated = await repo.updateProfile(
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      businessName: businessName,
+    );
     await storage.setUserJson(jsonEncode(updated.toJson()));
     state = state.copyWith(user: updated);
   }

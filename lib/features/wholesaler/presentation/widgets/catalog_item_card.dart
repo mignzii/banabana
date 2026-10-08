@@ -119,7 +119,7 @@ class CatalogItemCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        item.producer.businessName,
+                        item.producer.name,
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.gray400,
                         ),

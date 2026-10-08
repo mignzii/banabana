@@ -11,6 +11,9 @@ _$CatalogProducerImpl _$$CatalogProducerImplFromJson(
 ) => _$CatalogProducerImpl(
   businessName: json['businessName'] as String,
   zone: json['zone'] as String,
+  displayName: json['displayName'] as String?,
+  firstName: json['firstName'] as String?,
+  lastName: json['lastName'] as String?,
 );
 
 Map<String, dynamic> _$$CatalogProducerImplToJson(
@@ -18,6 +21,9 @@ Map<String, dynamic> _$$CatalogProducerImplToJson(
 ) => <String, dynamic>{
   'businessName': instance.businessName,
   'zone': instance.zone,
+  'displayName': instance.displayName,
+  'firstName': instance.firstName,
+  'lastName': instance.lastName,
 };
 
 _$CatalogItemImpl _$$CatalogItemImplFromJson(Map<String, dynamic> json) =>

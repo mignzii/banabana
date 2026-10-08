@@ -444,7 +444,7 @@ class _OrderCardState extends ConsumerState<_OrderCard> {
                     _InfoRow(
                       icon: Symbols.storefront,
                       text:
-                          'Grossiste: ${order.wholesalerName ?? 'Non spécifié'}',
+                          'Grossiste: ${order.wholesalerDisplayName ?? 'Non spécifié'}',
                       isDark: isDark,
                     ),
                     const SizedBox(height: AppSpacing.s4),

@@ -162,7 +162,7 @@ class _WholesalerOrderDetailScreenState
               color: isDark ? AppColors.gray400 : AppColors.gray500,
             ),
           ),
-          if (order.producerName != null) ...[
+          if (order.producerDisplayName != null) ...[
             const SizedBox(height: AppSpacing.s8),
             Row(
               children: [
@@ -173,7 +173,7 @@ class _WholesalerOrderDetailScreenState
                 ),
                 const SizedBox(width: AppSpacing.s8),
                 Text(
-                  order.producerName!,
+                  order.producerDisplayName!,
                   style: AppTextStyles.label.copyWith(
                     color: isDark ? AppColors.gray200 : AppColors.gray800,
                     fontWeight: FontWeight.w600,

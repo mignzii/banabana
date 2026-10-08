@@ -63,9 +63,15 @@ class AuthRepository {
     return User.fromJson(res.data as Map<String, dynamic>);
   }
 
-  Future<User> updateProfile({String? email, String? firstName, String? lastName}) async {
+  Future<User> updateProfile({
+    String? email,
+    String? firstName,
+    String? lastName,
+    String? businessName,
+  }) async {
     final res = await dio.patch('/users/profile', data: {
       if (email != null && email.isNotEmpty) 'email': email,
+      if (businessName != null && businessName.isNotEmpty) 'businessName': businessName,
       if (firstName != null && firstName.isNotEmpty) 'firstName': firstName,
       if (lastName != null && lastName.isNotEmpty) 'lastName': lastName,
     });

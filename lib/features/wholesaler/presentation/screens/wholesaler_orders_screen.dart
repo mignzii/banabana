@@ -373,7 +373,7 @@ class _OrderCard extends StatelessWidget {
                   OrderStatusBadge(status: order.status),
                 ],
               ),
-              if (order.producerName != null) ...[
+              if (order.producerDisplayName != null) ...[
                 const SizedBox(height: AppSpacing.s6),
                 Row(
                   children: [
@@ -384,7 +384,7 @@ class _OrderCard extends StatelessWidget {
                     ),
                     const SizedBox(width: AppSpacing.s6),
                     Text(
-                      order.producerName!,
+                      order.producerDisplayName!,
                       style: AppTextStyles.caption.copyWith(
                         color: isDark ? AppColors.gray300 : AppColors.gray700,
                         fontWeight: FontWeight.w600,

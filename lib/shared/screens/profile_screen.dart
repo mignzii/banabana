@@ -9,6 +9,7 @@ import 'package:banabana_b2b/core/theme/app_spacing.dart';
 import 'package:banabana_b2b/core/theme/app_text_styles.dart';
 import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/auth/providers/theme_provider.dart';
+import 'package:banabana_b2b/shared/utils/seller_name.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 import 'package:banabana_b2b/core/storage/storage_service.dart';
 
@@ -21,6 +22,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _emailCtrl = TextEditingController();
+  final _businessCtrl = TextEditingController();
   bool _isEditing = false;
   bool _saving = false;
   bool _submittedLocally = false;
@@ -31,12 +33,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     super.initState();
     final user = ref.read(authProvider).user;
     _emailCtrl.text = user?.email ?? '';
+    _businessCtrl.text = user?.businessName ?? '';
     _loadKycFlag();
   }
 
   @override
   void dispose() {
     _emailCtrl.dispose();
+    _businessCtrl.dispose();
     super.dispose();
   }
 
@@ -45,6 +49,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     try {
       await ref.read(authProvider.notifier).updateProfile(
             email: _emailCtrl.text.trim(),
+            businessName: _businessCtrl.text.trim(),
           );
       if (mounted) {
         setState(() => _isEditing = false);
@@ -60,6 +65,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   void _cancelEdit() {
     final user = ref.read(authProvider).user;
     _emailCtrl.text = user?.email ?? '';
+    _businessCtrl.text = user?.businessName ?? '';
     setState(() => _isEditing = false);
   }
 
@@ -214,10 +220,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     style: AppTextStyles.label.copyWith(color: AppColors.primary),
                   ),
                 ),
-                if (user?.businessName?.isNotEmpty == true) ...[
+                if (user?.businessName?.isNotEmpty == true &&
+                    !isGeneratedSellerName(user!.businessName!)) ...[
                   const SizedBox(height: AppSpacing.s4),
                   Text(
-                    user!.businessName!,
+                    user.businessName!,
                     style: AppTextStyles.bodySecondary.copyWith(color: textSecondary),
                   ),
                 ],
@@ -250,6 +257,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   isDark: isDark,
                 ),
                 Divider(height: AppSpacing.s24, color: border),
+                // Nom affiché aux acheteurs sur les produits du vendeur
+                if (user?.role == 'producer' || user?.role == 'wholesaler') ...[
+                  _EditableInfoRow(
+                    icon: Symbols.store,
+                    label: 'Nom de l\'entreprise',
+                    hint: 'Affiché sur vos produits',
+                    controller: _businessCtrl,
+                    isEditing: _isEditing,
+                    isDark: isDark,
+                  ),
+                  Divider(height: AppSpacing.s24, color: border),
+                ],
                 // Email — editable in edit mode
                 if (_isEditing) ...[
                   Row(
@@ -759,6 +778,96 @@ class _AccountActionDialogState extends State<_AccountActionDialog> {
               color: _canConfirm ? color : color.withValues(alpha: 0.4),
               fontWeight: FontWeight.w600,
             ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Ligne d'information modifiable en mode édition (champ texte) et affichée
+/// en lecture seule sinon.
+class _EditableInfoRow extends StatelessWidget {
+  const _EditableInfoRow({
+    required this.icon,
+    required this.label,
+    required this.hint,
+    required this.controller,
+    required this.isEditing,
+    required this.isDark,
+  });
+
+  final IconData icon;
+  final String label;
+  final String hint;
+  final TextEditingController controller;
+  final bool isEditing;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isEditing) {
+      return _InfoRow(
+        icon: icon,
+        label: label,
+        value: controller.text.trim().isNotEmpty
+            ? controller.text.trim()
+            : 'Non renseigné',
+        isDark: isDark,
+      );
+    }
+    final textPrimary = isDark ? AppColors.gray100 : AppColors.gray900;
+    final textSecondary = AppColors.gray400;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.gray200;
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: textSecondary),
+        const SizedBox(width: AppSpacing.s12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: AppTextStyles.caption.copyWith(color: textSecondary)),
+              const SizedBox(height: AppSpacing.s6),
+              TextFormField(
+                controller: controller,
+                textCapitalization: TextCapitalization.words,
+                onTapOutside: (_) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
+                style: AppTextStyles.body.copyWith(color: textPrimary),
+                decoration: InputDecoration(
+                  hintText: hint,
+                  hintStyle: AppTextStyles.bodySecondary.copyWith(
+                    color: isDark ? AppColors.gray500 : AppColors.gray400,
+                  ),
+                  filled: true,
+                  fillColor:
+                      isDark ? AppColors.darkSurface2 : AppColors.gray50,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s14,
+                    vertical: AppSpacing.s10,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMedium),
+                    borderSide: BorderSide(color: borderColor),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMedium),
+                    borderSide: BorderSide(color: borderColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.radiusMedium),
+                    borderSide:
+                        const BorderSide(color: AppColors.primary, width: 1.5),
+                  ),
+                  isDense: true,
+                ),
+              ),
+            ],
           ),
         ),
       ],
