@@ -1,0 +1,100 @@
+# TEST : Variantes — poids et volume, modification d'une variante existante
+# Crée un produit de test puis le supprime à la fin.
+appId: com.banabana.pro
+env:
+  PRODUCER_PHONE: "+2250700000013"
+  PRODUCER_PIN: "1234"
+  PRODUCT_TITLE: "Test Contenance Maestro"
+---
+- launchApp:
+    clearState: true
+- runFlow: ../flows/_login_producer.yaml
+
+- tapOn: "Produits"
+- tapOn: "Nouveau produit"
+
+# Étape 1 — Infos
+- tapOn: "Nom du produit \\*"
+- inputText: "${PRODUCT_TITLE}"
+- tapOn: "Photos & Infos"
+- tapOn: "Choisir une catégorie"
+- scrollUntilVisible:
+    element:
+      text: ".*Agriculture.*"
+    direction: DOWN
+- tapOn: ".*Agriculture.*"
+- tapOn: "Continuer"
+
+# Étape 2 — prix de base + variante avec poids et volume
+- assertVisible: "Prix & Variantes"
+- tapOn:
+    point: "50%,36%"
+- inputText: "5000"
+- tapOn: "Prix & Variantes"
+- tapOn: "Ajouter une variante"
+- tapOn: "Carton"
+- tapOn: "Prix \\(FCFA\\) \\*"
+- inputText: "4500"
+- tapOn: "Stock \\*"
+- inputText: "50"
+- tapOn: "Poids \\(kg\\)"
+- inputText: "25"
+- tapOn: "Volume \\(L\\)"
+- inputText: "1,5"
+- tapOn: "Unité de vente \\*"
+- tapOn: "Ajouter cette variante"
+- assertVisible: "(?s).*25 kg · 1,5 L.*"
+
+# Modifier la variante avant création
+- tapOn: "(?s).*25 kg · 1,5 L.*"
+- assertVisible: "Modifier la variante"
+- tapOn: "Poids \\(kg\\)"
+- eraseText: 10
+- inputText: "30"
+- tapOn: "Unité de vente \\*"
+- tapOn: "Enregistrer la variante"
+- assertVisible: "(?s).*30 kg · 1,5 L.*"
+- takeScreenshot: 05_variant_new_tile
+- tapOn: "Continuer"
+- tapOn: "Créer le produit"
+
+# Détail : le poids est enregistré (le volume dépend de la mise à jour du back)
+- assertVisible: "Détail produit"
+- assertVisible: "(?s).*30 kg.*"
+- takeScreenshot: 05_variant_detail_created
+
+# Modifier une variante existante : stock verrouillé, prix et poids modifiables
+- tapOn: "Modifier"
+- assertVisible: "Modifier le produit"
+- scrollUntilVisible:
+    element:
+      text: "(?s).*Carton.*30 kg.*"
+    direction: DOWN
+- tapOn: "(?s).*Carton.*30 kg.*"
+- assertVisible: "Modifier la variante"
+- assertVisible: "(?s).*Via l'inventaire.*"
+- takeScreenshot: 05_variant_edit_sheet
+- tapOn: "Prix \\(FCFA\\) \\*"
+- eraseText: 10
+- inputText: "4800"
+- tapOn: "Poids \\(kg\\)"
+- eraseText: 10
+- inputText: "12,5"
+- tapOn: "Unité de vente \\*"
+- tapOn: "Enregistrer la variante"
+- assertVisible: "(?s).*Modifié.*4800 FCFA.*12,5 kg.*"
+- tapOn: "Modifier le produit"
+- scrollUntilVisible:
+    element:
+      text: "Mettre à jour"
+    direction: DOWN
+- tapOn: "Mettre à jour"
+- assertVisible: "(?s).*12,5 kg.*"
+- assertVisible: "(?s).*4800.*"
+- takeScreenshot: 05_variant_detail_updated
+
+# Nettoyage
+- tapOn: "Afficher le menu"
+- tapOn: "Supprimer"
+- tapOn: "Supprimer"
+- assertVisible: "(?s).*Mes produits.*"

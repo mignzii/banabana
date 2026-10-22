@@ -253,7 +253,9 @@ mixin _$ProductVariant {
   String get productId => throw _privateConstructorUsedError;
   String get label => throw _privateConstructorUsedError;
   @JsonKey(fromJson: _parseDoubleNullable)
-  double? get weight => throw _privateConstructorUsedError;
+  double? get weight => throw _privateConstructorUsedError; // Volume en litres (ex. bidon de 20 L).
+  @JsonKey(fromJson: _parseDoubleNullable)
+  double? get volume => throw _privateConstructorUsedError;
   String? get pack => throw _privateConstructorUsedError;
   @JsonKey(fromJson: _parseDouble)
   double get price => throw _privateConstructorUsedError;
@@ -291,6 +293,7 @@ abstract class $ProductVariantCopyWith<$Res> {
     String productId,
     String label,
     @JsonKey(fromJson: _parseDoubleNullable) double? weight,
+    @JsonKey(fromJson: _parseDoubleNullable) double? volume,
     String? pack,
     @JsonKey(fromJson: _parseDouble) double price,
     @JsonKey(fromJson: _parseInt) int stock,
@@ -321,6 +324,7 @@ class _$ProductVariantCopyWithImpl<$Res, $Val extends ProductVariant>
     Object? productId = null,
     Object? label = null,
     Object? weight = freezed,
+    Object? volume = freezed,
     Object? pack = freezed,
     Object? price = null,
     Object? stock = null,
@@ -347,6 +351,10 @@ class _$ProductVariantCopyWithImpl<$Res, $Val extends ProductVariant>
             weight: freezed == weight
                 ? _value.weight
                 : weight // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            volume: freezed == volume
+                ? _value.volume
+                : volume // ignore: cast_nullable_to_non_nullable
                       as double?,
             pack: freezed == pack
                 ? _value.pack
@@ -400,6 +408,7 @@ abstract class _$$ProductVariantImplCopyWith<$Res>
     String productId,
     String label,
     @JsonKey(fromJson: _parseDoubleNullable) double? weight,
+    @JsonKey(fromJson: _parseDoubleNullable) double? volume,
     String? pack,
     @JsonKey(fromJson: _parseDouble) double price,
     @JsonKey(fromJson: _parseInt) int stock,
@@ -429,6 +438,7 @@ class __$$ProductVariantImplCopyWithImpl<$Res>
     Object? productId = null,
     Object? label = null,
     Object? weight = freezed,
+    Object? volume = freezed,
     Object? pack = freezed,
     Object? price = null,
     Object? stock = null,
@@ -455,6 +465,10 @@ class __$$ProductVariantImplCopyWithImpl<$Res>
         weight: freezed == weight
             ? _value.weight
             : weight // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        volume: freezed == volume
+            ? _value.volume
+            : volume // ignore: cast_nullable_to_non_nullable
                   as double?,
         pack: freezed == pack
             ? _value.pack
@@ -501,6 +515,7 @@ class _$ProductVariantImpl implements _ProductVariant {
     required this.productId,
     required this.label,
     @JsonKey(fromJson: _parseDoubleNullable) this.weight,
+    @JsonKey(fromJson: _parseDoubleNullable) this.volume,
     this.pack,
     @JsonKey(fromJson: _parseDouble) required this.price,
     @JsonKey(fromJson: _parseInt) required this.stock,
@@ -523,6 +538,10 @@ class _$ProductVariantImpl implements _ProductVariant {
   @override
   @JsonKey(fromJson: _parseDoubleNullable)
   final double? weight;
+  // Volume en litres (ex. bidon de 20 L).
+  @override
+  @JsonKey(fromJson: _parseDoubleNullable)
+  final double? volume;
   @override
   final String? pack;
   @override
@@ -548,7 +567,7 @@ class _$ProductVariantImpl implements _ProductVariant {
 
   @override
   String toString() {
-    return 'ProductVariant(id: $id, productId: $productId, label: $label, weight: $weight, pack: $pack, price: $price, stock: $stock, wholesaleUnit: $wholesaleUnit, minOrderQuantity: $minOrderQuantity, unitsPerPackage: $unitsPerPackage, minStock: $minStock, maxStock: $maxStock)';
+    return 'ProductVariant(id: $id, productId: $productId, label: $label, weight: $weight, volume: $volume, pack: $pack, price: $price, stock: $stock, wholesaleUnit: $wholesaleUnit, minOrderQuantity: $minOrderQuantity, unitsPerPackage: $unitsPerPackage, minStock: $minStock, maxStock: $maxStock)';
   }
 
   @override
@@ -561,6 +580,7 @@ class _$ProductVariantImpl implements _ProductVariant {
                 other.productId == productId) &&
             (identical(other.label, label) || other.label == label) &&
             (identical(other.weight, weight) || other.weight == weight) &&
+            (identical(other.volume, volume) || other.volume == volume) &&
             (identical(other.pack, pack) || other.pack == pack) &&
             (identical(other.price, price) || other.price == price) &&
             (identical(other.stock, stock) || other.stock == stock) &&
@@ -584,6 +604,7 @@ class _$ProductVariantImpl implements _ProductVariant {
     productId,
     label,
     weight,
+    volume,
     pack,
     price,
     stock,
@@ -617,6 +638,7 @@ abstract class _ProductVariant implements ProductVariant {
     required final String productId,
     required final String label,
     @JsonKey(fromJson: _parseDoubleNullable) final double? weight,
+    @JsonKey(fromJson: _parseDoubleNullable) final double? volume,
     final String? pack,
     @JsonKey(fromJson: _parseDouble) required final double price,
     @JsonKey(fromJson: _parseInt) required final int stock,
@@ -638,7 +660,10 @@ abstract class _ProductVariant implements ProductVariant {
   String get label;
   @override
   @JsonKey(fromJson: _parseDoubleNullable)
-  double? get weight;
+  double? get weight; // Volume en litres (ex. bidon de 20 L).
+  @override
+  @JsonKey(fromJson: _parseDoubleNullable)
+  double? get volume;
   @override
   String? get pack;
   @override

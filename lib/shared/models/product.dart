@@ -36,6 +36,8 @@ class ProductVariant with _$ProductVariant {
     required String productId,
     required String label,
     @JsonKey(fromJson: _parseDoubleNullable) double? weight,
+    // Volume en litres (ex. bidon de 20 L).
+    @JsonKey(fromJson: _parseDoubleNullable) double? volume,
     String? pack,
     @JsonKey(fromJson: _parseDouble) required double price,
     @JsonKey(fromJson: _parseInt) required int stock,

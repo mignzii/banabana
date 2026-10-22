@@ -11,6 +11,7 @@ import 'package:banabana_b2b/features/producer/providers/product_providers.dart'
 import 'package:banabana_b2b/features/producer/providers/category_providers.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/wholesaler_order_providers.dart';
 import 'package:banabana_b2b/shared/models/product.dart';
+import 'package:banabana_b2b/shared/utils/variant_format.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
@@ -576,9 +577,10 @@ class _VariantDetailCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      if (v.weight != null)
+                      if (variantContentLabel(weight: v.weight, volume: v.volume)
+                          case final content?)
                         Text(
-                          '${v.weight} kg',
+                          content,
                           style: AppTextStyles.caption.copyWith(color: textSecondary),
                         ),
                     ],

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +15,7 @@ import 'package:banabana_b2b/features/producer/providers/product_providers.dart'
 import 'package:banabana_b2b/features/producer/providers/category_providers.dart';
 import 'package:banabana_b2b/features/producer/presentation/widgets/image_picker_sheet.dart';
 import 'package:banabana_b2b/shared/models/product.dart';
+import 'package:banabana_b2b/shared/utils/variant_format.dart';
 import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 import 'package:banabana_b2b/shared/widgets/unsaved_changes_guard.dart';
@@ -44,30 +46,60 @@ const _kWholesaleUnitLabels = {
 // ─── Modèle local pour brouillon de variante ─────────────────────────────────
 
 class _VariantDraft {
+  /// Id de la variante existante, null pour une nouvelle variante.
+  final String? id;
   String label;
   String? wholesaleUnit;
   double? weight;
+  double? volume;
   double price;
   int stock;
   int? minOrderQuantity;
 
   _VariantDraft({
+    this.id,
     required this.label,
     this.wholesaleUnit,
     this.weight,
+    this.volume,
     required this.price,
     required this.stock,
     this.minOrderQuantity,
   });
+
+  factory _VariantDraft.fromVariant(ProductVariant v) => _VariantDraft(
+        id: v.id,
+        label: v.label,
+        wholesaleUnit: v.wholesaleUnit,
+        weight: v.weight,
+        volume: v.volume,
+        price: v.price,
+        stock: v.stock,
+        minOrderQuantity: v.minOrderQuantity,
+      );
 
   Map<String, dynamic> toJson() => {
         'label': label,
         if (wholesaleUnit != null && wholesaleUnit!.isNotEmpty)
           'wholesaleUnit': wholesaleUnit,
         if (weight != null) 'weight': weight,
+        if (volume != null) 'volume': volume,
         'price': price,
         'stock': stock,
         if (minOrderQuantity != null) 'minOrderQuantity': minOrderQuantity,
+      };
+
+  /// Champs modifiables d'une variante existante. Le stock n'en fait pas
+  /// partie : il passe par l'inventaire pour garder l'historique des
+  /// mouvements. Un poids effacé est envoyé à null pour être retiré.
+  Map<String, dynamic> toUpdateJson({required bool hadVolume}) => {
+        'label': label,
+        if (wholesaleUnit != null && wholesaleUnit!.isNotEmpty)
+          'wholesaleUnit': wholesaleUnit,
+        'weight': weight,
+        if (volume != null || hadVolume) 'volume': volume,
+        'price': price,
+        'minOrderQuantity': minOrderQuantity,
       };
 }
 
@@ -170,6 +202,11 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
   // Variantes
   final List<_VariantDraft> _newVariants = [];
   final Set<String> _deletedVariantIds = {};
+  // Variantes existantes modifiées, par id (envoyées à l'enregistrement).
+  final Map<String, _VariantDraft> _editedVariants = {};
+  // Le serveur ne connaît pas encore le champ « volume » : variante
+  // enregistrée sans lui (voir _sendVariant).
+  bool _volumeDropped = false;
 
   // Statut (édition uniquement)
   late bool _isActive;
@@ -244,6 +281,17 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
         for (final id in _deletedVariantIds) {
           await repo.deleteVariant(id);
         }
+        // Mettre à jour les variantes modifiées
+        for (final entry in _editedVariants.entries.toList()) {
+          final original = _activeExistingVariants
+              .where((v) => v.id == entry.key)
+              .firstOrNull;
+          await _sendVariant(
+            (data) => repo.updateVariant(entry.key, data),
+            entry.value.toUpdateJson(hadVolume: original?.volume != null),
+          );
+          _editedVariants.remove(entry.key);
+        }
         // Activer / désactiver
         if (_isActive != (widget.initial?.isActive ?? true)) {
           if (_isActive) {
@@ -275,7 +323,10 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
       // l'envoi des photos échoue. Chaque variante créée est retirée de la
       // liste pour ne pas être recréée en cas de nouvelle tentative.
       while (_newVariants.isNotEmpty) {
-        await repo.createVariant(targetId, _newVariants.first.toJson());
+        await _sendVariant(
+          (data) => repo.createVariant(targetId, data),
+          _newVariants.first.toJson(),
+        );
         _newVariants.removeAt(0);
       }
 
@@ -300,6 +351,12 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
                     'Ajoutez-les depuis « Modifier ».',
             type: SnackType.warning,
           );
+        } else if (_volumeDropped) {
+          context.showSnack(
+            '${widget.isEditing ? 'Produit mis à jour' : 'Produit créé'}, mais le volume '
+            'n\'a pas pu être enregistré (bientôt disponible)',
+            type: SnackType.warning,
+          );
         } else {
           context.showSnack(
             widget.isEditing ? 'Produit mis à jour' : 'Produit créé avec succès',
@@ -317,6 +374,30 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  /// Envoie une variante. Si le serveur ne connaît pas encore le champ
+  /// « volume » (400 « property volume should not exist »), la renvoie sans
+  /// ce champ plutôt que de faire échouer l'enregistrement.
+  Future<void> _sendVariant(
+    Future<void> Function(Map<String, dynamic> data) send,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      await send(data);
+    } on DioException catch (e) {
+      if (!data.containsKey('volume') || !_rejectsVolume(e)) rethrow;
+      await send(Map.of(data)..remove('volume'));
+      _volumeDropped = true;
+    }
+  }
+
+  bool _rejectsVolume(DioException e) {
+    if (e.response?.statusCode != 400) return false;
+    final body = e.response?.data;
+    final message = body is Map ? body['message'] : null;
+    final text = message is List ? message.join(' ') : '$message';
+    return text.contains('volume');
   }
 
   void _pickCategory(BuildContext context, bool isDark) {
@@ -398,14 +479,39 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
     );
   }
 
-  void _showAddVariant(BuildContext context, bool isDark) {
-    showModalBottomSheet<_VariantDraft>(
+  Future<_VariantDraft?> _openVariantSheet(
+    BuildContext context,
+    bool isDark, {
+    _VariantDraft? initial,
+  }) {
+    return showModalBottomSheet<_VariantDraft>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _AddVariantSheet(isDark: isDark),
-    ).then((draft) {
+      builder: (_) => _AddVariantSheet(isDark: isDark, initial: initial),
+    );
+  }
+
+  void _showAddVariant(BuildContext context, bool isDark) {
+    _openVariantSheet(context, isDark).then((draft) {
       if (draft != null) setState(() { _newVariants.add(draft); _isDirty = true; });
+    });
+  }
+
+  void _editExistingVariant(BuildContext context, bool isDark, ProductVariant v) {
+    final current = _editedVariants[v.id] ?? _VariantDraft.fromVariant(v);
+    _openVariantSheet(context, isDark, initial: current).then((draft) {
+      if (draft != null) {
+        setState(() { _editedVariants[v.id] = draft; _isDirty = true; });
+      }
+    });
+  }
+
+  void _editNewVariant(BuildContext context, bool isDark, int index) {
+    _openVariantSheet(context, isDark, initial: _newVariants[index]).then((draft) {
+      if (draft != null) {
+        setState(() { _newVariants[index] = draft; _isDirty = true; });
+      }
     });
   }
 
@@ -761,19 +867,29 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
       subtitle: 'Conditionnements proposés (sac 5kg, carton 12kg…)',
       child: Column(
         children: [
-          ...existingVariants.map((v) => _VariantTile(
-                isDark: isDark,
-                border: border,
-                textPrimary: textPrimary,
-                textSecondary: textSecondary,
-                label: v.label,
-                wholesaleUnit: v.wholesaleUnit,
-                price: v.price,
-                stock: v.stock,
-                minOrderQuantity: v.minOrderQuantity,
-                isExisting: true,
-                onDelete: () => setState(() => _deletedVariantIds.add(v.id)),
-              )),
+          ...existingVariants.map((v) {
+            final d = _editedVariants[v.id] ?? _VariantDraft.fromVariant(v);
+            return _VariantTile(
+              isDark: isDark,
+              border: border,
+              textPrimary: textPrimary,
+              textSecondary: textSecondary,
+              label: d.label,
+              wholesaleUnit: d.wholesaleUnit,
+              price: d.price,
+              stock: d.stock,
+              minOrderQuantity: d.minOrderQuantity,
+              weight: d.weight,
+              volume: d.volume,
+              isExisting: true,
+              isModified: _editedVariants.containsKey(v.id),
+              onTap: () => _editExistingVariant(context, isDark, v),
+              onDelete: () => setState(() {
+                _deletedVariantIds.add(v.id);
+                _editedVariants.remove(v.id);
+              }),
+            );
+          }),
           ..._newVariants.asMap().entries.map((e) => _VariantTile(
                 isDark: isDark,
                 border: border,
@@ -784,7 +900,10 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
                 price: e.value.price,
                 stock: e.value.stock,
                 minOrderQuantity: e.value.minOrderQuantity,
+                weight: e.value.weight,
+                volume: e.value.volume,
                 isExisting: false,
+                onTap: () => _editNewVariant(context, isDark, e.key),
                 onDelete: () => setState(() => _newVariants.removeAt(e.key)),
               )),
           if (existingVariants.isNotEmpty || _newVariants.isNotEmpty)
@@ -1305,7 +1424,11 @@ class _VariantTile extends StatelessWidget {
     required this.price,
     required this.stock,
     this.minOrderQuantity,
+    this.weight,
+    this.volume,
     required this.isExisting,
+    this.isModified = false,
+    required this.onTap,
     required this.onDelete,
   });
 
@@ -1318,14 +1441,26 @@ class _VariantTile extends StatelessWidget {
   final double price;
   final int stock;
   final int? minOrderQuantity;
+  final double? weight;
+  final double? volume;
   final bool isExisting;
+  final bool isModified;
+  final VoidCallback onTap;
   final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
     final bg = isDark ? AppColors.darkSurface2 : AppColors.gray50;
+    final content = variantContentLabel(weight: weight, volume: volume);
+    final badge = !isExisting ? 'Nouveau' : (isModified ? 'Modifié' : null);
 
-    return Container(
+    return Semantics(
+      button: true,
+      hint: 'Modifier la variante',
+      child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      child: Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.s8),
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.s12,
@@ -1361,7 +1496,7 @@ class _VariantTile extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    if (!isExisting) ...[
+                    if (badge != null) ...[
                       const SizedBox(width: AppSpacing.s6),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
@@ -1370,7 +1505,7 @@ class _VariantTile extends StatelessWidget {
                           borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
                         ),
                         child: Text(
-                          'Nouveau',
+                          badge,
                           style: AppTextStyles.caption.copyWith(
                             color: AppColors.primary,
                             fontSize: 10,
@@ -1386,16 +1521,25 @@ class _VariantTile extends StatelessWidget {
                   '${price.toStringAsFixed(0)} FCFA · Stock: $stock${minOrderQuantity != null ? ' · Min. $minOrderQuantity' : ''}',
                   style: AppTextStyles.caption.copyWith(color: textSecondary),
                 ),
+                if (content != null)
+                  Text(
+                    content,
+                    style: AppTextStyles.caption.copyWith(color: textSecondary),
+                  ),
               ],
             ),
           ),
+          Icon(Symbols.edit, size: 16, color: textSecondary),
           IconButton(
+            tooltip: 'Supprimer la variante',
             icon: Icon(Symbols.delete_outline, size: 18, color: AppColors.error.withValues(alpha: 0.8)),
             onPressed: onDelete,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             padding: EdgeInsets.zero,
           ),
         ],
+      ),
+      ),
       ),
     );
   }
@@ -1404,8 +1548,10 @@ class _VariantTile extends StatelessWidget {
 // ─── Sheet ajout variante ─────────────────────────────────────────────────────
 
 class _AddVariantSheet extends StatefulWidget {
-  const _AddVariantSheet({required this.isDark});
+  const _AddVariantSheet({required this.isDark, this.initial});
   final bool isDark;
+  /// Variante à modifier (pré-remplit le formulaire), null pour un ajout.
+  final _VariantDraft? initial;
 
   @override
   State<_AddVariantSheet> createState() => _AddVariantSheetState();
@@ -1416,14 +1562,43 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
   final _priceCtrl = TextEditingController();
   final _stockCtrl = TextEditingController();
   final _minQtyCtrl = TextEditingController();
+  final _weightCtrl = TextEditingController();
+  final _volumeCtrl = TextEditingController();
   String? _wholesaleUnit;
+
+  bool get _isEdit => widget.initial != null;
+  // Variante déjà enregistrée : le stock se modifie depuis l'inventaire.
+  bool get _stockLocked => widget.initial?.id != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final v = widget.initial;
+    if (v != null) {
+      _wholesaleUnit = v.wholesaleUnit;
+      _priceCtrl.text = v.price.toStringAsFixed(0);
+      _stockCtrl.text = '${v.stock}';
+      _minQtyCtrl.text = v.minOrderQuantity?.toString() ?? '';
+      _weightCtrl.text = formatDecimalInput(v.weight);
+      _volumeCtrl.text = formatDecimalInput(v.volume);
+    }
+  }
 
   @override
   void dispose() {
     _priceCtrl.dispose();
     _stockCtrl.dispose();
     _minQtyCtrl.dispose();
+    _weightCtrl.dispose();
+    _volumeCtrl.dispose();
     super.dispose();
+  }
+
+  String? _validateDecimal(String? v) {
+    if (v == null || v.trim().isEmpty) return null;
+    final value = parseDecimal(v);
+    if (value == null || value <= 0) return 'Invalide';
+    return null;
   }
 
   InputDecoration _deco(String label, {bool isDark = false}) {
@@ -1473,6 +1648,8 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
         AppSpacing.s16,
         MediaQuery.of(context).viewInsets.bottom + AppSpacing.s16,
       ),
+      // Défilable : avec le clavier ouvert, le formulaire dépasse sur petit écran.
+      child: SingleChildScrollView(
       child: Form(
         key: _formKey,
         child: Column(
@@ -1491,7 +1668,7 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
             ),
             const SizedBox(height: AppSpacing.s16),
             Text(
-              'Ajouter une variante',
+              _isEdit ? 'Modifier la variante' : 'Ajouter une variante',
               style: AppTextStyles.sectionTitle.copyWith(color: textPrimary),
             ),
             const SizedBox(height: AppSpacing.s4),
@@ -1568,8 +1745,13 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
                   child: TextFormField(
                     onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                     controller: _stockCtrl,
-                    style: AppTextStyles.body.copyWith(color: textPrimary),
-                    decoration: _deco('Stock *', isDark: isDark),
+                    enabled: !_stockLocked,
+                    style: AppTextStyles.body.copyWith(
+                      color: _stockLocked ? textSecondary : textPrimary,
+                    ),
+                    decoration: _deco('Stock *', isDark: isDark).copyWith(
+                      helperText: _stockLocked ? 'Via l\'inventaire' : null,
+                    ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     validator: (v) {
@@ -1592,6 +1774,43 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
+            const SizedBox(height: AppSpacing.s12),
+
+            // Contenance d'une unité vendue (facultatif)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+                    controller: _weightCtrl,
+                    style: AppTextStyles.body.copyWith(color: textPrimary),
+                    decoration: _deco('Poids (kg)', isDark: isDark),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                    ],
+                    validator: _validateDecimal,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.s12),
+                Expanded(
+                  child: TextFormField(
+                    onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+                    controller: _volumeCtrl,
+                    style: AppTextStyles.body.copyWith(color: textPrimary),
+                    decoration: _deco('Volume (L)', isDark: isDark),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                    ],
+                    validator: _validateDecimal,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: AppSpacing.s20),
 
             FilledButton(
@@ -1603,10 +1822,19 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
                   );
                   return;
                 }
+                final initial = widget.initial;
+                // Libellé conservé tant que l'unité ne change pas.
+                final label = initial != null &&
+                        initial.wholesaleUnit == _wholesaleUnit
+                    ? initial.label
+                    : _kWholesaleUnitLabels[_wholesaleUnit] ?? _wholesaleUnit!;
                 Navigator.of(context).pop(
                   _VariantDraft(
-                    label: _kWholesaleUnitLabels[_wholesaleUnit] ?? _wholesaleUnit!,
+                    id: initial?.id,
+                    label: label,
                     wholesaleUnit: _wholesaleUnit,
+                    weight: parseDecimal(_weightCtrl.text),
+                    volume: parseDecimal(_volumeCtrl.text),
                     price: double.parse(_priceCtrl.text.trim()),
                     stock: int.parse(_stockCtrl.text.trim()),
                     minOrderQuantity: int.tryParse(_minQtyCtrl.text.trim()),
@@ -1622,7 +1850,7 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
                 ),
               ),
               child: Text(
-                'Ajouter cette variante',
+                _isEdit ? 'Enregistrer la variante' : 'Ajouter cette variante',
                 style: AppTextStyles.label.copyWith(
                   color: AppColors.white,
                   fontWeight: FontWeight.w600,
@@ -1631,6 +1859,7 @@ class _AddVariantSheetState extends State<_AddVariantSheet> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
