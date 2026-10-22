@@ -12,6 +12,7 @@ import 'package:banabana_b2b/features/producer/providers/category_providers.dart
 import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
 import 'package:banabana_b2b/features/wholesaler/providers/cart_providers.dart';
 import 'package:banabana_b2b/shared/models/product.dart';
+import 'package:banabana_b2b/shared/utils/variant_format.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
 class ProductPublicDetailScreen extends ConsumerStatefulWidget {
@@ -652,6 +653,25 @@ class _ProductPublicDetailScreenState
             );
           }).toList(),
         ),
+        if (variantContentLabel(
+          weight: _selectedVariant?.weight,
+          volume: _selectedVariant?.volume,
+        ) case final content?) ...[
+          const SizedBox(height: AppSpacing.s10),
+          Row(
+            children: [
+              Icon(Symbols.scale, size: 16,
+                  color: isDark ? AppColors.gray400 : AppColors.gray500),
+              const SizedBox(width: AppSpacing.s6),
+              Text(
+                'Contenance : $content',
+                style: AppTextStyles.label.copyWith(
+                  color: isDark ? AppColors.gray300 : AppColors.gray700,
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
