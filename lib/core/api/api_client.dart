@@ -8,13 +8,13 @@ const _kBaseUrl = String.fromEnvironment(
   defaultValue: 'http://3.227.108.30/v1',
 );
 
+/// Origine du serveur (sans le préfixe /v1), pour les médias et le temps réel.
+final String apiOrigin = _kBaseUrl.replaceFirst(RegExp(r'/v1.*'), '');
+
 /// Resolves a possibly-relative image URL from the backend.
 /// TypeORM uploads return paths like "/uploads/xxx.jpg" — prefix with the server origin.
 String resolveImageUrl(String url) {
-  if (url.startsWith('/')) {
-    final origin = _kBaseUrl.replaceFirst(RegExp(r'/v1.*'), '');
-    return '$origin$url';
-  }
+  if (url.startsWith('/')) return '$apiOrigin$url';
   return url;
 }
 

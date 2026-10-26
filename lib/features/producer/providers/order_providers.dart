@@ -18,6 +18,15 @@ class OrdersNotifier extends StateNotifier<AsyncValue<List<Order>>> {
     state = await AsyncValue.guard(() => _repo.getMyOrders());
   }
 
+  /// Recharge sans repasser par l'état de chargement (pas de flash à
+  /// l'écran) ; en cas d'erreur réseau, les données affichées sont gardées.
+  Future<void> refresh() async {
+    final next = await AsyncValue.guard(() => _repo.getMyOrders());
+    if (!mounted) return;
+    if (next.hasError && state.hasValue) return;
+    state = next;
+  }
+
   Future<void> accept(String id) async {
     await _repo.accept(id);
     await load();

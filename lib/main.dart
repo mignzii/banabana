@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:banabana_b2b/core/realtime/live_updates.dart';
 import 'package:banabana_b2b/core/router/app_router.dart';
 import 'package:banabana_b2b/core/theme/app_theme.dart';
 import 'package:banabana_b2b/features/auth/providers/auth_provider.dart';
@@ -31,6 +32,8 @@ class _BanaBanaAppState extends ConsumerState<BanaBanaApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Mises à jour en direct (temps réel, retour dans l'app, rafraîchissement).
+    ref.watch(liveUpdatesProvider);
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(themeModeProvider);
     return MaterialApp.router(

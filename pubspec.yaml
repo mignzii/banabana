@@ -21,6 +21,7 @@ dependencies:
   # Storage & networking
   shared_preferences: ^2.3.5
   dio: ^5.8.0+1
+  socket_io_client: ^3.1.6
 
   # UI
   cupertino_icons: ^1.0.8

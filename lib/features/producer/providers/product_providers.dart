@@ -20,6 +20,15 @@ class ProductsNotifier extends StateNotifier<AsyncValue<List<Product>>> {
     state = await AsyncValue.guard(() => _repo.getMyProducts());
   }
 
+  /// Recharge sans repasser par l'état de chargement (pas de flash à
+  /// l'écran) ; en cas d'erreur réseau, les données affichées sont gardées.
+  Future<void> refresh() async {
+    final next = await AsyncValue.guard(() => _repo.getMyProducts());
+    if (!mounted) return;
+    if (next.hasError && state.hasValue) return;
+    state = next;
+  }
+
   Future<void> activate(String id) async {
     await _repo.activate(id);
     await load();
