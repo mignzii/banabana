@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,8 +15,15 @@ class StorageService {
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
 
-  Future<void> setAccessToken(String token) =>
-      _secure.write(key: _kAccessToken, value: token);
+  // Diffuse chaque nouveau jeton d'accès (connexion ou rafraîchissement),
+  // pour que la connexion temps réel se refasse avec le jeton à jour.
+  static final _accessTokenChanges = StreamController<String>.broadcast();
+  Stream<String> get accessTokenChanges => _accessTokenChanges.stream;
+
+  Future<void> setAccessToken(String token) async {
+    await _secure.write(key: _kAccessToken, value: token);
+    _accessTokenChanges.add(token);
+  }
 
   Future<String?> getAccessToken() =>
       _secure.read(key: _kAccessToken);

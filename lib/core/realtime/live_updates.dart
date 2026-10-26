@@ -35,6 +35,9 @@ class LiveUpdates with WidgetsBindingObserver {
 
   final Ref _ref;
   io.Socket? _socket;
+  String? _socketToken;
+  DateTime? _lastTokenRenewal;
+  StreamSubscription<String>? _tokenSub;
   Timer? _ordersTimer;
   Timer? _dataTimer;
   bool _started = false;
@@ -50,6 +53,10 @@ class LiveUpdates with WidgetsBindingObserver {
     if (_started) return;
     _started = true;
     WidgetsBinding.instance.addObserver(this);
+    _tokenSub = _ref
+        .read(storageServiceProvider)
+        .accessTokenChanges
+        .listen(_onTokenChanged);
     _connectSocket();
     _scheduleTimers();
   }
@@ -58,6 +65,9 @@ class LiveUpdates with WidgetsBindingObserver {
     if (!_started) return;
     _started = false;
     WidgetsBinding.instance.removeObserver(this);
+    _tokenSub?.cancel();
+    _tokenSub = null;
+    _socketToken = null;
     _ordersTimer?.cancel();
     _dataTimer?.cancel();
     _socket?.dispose();
@@ -95,7 +105,8 @@ class LiveUpdates with WidgetsBindingObserver {
 
   Future<void> _connectSocket() async {
     final token = await _ref.read(storageServiceProvider).getAccessToken();
-    if (!_started || token == null) return;
+    if (!_started || token == null || _socket != null) return;
+    _socketToken = token;
     final socket = io.io(
       '$apiOrigin/realtime',
       io.OptionBuilder()
@@ -114,13 +125,51 @@ class LiveUpdates with WidgetsBindingObserver {
         _scheduleTimers();
       })
       ..onDisconnect((_) => _scheduleTimers())
-      ..onConnectError((_) async {
-        // Jeton expiré entre-temps : le prochain essai utilise le plus récent.
+      ..onConnectError((error) async {
         final latest = await _ref.read(storageServiceProvider).getAccessToken();
-        if (latest != null) socket.auth = {'token': latest};
+        if (latest != null && latest != _socketToken) {
+          // Jeton déjà rafraîchi entre-temps : nouvel essai avec celui-ci.
+          _onTokenChanged(latest);
+        } else if (_isUnauthorized(error)) {
+          // Jeton expiré : le serveur refuse et ne relance pas la connexion.
+          // On renouvelle le jeton (via l'API), ce qui déclenche la reconnexion.
+          _renewToken();
+        }
       })
       ..on('change', (data) => _onChange(data));
     _socket = socket;
+    socket.connect();
+  }
+
+  bool _isUnauthorized(dynamic error) {
+    final data = error is Map ? error['data'] : null;
+    return '$error'.contains('UNAUTHORIZED') ||
+        (data is Map && data['code'] == 'UNAUTHORIZED');
+  }
+
+  /// Un appel authentifié fait rafraîchir le jeton par l'intercepteur ; le
+  /// nouveau jeton arrive ensuite dans [_onTokenChanged]. Au plus une fois
+  /// toutes les 30 s pour ne pas boucler si la session est vraiment perdue.
+  void _renewToken() {
+    final now = DateTime.now();
+    final last = _lastTokenRenewal;
+    if (last != null && now.difference(last) < const Duration(seconds: 30)) return;
+    _lastTokenRenewal = now;
+    _ref.read(authProvider.notifier).refreshProfile();
+  }
+
+  /// Le serveur ne vérifie le jeton qu'à la connexion : après un
+  /// rafraîchissement, on se reconnecte avec le nouveau jeton.
+  void _onTokenChanged(String token) {
+    if (!_started || token == _socketToken) return;
+    _socketToken = token;
+    final socket = _socket;
+    if (socket == null) {
+      _connectSocket();
+      return;
+    }
+    socket.auth = {'token': token};
+    if (socket.connected) socket.disconnect();
     socket.connect();
   }
 
@@ -130,6 +179,8 @@ class LiveUpdates with WidgetsBindingObserver {
       'order' || 'delivery' => [LiveTopic.orders],
       'product' || 'variant' || 'inventory' => [LiveTopic.products, LiveTopic.catalog],
       'category' => [LiveTopic.catalog],
+      // Crédit livreur : ne concerne pas cette app.
+      'driverCredit' => const <LiveTopic>[],
       _ => LiveTopic.values,
     };
     refresh(topics);
