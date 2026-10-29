@@ -434,7 +434,7 @@ class _WholesalerOrderDetailScreenState
                       ),
                     ),
                     Text(
-                      '${fmt.format(order.totalAmount.toInt())} FCFA',
+                      '${fmt.format((order.totalAmount - order.deliveryFee).toInt())} FCFA',
                       style: AppTextStyles.label.copyWith(
                         fontWeight: FontWeight.w600,
                         color: isDark
@@ -444,6 +444,32 @@ class _WholesalerOrderDetailScreenState
                     ),
                   ],
                 ),
+                if (order.deliveryFee > 0) ...[
+                  const SizedBox(height: AppSpacing.s8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Livraison (${order.deliveryDistance.toStringAsFixed(1)} km'
+                        '${order.totalWeight > 0 ? ' · ${order.totalWeight.toStringAsFixed(0)} kg' : ''})',
+                        style: AppTextStyles.label.copyWith(
+                          color: isDark
+                              ? AppColors.gray400
+                              : AppColors.gray500,
+                        ),
+                      ),
+                      Text(
+                        '${fmt.format(order.deliveryFee.toInt())} FCFA',
+                        style: AppTextStyles.label.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? AppColors.gray100
+                              : AppColors.gray900,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 Divider(
                   height: AppSpacing.s24,
                   color: isDark

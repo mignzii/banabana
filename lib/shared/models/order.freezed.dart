@@ -392,6 +392,12 @@ mixin _$Order {
   OrderStatus get status => throw _privateConstructorUsedError;
   @JsonKey(fromJson: _parseDouble)
   double get totalAmount => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseDouble)
+  double get deliveryFee => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseDouble)
+  double get deliveryDistance => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _parseDouble)
+  double get totalWeight => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   List<OrderItem> get items => throw _privateConstructorUsedError;
   String? get producerName => throw _privateConstructorUsedError;
@@ -422,6 +428,9 @@ abstract class $OrderCopyWith<$Res> {
     String wholesalerId,
     OrderStatus status,
     @JsonKey(fromJson: _parseDouble) double totalAmount,
+    @JsonKey(fromJson: _parseDouble) double deliveryFee,
+    @JsonKey(fromJson: _parseDouble) double deliveryDistance,
+    @JsonKey(fromJson: _parseDouble) double totalWeight,
     DateTime createdAt,
     List<OrderItem> items,
     String? producerName,
@@ -454,6 +463,9 @@ class _$OrderCopyWithImpl<$Res, $Val extends Order>
     Object? wholesalerId = null,
     Object? status = null,
     Object? totalAmount = null,
+    Object? deliveryFee = null,
+    Object? deliveryDistance = null,
+    Object? totalWeight = null,
     Object? createdAt = null,
     Object? items = null,
     Object? producerName = freezed,
@@ -482,6 +494,18 @@ class _$OrderCopyWithImpl<$Res, $Val extends Order>
             totalAmount: null == totalAmount
                 ? _value.totalAmount
                 : totalAmount // ignore: cast_nullable_to_non_nullable
+                      as double,
+            deliveryFee: null == deliveryFee
+                ? _value.deliveryFee
+                : deliveryFee // ignore: cast_nullable_to_non_nullable
+                      as double,
+            deliveryDistance: null == deliveryDistance
+                ? _value.deliveryDistance
+                : deliveryDistance // ignore: cast_nullable_to_non_nullable
+                      as double,
+            totalWeight: null == totalWeight
+                ? _value.totalWeight
+                : totalWeight // ignore: cast_nullable_to_non_nullable
                       as double,
             createdAt: null == createdAt
                 ? _value.createdAt
@@ -542,6 +566,9 @@ abstract class _$$OrderImplCopyWith<$Res> implements $OrderCopyWith<$Res> {
     String wholesalerId,
     OrderStatus status,
     @JsonKey(fromJson: _parseDouble) double totalAmount,
+    @JsonKey(fromJson: _parseDouble) double deliveryFee,
+    @JsonKey(fromJson: _parseDouble) double deliveryDistance,
+    @JsonKey(fromJson: _parseDouble) double totalWeight,
     DateTime createdAt,
     List<OrderItem> items,
     String? producerName,
@@ -573,6 +600,9 @@ class __$$OrderImplCopyWithImpl<$Res>
     Object? wholesalerId = null,
     Object? status = null,
     Object? totalAmount = null,
+    Object? deliveryFee = null,
+    Object? deliveryDistance = null,
+    Object? totalWeight = null,
     Object? createdAt = null,
     Object? items = null,
     Object? producerName = freezed,
@@ -601,6 +631,18 @@ class __$$OrderImplCopyWithImpl<$Res>
         totalAmount: null == totalAmount
             ? _value.totalAmount
             : totalAmount // ignore: cast_nullable_to_non_nullable
+                  as double,
+        deliveryFee: null == deliveryFee
+            ? _value.deliveryFee
+            : deliveryFee // ignore: cast_nullable_to_non_nullable
+                  as double,
+        deliveryDistance: null == deliveryDistance
+            ? _value.deliveryDistance
+            : deliveryDistance // ignore: cast_nullable_to_non_nullable
+                  as double,
+        totalWeight: null == totalWeight
+            ? _value.totalWeight
+            : totalWeight // ignore: cast_nullable_to_non_nullable
                   as double,
         createdAt: null == createdAt
             ? _value.createdAt
@@ -655,6 +697,9 @@ class _$OrderImpl implements _Order {
     required this.wholesalerId,
     required this.status,
     @JsonKey(fromJson: _parseDouble) required this.totalAmount,
+    @JsonKey(fromJson: _parseDouble) this.deliveryFee = 0,
+    @JsonKey(fromJson: _parseDouble) this.deliveryDistance = 0,
+    @JsonKey(fromJson: _parseDouble) this.totalWeight = 0,
     required this.createdAt,
     final List<OrderItem> items = const [],
     this.producerName,
@@ -679,6 +724,15 @@ class _$OrderImpl implements _Order {
   @override
   @JsonKey(fromJson: _parseDouble)
   final double totalAmount;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  final double deliveryFee;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  final double deliveryDistance;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  final double totalWeight;
   @override
   final DateTime createdAt;
   final List<OrderItem> _items;
@@ -709,7 +763,7 @@ class _$OrderImpl implements _Order {
 
   @override
   String toString() {
-    return 'Order(id: $id, wholesalerId: $wholesalerId, status: $status, totalAmount: $totalAmount, createdAt: $createdAt, items: $items, producerName: $producerName, wholesalerName: $wholesalerName, wholesalerPhone: $wholesalerPhone, notes: $notes, deliveryAddress: $deliveryAddress, deliveryName: $deliveryName, deliveryPhone: $deliveryPhone, paymentMethod: $paymentMethod)';
+    return 'Order(id: $id, wholesalerId: $wholesalerId, status: $status, totalAmount: $totalAmount, deliveryFee: $deliveryFee, deliveryDistance: $deliveryDistance, totalWeight: $totalWeight, createdAt: $createdAt, items: $items, producerName: $producerName, wholesalerName: $wholesalerName, wholesalerPhone: $wholesalerPhone, notes: $notes, deliveryAddress: $deliveryAddress, deliveryName: $deliveryName, deliveryPhone: $deliveryPhone, paymentMethod: $paymentMethod)';
   }
 
   @override
@@ -723,6 +777,12 @@ class _$OrderImpl implements _Order {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.totalAmount, totalAmount) ||
                 other.totalAmount == totalAmount) &&
+            (identical(other.deliveryFee, deliveryFee) ||
+                other.deliveryFee == deliveryFee) &&
+            (identical(other.deliveryDistance, deliveryDistance) ||
+                other.deliveryDistance == deliveryDistance) &&
+            (identical(other.totalWeight, totalWeight) ||
+                other.totalWeight == totalWeight) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
@@ -751,6 +811,9 @@ class _$OrderImpl implements _Order {
     wholesalerId,
     status,
     totalAmount,
+    deliveryFee,
+    deliveryDistance,
+    totalWeight,
     createdAt,
     const DeepCollectionEquality().hash(_items),
     producerName,
@@ -783,6 +846,9 @@ abstract class _Order implements Order {
     required final String wholesalerId,
     required final OrderStatus status,
     @JsonKey(fromJson: _parseDouble) required final double totalAmount,
+    @JsonKey(fromJson: _parseDouble) final double deliveryFee,
+    @JsonKey(fromJson: _parseDouble) final double deliveryDistance,
+    @JsonKey(fromJson: _parseDouble) final double totalWeight,
     required final DateTime createdAt,
     final List<OrderItem> items,
     final String? producerName,
@@ -806,6 +872,15 @@ abstract class _Order implements Order {
   @override
   @JsonKey(fromJson: _parseDouble)
   double get totalAmount;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  double get deliveryFee;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  double get deliveryDistance;
+  @override
+  @JsonKey(fromJson: _parseDouble)
+  double get totalWeight;
   @override
   DateTime get createdAt;
   @override

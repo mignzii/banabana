@@ -228,6 +228,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(
+                    'Les frais de livraison (selon distance et poids) seront ajoutés à votre commande avant le paiement.',
+                    style: AppTextStyles.label.copyWith(
+                      fontSize: 12,
+                      color: isDark ? AppColors.gray400 : AppColors.gray500,
+                    ),
+                  ),
                 ],
               ),
             ),

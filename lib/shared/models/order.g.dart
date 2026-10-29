@@ -39,6 +39,15 @@ _$OrderImpl _$$OrderImplFromJson(Map<String, dynamic> json) => _$OrderImpl(
   wholesalerId: json['wholesalerId'] as String,
   status: $enumDecode(_$OrderStatusEnumMap, json['status']),
   totalAmount: _parseDouble(json['totalAmount']),
+  deliveryFee: json['deliveryFee'] == null
+      ? 0
+      : _parseDouble(json['deliveryFee']),
+  deliveryDistance: json['deliveryDistance'] == null
+      ? 0
+      : _parseDouble(json['deliveryDistance']),
+  totalWeight: json['totalWeight'] == null
+      ? 0
+      : _parseDouble(json['totalWeight']),
   createdAt: DateTime.parse(json['createdAt'] as String),
   items:
       (json['items'] as List<dynamic>?)
@@ -61,6 +70,9 @@ Map<String, dynamic> _$$OrderImplToJson(_$OrderImpl instance) =>
       'wholesalerId': instance.wholesalerId,
       'status': _$OrderStatusEnumMap[instance.status]!,
       'totalAmount': instance.totalAmount,
+      'deliveryFee': instance.deliveryFee,
+      'deliveryDistance': instance.deliveryDistance,
+      'totalWeight': instance.totalWeight,
       'createdAt': instance.createdAt.toIso8601String(),
       'items': instance.items,
       'producerName': instance.producerName,
