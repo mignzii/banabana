@@ -14,11 +14,13 @@ class ProductCard extends StatelessWidget {
     required this.product,
     this.onTap,
     this.onEdit,
+    this.onDelete,
   });
 
   final Product product;
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +132,30 @@ class ProductCard extends StatelessWidget {
                               ),
                             ),
                           ),
+                          if (onDelete != null) ...[
+                            Material(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
+                              child: InkWell(
+                                onTap: onDelete,
+                                borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
+                                child: Ink(
+                                  width: 28,
+                                  height: 28,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.error.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(AppSpacing.radiusSmall),
+                                  ),
+                                  child: const Icon(
+                                    Symbols.delete_outline,
+                                    size: 14,
+                                    color: AppColors.error,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.s4),
+                          ],
                           if (onEdit != null)
                             Material(
                               color: Colors.transparent,

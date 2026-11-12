@@ -12,6 +12,9 @@ import 'package:banabana_b2b/features/wholesaler/providers/wholesaler_order_prov
 import 'package:banabana_b2b/features/producer/presentation/widgets/inventory_movement_sheet.dart';
 import 'package:banabana_b2b/shared/models/inventory.dart';
 import 'package:banabana_b2b/shared/models/order.dart';
+import 'package:banabana_b2b/shared/models/product.dart';
+import 'package:banabana_b2b/shared/widgets/app_snack_bar.dart';
+import 'package:banabana_b2b/shared/widgets/product_card.dart';
 import 'package:banabana_b2b/shared/widgets/error_state_widget.dart';
 import 'package:banabana_b2b/shared/widgets/loading_shimmer.dart';
 
@@ -32,7 +35,7 @@ class _WholesalerInventoryScreenState
   @override
   void initState() {
     super.initState();
-    _tabCtrl = TabController(length: 4, vsync: this);
+    _tabCtrl = TabController(length: 5, vsync: this);
     _tabCtrl.addListener(() => setState(() {}));
   }
 
@@ -234,6 +237,7 @@ class _WholesalerInventoryScreenState
                     .copyWith(fontWeight: FontWeight.w600, fontSize: 12),
                 tabs: [
                   const Tab(text: 'Tous'),
+                  const Tab(text: 'Mes produits'),
                   Tab(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -268,7 +272,7 @@ class _WholesalerInventoryScreenState
             Divider(height: 1, color: border),
 
             // Search (hidden on Stats tab)
-            if (_tabCtrl.index != 3)
+            if (_tabCtrl.index != 4)
               Container(
                 color: isDark ? AppColors.darkBg : surface,
                 padding: const EdgeInsets.fromLTRB(
@@ -312,14 +316,26 @@ class _WholesalerInventoryScreenState
                     stockLabel: _stockLabel,
                   ),
 
-                  // Tab 1 — Alertes
+                  // Tab 1 — Mes produits (affichage + suppression)
+                  _MyProductsTab(
+                    products: _query.isEmpty
+                        ? products
+                        : products
+                            .where((p) => p.title
+                                .toLowerCase()
+                                .contains(_query.toLowerCase()))
+                            .toList(),
+                    isDark: isDark,
+                  ),
+
+                  // Tab 2 — Alertes
                   _AlertsTab(
                     outOfStock: outOfStock,
                     lowStock: lowStock,
                     isDark: isDark,
                   ),
 
-                  // Tab 2 — Mouvements
+                  // Tab 3 — Mouvements
                   _MovementsTab(
                     movementsAsync: movementsAsync,
                     nameMap: nameMap,
@@ -328,7 +344,7 @@ class _WholesalerInventoryScreenState
                     onRetry: () => ref.invalidate(stockMovementsProvider),
                   ),
 
-                  // Tab 3 — Stats
+                  // Tab 4 — Stats
                   _StatsTab(
                     totalValue: totalValue,
                     productStats: productStats,
@@ -341,6 +357,89 @@ class _WholesalerInventoryScreenState
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── Mes produits ───────────────────────────────────────────────────────────────
+class _MyProductsTab extends ConsumerWidget {
+  final List<Product> products;
+  final bool isDark;
+
+  const _MyProductsTab({required this.products, required this.isDark});
+
+  Future<void> _confirmDelete(
+      BuildContext context, WidgetRef ref, Product p) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? AppColors.darkSurface : AppColors.white,
+        title: const Text('Supprimer le produit'),
+        content: Text('Supprimer "${p.title}" ? Cette action est irréversible.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Supprimer'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    try {
+      await ref.read(productsNotifierProvider.notifier).delete(p.id);
+      if (context.mounted) {
+        context.showSnack('Produit supprimé', type: SnackType.success);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        context.showSnack(e.toString(), type: SnackType.error);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (products.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Symbols.inventory_2,
+                size: 56,
+                color: isDark ? AppColors.gray500 : AppColors.gray300),
+            const SizedBox(height: AppSpacing.s12),
+            Text('Aucun produit',
+                style: AppTextStyles.body.copyWith(
+                    color: isDark ? AppColors.gray400 : AppColors.gray500)),
+          ],
+        ),
+      );
+    }
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.s16, AppSpacing.s16,
+          AppSpacing.s16, AppSpacing.s96),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: AppSpacing.s12,
+        mainAxisSpacing: AppSpacing.s12,
+        childAspectRatio: 0.68,
+      ),
+      itemCount: products.length,
+      itemBuilder: (context, i) {
+        final p = products[i];
+        return ProductCard(
+          key: ValueKey(p.id),
+          product: p,
+          onTap: () => context.push('/shop/inventory/${p.id}'),
+          onEdit: () => context.push('/shop/inventory/${p.id}/edit'),
+          onDelete: () => _confirmDelete(context, ref, p),
+        );
+      },
     );
   }
 }

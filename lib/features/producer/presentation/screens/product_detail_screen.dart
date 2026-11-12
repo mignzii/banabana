@@ -60,7 +60,7 @@ class ProductDetailScreen extends ConsumerWidget {
               product: product,
               isDark: isDark,
               listRoute: routePrefix.startsWith('/shop')
-                  ? '/shop/products'
+                  ? '/shop/inventory'
                   : '/producer/products',
             ),
             orElse: () => const SizedBox.shrink(),
