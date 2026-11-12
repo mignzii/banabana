@@ -325,6 +325,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'shop-analytics',
         pageBuilder: (_, __) => _fadePage(const WholesalerAnalyticsScreen()),
       ),
+      // « Mes produits » du grossiste : liste + accès édition / suppression
+      GoRoute(
+        parentNavigatorKey: _rootNavKey,
+        path: '/shop/products',
+        name: 'shop-products',
+        pageBuilder: (_, __) =>
+            _fadePage(const ProductsScreen(routePrefix: '/shop/inventory')),
+      ),
       GoRoute(
         parentNavigatorKey: _rootNavKey,
         path: '/shop/inventory/new',

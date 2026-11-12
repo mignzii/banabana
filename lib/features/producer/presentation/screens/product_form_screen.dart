@@ -366,7 +366,10 @@ class _ProductFormBodyState extends ConsumerState<_ProductFormBody> {
         if (widget.isEditing) {
           context.pop();
         } else {
-          context.pushReplacement('/producer/products/$targetId');
+          final isShop = GoRouterState.of(context).matchedLocation.startsWith('/shop');
+          context.pushReplacement(
+            isShop ? '/shop/inventory/$targetId' : '/producer/products/$targetId',
+          );
         }
       }
     } catch (e) {

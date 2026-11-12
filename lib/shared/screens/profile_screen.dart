@@ -402,6 +402,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ],
 
+          // Accès aux produits du grossiste (affichage + suppression)
+          if (user?.role == 'wholesaler') ...[
+            const SizedBox(height: AppSpacing.s16),
+            _SectionCard(
+              isDark: isDark,
+              surface: surface,
+              border: border,
+              child: ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(Symbols.inventory_2, size: 20, color: textPrimary),
+                title: Text(
+                  'Mes produits',
+                  style: AppTextStyles.body.copyWith(color: textPrimary),
+                ),
+                trailing: Icon(Symbols.chevron_right, size: 18, color: textSecondary),
+                onTap: () => context.push('/shop/products'),
+              ),
+            ),
+          ],
+
           const SizedBox(height: AppSpacing.s16),
 
           // Préférences

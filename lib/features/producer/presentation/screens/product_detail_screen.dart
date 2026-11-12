@@ -56,7 +56,13 @@ class ProductDetailScreen extends ConsumerWidget {
             tooltip: 'Modifier',
           ),
           productAsync.maybeWhen(
-            data: (product) => _MoreMenu(product: product, isDark: isDark),
+            data: (product) => _MoreMenu(
+              product: product,
+              isDark: isDark,
+              listRoute: routePrefix.startsWith('/shop')
+                  ? '/shop/products'
+                  : '/producer/products',
+            ),
             orElse: () => const SizedBox.shrink(),
           ),
           const SizedBox(width: AppSpacing.s4),
@@ -1108,9 +1114,14 @@ class _ActionsBarState extends ConsumerState<_ActionsBar> {
 // ─── Menu "..." (supprimer) ───────────────────────────────────────────────────
 
 class _MoreMenu extends ConsumerWidget {
-  const _MoreMenu({required this.product, required this.isDark});
+  const _MoreMenu({
+    required this.product,
+    required this.isDark,
+    required this.listRoute,
+  });
   final Product product;
   final bool isDark;
+  final String listRoute;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1153,7 +1164,7 @@ class _MoreMenu extends ConsumerWidget {
               ref.invalidate(productsNotifierProvider);
               if (context.mounted) {
                 context.showSnack('Produit supprimé', type: SnackType.success);
-                context.go('/producer/products');
+                context.go(listRoute);
               }
             } catch (e) {
               if (context.mounted) {
